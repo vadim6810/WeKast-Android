@@ -22,43 +22,6 @@ import java.util.Map;
  */
 public class AccessServiceAPI {
 
-    /**
-     * Call service api with GET method and then return result form service as json string
-     *
-     * @param url
-     * @return
-     */
-//    public String getJSONStringFromUrl_GET(String url) {
-//        JSONArray jsonArray = null;
-//        HttpURLConnection httpURLConnection = null;
-//        BufferedReader bufferedReader;
-//        StringBuilder stringBuilder;
-//        String line;
-//        String jsonString = "";
-//        try {
-//            URL u = new URL(url);
-//            httpURLConnection = (HttpURLConnection) u.openConnection();
-//            httpURLConnection.setRequestMethod("GET");
-//            bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-//            stringBuilder = new StringBuilder();
-//
-//            while ((line = bufferedReader.readLine()) != null) {
-//                stringBuilder.append(line + '\n');
-//            }
-//            jsonString = stringBuilder.toString();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (ProtocolException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            httpURLConnection.disconnect();
-//        }
-//
-//        return jsonString;
-//    }
-
 
     /**
      * Convert json string to json object
@@ -155,65 +118,4 @@ public class AccessServiceAPI {
 
         return jsonString;
     }
-
-
-//    public String getJSONStringWithParam_POST(String serviceUrl, String params)
-//            throws IOException {
-//        JSONArray jsonArray = null;
-//        String jsonString = null;
-//        HttpURLConnection conn = null;
-//        String line;
-//
-//        URL url;
-//        try {
-//            url = new URL(serviceUrl);
-//        } catch (MalformedURLException e) {
-//            throw new IllegalArgumentException("invalid url: " + serviceUrl);
-//        }
-//
-//        Log.w("getJSONStringWithParam", "param=>" + params);
-//        byte[] bytes = params.getBytes();
-//        try {
-//
-//            conn = (HttpURLConnection) url.openConnection();
-//            conn.setDoOutput(true);
-//            conn.setUseCaches(false);
-//            conn.setFixedLengthStreamingMode(bytes.length);
-//            conn.setRequestMethod("POST");
-//            //conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
-//            conn.setRequestProperty("Content-Type", "application/json");
-//            conn.connect();
-//            // post the request
-//            OutputStream out = conn.getOutputStream();
-//            out.write(bytes);
-//            out.close();
-//            // handle the response
-//            int status = conn.getResponseCode();
-//
-//            Log.w("getJSONStringWithParam", "Response Status = " + status);
-//            if (status != 200) {
-//                throw new IOException("Post failed with error code " + status);
-//            }
-//
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            StringBuilder stringBuilder = new StringBuilder();
-//
-//
-//            while ((line = bufferedReader.readLine()) != null) {
-//                stringBuilder.append(line + '\n');
-//            }
-//
-//            jsonString = stringBuilder.toString();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (ProtocolException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            conn.disconnect();
-//        }
-//
-//        return jsonString;
-//    }
 }

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -81,25 +82,33 @@ public class LoginActivity extends Activity {
             param.put("login", params[0]);
             param.put("password", params[1]);
 
-            JSONObject jObjResult;
+            JSONObject jsonObject;
 
             try {
 
                 JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_LIST, param);
-                Object json = new JSONTokener(JSONresponse).nextValue();
-                if (json instanceof JSONObject) {
-//                    JSONObject jsonObject = new JSONObject(JSONresponse);
-                    jObjResult = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
-                    JSONresponse = jObjResult.getString("err");
+                jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
+
+                if(jsonObject.getInt("status") == 0)
+                    return Common.RESULT_SUCCESS;
+                else {
+                    JSONresponse = jsonObject.getString("error");
                     return Common.RESULT_ERROR;
                 }
-                else {
-                  //  if (json instanceof JSONArray)
-                    return Common.RESULT_SUCCESS;
-                }
+
+//                Object json = new JSONTokener(JSONresponse).nextValue();
+//                if (json instanceof JSONObject) {
+////                    JSONObject jsonObject = new JSONObject(JSONresponse);
+//                    jObjResult = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
+//                    JSONresponse = jObjResult.getString("err");
+//                    return Common.RESULT_ERROR;
+//                }
+//                else {
+//                  //  if (json instanceof JSONArray)
+//                    return Common.RESULT_SUCCESS;
+//                }
 
             } catch (Exception e) {
-
                 return Common.RESULT_ERROR;
             }
         }
@@ -108,14 +117,19 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             m_ProgressDialog.dismiss();
-            if (result != Common.RESULT_ERROR) {
-                Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_LONG).show();
+            if (result == Common.RESULT_SUCCESS) {
+                toastShow("Login success");
                 Intent i = new Intent(getApplicationContext(), WelcomeActivity.class);
                 i.putExtra("login", txtLogin.getText().toString());
                 startActivity(i);
             } else {
-                Toast.makeText(getApplicationContext(), "Login fail ==> " + JSONresponse, Toast.LENGTH_LONG).show();
+                toastShow("Login fail ==> " + JSONresponse);
             }
+        }
+        private void toastShow(String s) {
+            Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
         }
     }
 }

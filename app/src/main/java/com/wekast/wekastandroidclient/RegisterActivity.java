@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -61,36 +62,46 @@ public class RegisterActivity extends Activity {
             Map<String ,String> postParam = new HashMap<>();
             postParam.put("login", params[0]);
             postParam.put("email", params[1]);
+
+            JSONObject jsonObject;
+
             try{
                 JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_REGISTER, postParam);
-//                JSONObject jsonObject = new JSONObject(JSONresponse);
-                JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
-                return (jsonObject.getString("login")).length() > 0 ? Common.RESULT_SUCCESS : Common.RESULT_ERROR;
+                jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
 
+                if(jsonObject.getInt("status") == 0)
+                    return Common.RESULT_SUCCESS;
+                else {
+                    JSONresponse = jsonObject.getString("error");
+                    return Common.RESULT_ERROR;
+                }
 
             } catch (Exception e) {
-                e.printStackTrace();
                 return Common.RESULT_ERROR;
             }
         }
 
         @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
             m_ProgressDialog.dismiss();
-            if (integer == Common.RESULT_SUCCESS) {
-                Toast.makeText(RegisterActivity.this, "Register success", Toast.LENGTH_LONG).show();
+            if (result == Common.RESULT_SUCCESS) {
+                toastShow("Register success");
+//                Toast.makeText(RegisterActivity.this, "Register success", Toast.LENGTH_LONG).show();
                 Intent i = new Intent();
                 i.putExtra("login", txtLogin.getText().toString());
                 i.putExtra("email", txtEmail.getText().toString());
                 setResult(1, i);
                 finish();
-            } else if (integer == Common.RESULT_USERS_EXISTS) {
-                Toast.makeText(RegisterActivity.this, "Login is exists!", Toast.LENGTH_LONG).show();
-
             } else {
-                Toast.makeText(RegisterActivity.this, "Registration fail!", Toast.LENGTH_LONG).show();
+                toastShow( "Registration fail ==> " + JSONresponse);
             }
+        }
+
+        private void toastShow(String s) {
+            Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
         }
     }
 }
