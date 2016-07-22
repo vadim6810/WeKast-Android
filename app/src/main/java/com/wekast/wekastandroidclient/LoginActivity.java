@@ -9,10 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import org.json.JSONObject;
-import org.json.JSONTokener;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +21,6 @@ public class LoginActivity extends Activity {
     private EditText txtPassword;
     private AccessServiceAPI m_AccessServiceAPI;
     private ProgressDialog m_ProgressDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

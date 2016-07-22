@@ -50,6 +50,7 @@ public class RegisterActivity extends Activity {
 
     public class TaskRegister extends AsyncTask<String , Void, Integer>{
         private String JSONresponse;
+        private String password;
 
         @Override
         protected void onPreExecute() {
@@ -69,8 +70,12 @@ public class RegisterActivity extends Activity {
                 JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_REGISTER, postParam);
                 jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
 
-                if(jsonObject.getInt("status") == 0)
+                if(jsonObject.getInt("status") == 0) {
+                    JSONresponse = jsonObject.getString("answer");
+                    JSONObject jsonObject2 = new JSONObject(JSONresponse);
+                    password = jsonObject2.getString("password");
                     return Common.RESULT_SUCCESS;
+                }
                 else {
                     JSONresponse = jsonObject.getString("error");
                     return Common.RESULT_ERROR;
@@ -86,10 +91,10 @@ public class RegisterActivity extends Activity {
             super.onPostExecute(result);
             m_ProgressDialog.dismiss();
             if (result == Common.RESULT_SUCCESS) {
-                toastShow("Register success");
+                toastShow("Register success! Password: " + password);
                 Intent i = new Intent();
                 i.putExtra("login", txtLogin.getText().toString());
-                i.putExtra("email", txtEmail.getText().toString());
+                i.putExtra("password", password.toString());
                 setResult(1, i);
                 finish();
             } else {
