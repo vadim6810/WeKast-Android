@@ -87,7 +87,6 @@ public class RegisterActivity extends Activity {
             m_ProgressDialog.dismiss();
             if (result == Common.RESULT_SUCCESS) {
                 toastShow("Register success");
-//                Toast.makeText(RegisterActivity.this, "Register success", Toast.LENGTH_LONG).show();
                 Intent i = new Intent();
                 i.putExtra("login", txtLogin.getText().toString());
                 i.putExtra("email", txtEmail.getText().toString());
