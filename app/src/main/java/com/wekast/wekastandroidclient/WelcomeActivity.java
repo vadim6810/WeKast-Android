@@ -21,6 +21,6 @@ public class WelcomeActivity extends Activity{
     }
 
     public void btnBack_Click(View v){
-        finish();
+      finish();
     }
 }
