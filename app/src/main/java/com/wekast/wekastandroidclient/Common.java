@@ -10,4 +10,5 @@ public class Common {
     static final String SERVICE_API_URL_REGISTER = SERVICE_API_URL+"/register";
     static final int RESULT_SUCCESS = 0;
     static final int RESULT_ERROR = -1;
+    static final String SHAREDPREFERNCE = "WeKastPreference";
 }

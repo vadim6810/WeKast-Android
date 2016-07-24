@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -29,7 +30,23 @@ public class LoginActivity extends Activity {
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
         m_AccessServiceAPI = new AccessServiceAPI();
+        getLoginSP();
+    }
 
+    private void getLoginSP() {
+        SharedPreferences settingsActivity = getSharedPreferences(Common.SHAREDPREFERNCE, MODE_PRIVATE);
+        String login = settingsActivity.getString("login", "");
+        String password = settingsActivity.getString("password", "");
+        txtLogin.setText(login);
+        txtPassword.setText(password);
+    }
+
+    private void setLoginSP() {
+        SharedPreferences settingsActivity = getSharedPreferences(Common.SHAREDPREFERNCE, MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = settingsActivity.edit();
+        prefEditor.putString("login", txtLogin.getText().toString());
+        prefEditor.putString("password", txtPassword.getText().toString());
+        prefEditor.commit();
     }
 
     public void btnLogin_Click(View v) {
@@ -42,10 +59,12 @@ public class LoginActivity extends Activity {
             txtPassword.setError("Password is required!");
             return;
         }
-
+        setLoginSP();
         //Call async task to login
         new TaskLogin().execute(txtLogin.getText().toString(), txtPassword.getText().toString());
     }
+
+
 
     public void btnRegister_Click(View v) {
         Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -58,6 +77,7 @@ public class LoginActivity extends Activity {
         if (resultCode == 1) {
             txtLogin.setText(data.getStringExtra("login"));
             txtPassword.setText(data.getStringExtra("password"));
+
         }
     }
 
