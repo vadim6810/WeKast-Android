@@ -83,6 +83,7 @@ public class LoginActivity extends Activity {
 
     public class TaskLogin extends AsyncTask<String, Void, Integer>{
         private String JSONresponse;
+        private String JSONList;
 
         @Override
         protected void onPreExecute() {
@@ -105,25 +106,14 @@ public class LoginActivity extends Activity {
                 JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_LIST, param);
                 jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
 
-                if(jsonObject.getInt("status") == 0)
+                if(jsonObject.getInt("status") == 0){
+                    JSONList = jsonObject.getString("answer");
                     return Common.RESULT_SUCCESS;
+                }
                 else {
                     JSONresponse = jsonObject.getString("error");
                     return Common.RESULT_ERROR;
                 }
-
-//                Object json = new JSONTokener(JSONresponse).nextValue();
-//                if (json instanceof JSONObject) {
-////                    JSONObject jsonObject = new JSONObject(JSONresponse);
-//                    jObjResult = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
-//                    JSONresponse = jObjResult.getString("err");
-//                    return Common.RESULT_ERROR;
-//                }
-//                else {
-//                  //  if (json instanceof JSONArray)
-//                    return Common.RESULT_SUCCESS;
-//                }
-
             } catch (Exception e) {
                 return Common.RESULT_ERROR;
             }
@@ -137,6 +127,7 @@ public class LoginActivity extends Activity {
                 toastShow("Login success");
                 Intent i = new Intent(getApplicationContext(), WelcomeActivity.class);
                 i.putExtra("login", txtLogin.getText().toString());
+                i.putExtra("answer", JSONList);
                 startActivity(i);
             } else {
                 toastShow("Login fail ==> " + JSONresponse);
