@@ -1,5 +1,7 @@
 package com.wekast.wekastandroidclient;
 
+import android.os.Environment;
+
 /**
  * Created by RDL on 15.07.2016.
  */
@@ -11,4 +13,6 @@ public class Common {
     static final int RESULT_SUCCESS = 0;
     static final int RESULT_ERROR = -1;
     static final String SHAREDPREFERNCE = "WeKastPreference";
+    static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()+"/";
+    static final String WORK_DIRECTORY = "WeKast/";
 }
