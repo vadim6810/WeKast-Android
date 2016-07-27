@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.VideoView;
@@ -41,6 +42,7 @@ public class InitActivity extends Activity{
         File file = new File(Common.DEFAULT_PATH_DIRECTORY + Common.WORK_DIRECTORY);
         if (!file.isDirectory()) {
             file.mkdir();
+            Log.d("Create directory",Common.DEFAULT_PATH_DIRECTORY + Common.WORK_DIRECTORY);
         }
     }
 
