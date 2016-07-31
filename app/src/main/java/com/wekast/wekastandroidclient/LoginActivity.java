@@ -64,8 +64,6 @@ public class LoginActivity extends Activity {
         new TaskLogin().execute(txtLogin.getText().toString(), txtPassword.getText().toString());
     }
 
-
-
     public void btnRegister_Click(View v) {
         Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivityForResult(i, 1);
