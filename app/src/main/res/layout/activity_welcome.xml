@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/tv_welcome" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back to login page"
-        android:onClick="btnBack_Click"
         android:layout_gravity="center" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Download all"
-        android:onClick="btnDownload_Click" />
+        android:onClick="btnBack_Click"
+        android:text="Back to login page" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="btnDownload_Click"
+        android:text="Download all" />
 
     <ListView
         android:id="@+id/presenterList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:listitem="@android:layout/simple_list_item_2">
-    </ListView>
+        tools:listitem="@android:layout/simple_list_item_2"></ListView>
 
 </LinearLayout>

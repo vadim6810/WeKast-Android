@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -10,7 +10,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.wekast.wekastandroidclient.model.AccessServiceAPI;
+import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
+
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +40,7 @@ public class LoginActivity extends Activity {
     }
 
     private void getLoginSP() {
-        SharedPreferences settingsActivity = getSharedPreferences(Common.SHAREDPREFERNCE, MODE_PRIVATE);
+        SharedPreferences settingsActivity = getSharedPreferences(Utils.SHAREDPREFERNCE, MODE_PRIVATE);
         String login = settingsActivity.getString("login", "");
         String password = settingsActivity.getString("password", "");
         txtLogin.setText(login);
@@ -42,7 +48,7 @@ public class LoginActivity extends Activity {
     }
 
     private void setLoginSP() {
-        SharedPreferences settingsActivity = getSharedPreferences(Common.SHAREDPREFERNCE, MODE_PRIVATE);
+        SharedPreferences settingsActivity = getSharedPreferences(Utils.SHAREDPREFERNCE, MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = settingsActivity.edit();
         prefEditor.putString("login", txtLogin.getText().toString());
         prefEditor.putString("password", txtPassword.getText().toString());
@@ -79,7 +85,7 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public class TaskLogin extends AsyncTask<String, Void, Integer>{
+    public class TaskLogin extends AsyncTask<String, Void, Integer> {
         private String JSONresponse;
         private String JSONList;
 
@@ -93,7 +99,7 @@ public class LoginActivity extends Activity {
         @Override
         protected Integer doInBackground(String... params) {
             //Create date to pass in param
-            Map<String, String > param = new HashMap<>();
+            Map<String, String> param = new HashMap<>();
             param.put("login", params[0]);
             param.put("password", params[1]);
 
@@ -101,19 +107,18 @@ public class LoginActivity extends Activity {
 
             try {
 
-                JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_LIST, param);
+                JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Utils.SERVICE_API_URL_LIST, param);
                 jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
 
-                if(jsonObject.getInt("status") == 0){
+                if (jsonObject.getInt("status") == 0) {
                     JSONList = jsonObject.getString("answer");
-                    return Common.RESULT_SUCCESS;
-                }
-                else {
+                    return Utils.RESULT_SUCCESS;
+                } else {
                     JSONresponse = jsonObject.getString("error");
-                    return Common.RESULT_ERROR;
+                    return Utils.RESULT_ERROR;
                 }
             } catch (Exception e) {
-                return Common.RESULT_ERROR;
+                return Utils.RESULT_ERROR;
             }
         }
 
@@ -121,7 +126,7 @@ public class LoginActivity extends Activity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             m_ProgressDialog.dismiss();
-            if (result == Common.RESULT_SUCCESS) {
+            if (result == Utils.RESULT_SUCCESS) {
                 toastShow("Login success");
                 Intent i = new Intent(getApplicationContext(), WelcomeActivity.class);
                 i.putExtra("login", txtLogin.getText().toString());
@@ -131,6 +136,7 @@ public class LoginActivity extends Activity {
                 toastShow("Login fail ==> " + JSONresponse);
             }
         }
+
         private void toastShow(String s) {
             Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);

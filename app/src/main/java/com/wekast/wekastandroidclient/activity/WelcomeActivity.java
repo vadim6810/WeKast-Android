@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -12,6 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.wekast.wekastandroidclient.model.AccessServiceAPI;
+import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,10 +32,10 @@ import java.util.Map;
  * Created by RDL on 15.07.2016.
  */
 public class WelcomeActivity extends Activity {
-    private static final String  LOG_TAG = "WelcomeActivity = ";
+    private static final String LOG_TAG = "WelcomeActivity = ";
     private TextView tvWelcome;
     private ArrayList<String> arrayList = new ArrayList<>();
-    private Map<String, String>  mapList= new HashMap<>();
+    private Map<String, String> mapList = new HashMap<>();
     private AccessServiceAPI m_AccessServiceAPI;
     private ProgressDialog m_ProgressDialog;
 
@@ -88,11 +92,11 @@ public class WelcomeActivity extends Activity {
 
     public void btnDownload_Click(View v) {
         m_AccessServiceAPI = new AccessServiceAPI();
-        SharedPreferences settingsActivity = getSharedPreferences(Common.SHAREDPREFERNCE, MODE_PRIVATE);
+        SharedPreferences settingsActivity = getSharedPreferences(Utils.SHAREDPREFERNCE, MODE_PRIVATE);
         String login = settingsActivity.getString("login", "");
         String password = settingsActivity.getString("password", "");
         new DownloadTask().execute(login, password);
-     }
+    }
 
     class DownloadTask extends AsyncTask<String, Void, Integer> {
         @Override
@@ -109,20 +113,20 @@ public class WelcomeActivity extends Activity {
             param.put("password", params[1]);
             for (Map.Entry<String, String> item : mapList.entrySet()) {
                 try {
-                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(Common.SERVICE_API_URL_DOWNLOAD +  item.getKey(), param);
+                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
                     writeFile(content, item.getValue());
                 } catch (IOException e) {
-                    return Common.RESULT_ERROR;
+                    return Utils.RESULT_ERROR;
                 }
             }
-            return Common.RESULT_SUCCESS;
+            return Utils.RESULT_SUCCESS;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             m_ProgressDialog.dismiss();
-            if (result == Common.RESULT_SUCCESS) {
+            if (result == Utils.RESULT_SUCCESS) {
                 toastShow("Download completed.");
             } else {
                 toastShow("Download fail!!!");
@@ -139,7 +143,7 @@ public class WelcomeActivity extends Activity {
             Log.d(LOG_TAG, "writeToFile");
             FileOutputStream fos;
             try {
-                fos = new FileOutputStream(new File(Common.DIRECTORY, FILENAME));
+                fos = new FileOutputStream(new File(Utils.DIRECTORY, FILENAME));
                 fos.write(content);
                 fos.flush();
                 fos.close();

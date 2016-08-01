@@ -1,9 +1,11 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.wekast.wekastandroidclient.R;
 
 /**
  * Created by Meztiros on 31.07.2016.
@@ -16,10 +18,10 @@ public class ListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         // получаем экземпляр элемента ListView
-        ListView listView = (ListView)findViewById(R.id.listView);
+        ListView listView = (ListView) findViewById(R.id.listView);
 
         // определяем массив типа String
-        final String[] catNames = new String[] {
+        final String[] catNames = new String[]{
                 "Презентация1", "Презентация2", "Презентация3", "Презентация4", "Презентация5",
                 "Презентация6", "Презентация7", "Презентация8", "Презентация9", "Презентация10",
                 "Презентация11", "Презентация12", "Презентация13"
@@ -31,8 +33,6 @@ public class ListActivity extends Activity {
 
         listView.setAdapter(adapter);
     }
-
-
 
 
 }

@@ -1,15 +1,16 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
-import java.io.File;
+import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,13 +18,14 @@ import java.util.TimerTask;
 /**
  * Created by RDL on 23.07.2016.
  */
-public class InitActivity extends Activity{
+public class InitActivity extends Activity {
     private VideoView startVideo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_init);
 
@@ -32,19 +34,12 @@ public class InitActivity extends Activity{
         startVideo.setVideoURI(videoUri);
         startVideo.start();
 
-        initWorkFolder();
+        Utils.initWorkFolder();
 
-        new Timer().schedule(new LoginActivityTimer(),4000);
+        new Timer().schedule(new LoginActivityTimer(), 4000);
 
     }
 
-    private void initWorkFolder() {
-        File file = new File(Common.DEFAULT_PATH_DIRECTORY + Common.WORK_DIRECTORY);
-        if (!file.isDirectory()) {
-            file.mkdir();
-            Log.d("Create directory",Common.DEFAULT_PATH_DIRECTORY + Common.WORK_DIRECTORY);
-        }
-    }
 
     private class LoginActivityTimer extends TimerTask {
         @Override

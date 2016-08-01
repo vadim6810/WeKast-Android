@@ -1,8 +1,10 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.model;
 
 import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -118,6 +120,7 @@ public class AccessServiceAPI {
 
     /**
      * Get binary data from URL with method POST
+     *
      * @param serviceUrl
      * @param params
      * @return byte[]
@@ -164,14 +167,12 @@ public class AccessServiceAPI {
             InputStream stream = conn.getInputStream();
             int c;
             byte[] buffer = new byte[4096];
-            while ((c = stream.read(buffer)) != -1)
-            {
-                byteArrayOutputStream.write(buffer,0,c);
+            while ((c = stream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, c);
             }
             stream.close();
             conn.disconnect();
-        }
-        catch(Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         return byteArrayOutputStream.toByteArray();

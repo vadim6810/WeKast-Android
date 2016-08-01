@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -9,6 +9,10 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.wekast.wekastandroidclient.model.AccessServiceAPI;
+import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
 
@@ -28,18 +32,18 @@ public class RegisterActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        txtLogin = (EditText)findViewById(R.id.txt_login);
-        txtEmail = (EditText)findViewById(R.id.txt_email);
+        txtLogin = (EditText) findViewById(R.id.txt_login);
+        txtEmail = (EditText) findViewById(R.id.txt_email);
         m_AccessServiceAPI = new AccessServiceAPI();
     }
 
-    public void btnRegister_Click(View v){
+    public void btnRegister_Click(View v) {
         //validate input
-        if ("".equals(txtLogin.getText().toString())){
+        if ("".equals(txtLogin.getText().toString())) {
             txtLogin.setError("Login is required!");
             return;
         }
-        if ("".equals(txtEmail.getText().toString())){
+        if ("".equals(txtEmail.getText().toString())) {
             txtEmail.setError("Email is required!");
             return;
         }
@@ -48,7 +52,7 @@ public class RegisterActivity extends Activity {
 
     }
 
-    public class TaskRegister extends AsyncTask<String , Void, Integer>{
+    public class TaskRegister extends AsyncTask<String, Void, Integer> {
         private String JSONresponse;
         private String password;
 
@@ -60,29 +64,28 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected Integer doInBackground(String... params) {
-            Map<String ,String> postParam = new HashMap<>();
+            Map<String, String> postParam = new HashMap<>();
             postParam.put("login", params[0]);
             postParam.put("email", params[1]);
 
             JSONObject jsonObject;
 
-            try{
-                JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Common.SERVICE_API_URL_REGISTER, postParam);
+            try {
+                JSONresponse = m_AccessServiceAPI.getJSONStringWithParam_POST(Utils.SERVICE_API_URL_REGISTER, postParam);
                 jsonObject = m_AccessServiceAPI.convertJSONString2Obj(JSONresponse);
 
-                if(jsonObject.getInt("status") == 0) {
+                if (jsonObject.getInt("status") == 0) {
                     JSONresponse = jsonObject.getString("answer");
                     JSONObject jsonObject2 = new JSONObject(JSONresponse);
                     password = jsonObject2.getString("password");
-                    return Common.RESULT_SUCCESS;
-                }
-                else {
+                    return Utils.RESULT_SUCCESS;
+                } else {
                     JSONresponse = jsonObject.getString("error");
-                    return Common.RESULT_ERROR;
+                    return Utils.RESULT_ERROR;
                 }
 
             } catch (Exception e) {
-                return Common.RESULT_ERROR;
+                return Utils.RESULT_ERROR;
             }
         }
 
@@ -90,7 +93,7 @@ public class RegisterActivity extends Activity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             m_ProgressDialog.dismiss();
-            if (result == Common.RESULT_SUCCESS) {
+            if (result == Utils.RESULT_SUCCESS) {
                 toastShow("Register success! Password: " + password);
                 Intent i = new Intent();
                 i.putExtra("login", txtLogin.getText().toString());
@@ -98,7 +101,7 @@ public class RegisterActivity extends Activity {
                 setResult(1, i);
                 finish();
             } else {
-                toastShow( "Registration fail ==> " + JSONresponse);
+                toastShow("Registration fail ==> " + JSONresponse);
             }
         }
 
