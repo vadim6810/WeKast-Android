@@ -2,6 +2,7 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
@@ -44,9 +45,21 @@ public class InitActivity extends Activity {
     private class LoginActivityTimer extends TimerTask {
         @Override
         public void run() {
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent i;
+            if (getLogin()){
+                i = new Intent(getApplicationContext(), LoginActivity.class);
+            } else {
+                i = new Intent(getApplicationContext(), ListActivity.class);
+            }
             startActivity(i);
         }
 
+        private boolean getLogin() {
+            SharedPreferences settingsActivity = getSharedPreferences(Utils.SHAREDPREFERNCE, MODE_PRIVATE);
+            String login = settingsActivity.getString("login", "");
+            return (login == "") ? true : false ;
+        }
     }
-}
+    }
+
+

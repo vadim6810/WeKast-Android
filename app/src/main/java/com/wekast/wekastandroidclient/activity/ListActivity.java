@@ -1,7 +1,9 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -35,4 +37,8 @@ public class ListActivity extends Activity {
     }
 
 
+    public void btnWelcome_Click(View view) {
+        Intent i = new Intent(ListActivity.this, LoginActivity.class);
+        startActivity(i);
+    }
 }
