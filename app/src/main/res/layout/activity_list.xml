@@ -11,18 +11,19 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/connectButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Connect" />
+            android:text="@string/connectButtonText"
+            android:onClick="createWiFiHotspot"/>
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/downloadButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Download"
+            android:text="@string/downloadButtonText"
             android:onClick="btnWelcome_Click"/>
     </LinearLayout>
 

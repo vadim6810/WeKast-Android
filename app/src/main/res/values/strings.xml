@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">WeKast</string>
+
+    <string name="connectButtonText">Connect</string>
+    <string name="downloadButtonText">Connect</string>
+
+    <string name="ssid">wekast</string>
+    <string name="pass">12345678</string>
 </resources>
