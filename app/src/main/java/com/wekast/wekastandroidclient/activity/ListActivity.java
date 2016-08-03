@@ -34,6 +34,8 @@ public class ListActivity extends Activity {
                 android.R.layout.simple_list_item_1, catNames);
 
         listView.setAdapter(adapter);
+        // xxxx
+
     }
 
 
