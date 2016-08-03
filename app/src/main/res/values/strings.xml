@@ -2,7 +2,7 @@
     <string name="app_name">WeKast</string>
 
     <string name="connectButtonText">Connect</string>
-    <string name="downloadButtonText">Connect</string>
+    <string name="downloadButtonText">Download</string>
 
     <string name="ssid">wekast</string>
     <string name="pass">12345678</string>
