@@ -2,8 +2,13 @@
     <string name="app_name">WeKast</string>
 
     <string name="connectButtonText">Connect</string>
-    <string name="downloadButtonText">Connect</string>
+    <string name="downloadButtonText">Download</string>
 
     <string name="ssid">wekast</string>
     <string name="pass">12345678</string>
+
+    <string name="clearButtonText">Clear</string>
+    <string name="updateServiceButtonText">Service on Dongle update()</string>
+    <string name="captonTextViewText">CLIENT</string>
+    <string name="backButtonText">backButtonText</string>
 </resources>

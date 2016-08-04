@@ -2,10 +2,16 @@ package com.wekast.wekastandroidclient.model;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiEnterpriseConfig;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -68,7 +74,7 @@ public class WifiApControl {
         try {
             return (Boolean) isWifiApEnabled.invoke(wifiManager);
         } catch (Exception e) {
-            Log.v("BatPhone", e.toString(), e); // shouldn't happen
+            Log.d(TAG, "WifiApControl.isWifiApEnabled(): " + e.toString(), e); // shouldn't happen
             return false;
         }
     }
@@ -77,7 +83,7 @@ public class WifiApControl {
         try {
             return (Integer) getWifiApState.invoke(wifiManager);
         } catch (Exception e) {
-            Log.v("BatPhone", e.toString(), e); // shouldn't happen
+            Log.d(TAG, "WifiApControl.getWifiApState(): " + e.toString(), e); // shouldn't happen
             return -1;
         }
     }
@@ -86,19 +92,69 @@ public class WifiApControl {
         try {
             return (WifiConfiguration) getWifiApConfiguration.invoke(wifiManager);
         } catch (Exception e) {
-            Log.v("BatPhone", e.toString(), e); // shouldn't happen
+            Log.d(TAG, "WifiApControl.getWifiApConfiguration(): " + e.toString(), e); // shouldn't happen
             return null;
         }
     }
 
-    public boolean setWifiApEnabled(boolean enabled) {
+    public boolean setWifiApEnabled(Context context, boolean enabled)  {
+
         try {
-            return (Boolean) setWifiApEnabled.invoke(wifiManager, wifiConfig, enabled);
-        } catch (Exception e) {
-            Log.v("BatPhone", e.toString(), e); // shouldn't happen
+            boolean curStatus = (Boolean) setWifiApEnabled.invoke(wifiManager, wifiConfig, enabled);
+            Log.d(TAG, "WifiApControl.setWifiApEnabled(): " + curStatus);
+            return curStatus;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            Log.d(TAG, "WifiApControl.setWifiApEnabled(): false");
+            return false;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            Log.d(TAG, "WifiApControl.setWifiApEnabled(): false");
             return false;
         }
+
     }
+
+
+//        try {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                if (Settings.System.canWrite(context)) {
+//                    Log.d(TAG, "Settings.System.canWrite(context)? true");
+//                } else {
+//                    Log.d(TAG, "Settings.System.canWrite(context)? false");
+//                    Intent grantIntent = new   Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+//                    startActivity(grantIntent);
+//                }
+//
+//            } else {
+////                return (Boolean) setWifiApEnabled.invoke(wifiManager, wifiConfig, enabled);
+//            }
+//            return (Boolean) wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class).invoke(wifiManager, wifiConfig, enabled);
+//        } catch (Exception e) {
+//            Log.d(TAG, "WifiApControl.setWifiApEnabled(): " + e.toString(), e); // shouldn't happen
+//            return false;
+//        }
+
+
+//        if (context == null) {
+//            return false;
+//        }
+////        WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+//        if (wifiManager == null) {
+//            return false;
+//        }
+//        try {
+////            Method setWifiApEnabled = WifiManager.class.getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+//            boolean test = (Boolean) setWifiApEnabled.invoke(wifiManager, wifiConfig, enabled);
+//            return test;
+//        } catch (Exception e) {
+////            Log.d(TAG, "WifiApControl.setWifiApEnabled(): " + e.toString()); // shouldn't happen
+//            Log.d(TAG, "WifiApControl.setWifiApEnabled(): " + e.toString(), e); // shouldn't happen
+//            return false;
+//        }
+
+
+
 
     /**
      * Function that configuretes WifiConfiguration for connecting to hotspot
@@ -110,7 +166,7 @@ public class WifiApControl {
         wifiConfig.SSID = ssid;
         wifiConfig.preSharedKey = pass;
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-        Log.d(TAG, "MainActivity.configureWifiConfig():\n" + wifiConfig);
+//        Log.d(TAG, "WifiApControl.configureWifiConfig():\n" + wifiConfig);
     }
 
     /**
@@ -121,14 +177,13 @@ public class WifiApControl {
      */
     public void turnOnOffHotspot(Context context, boolean isTurnToOn, WifiApControl apControl) {
         Log.d(TAG, "WifiApControl.turnOnOffHotspot(): started ");
-        apControl = WifiApControl.getApControl(wifiManager);
+//        apControl = WifiApControl.getApControl(wifiManager);
         if (apControl != null) {
             // Turn off wifi before enable hotspot
             if (isWifiOn(context)) {
                 turnOnOffWifi(context, false);
             }
-            apControl.setWifiApEnabled(isTurnToOn);
-            Log.d(TAG, "WifiApControl.turnOnOffHotspot(): connected to " + wifiConfig.SSID);
+            apControl.setWifiApEnabled(context, isTurnToOn);
         }
         while(!apControl.isWifiApEnabled()) {
             try {

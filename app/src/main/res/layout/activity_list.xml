@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/connectButtonText"
-            android:onClick="createWiFiHotspot"/>
+            android:onClick="btnConnect_Click" />
 
         <Button
             android:id="@+id/downloadButton"
