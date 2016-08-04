@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+tools:context="com.wekast.wekastandroidclient.activity.TestActivity"
+    android:weightSum="1">
+
+<TextView
+    android:id="@+id/captonTextView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="20dp"
+    android:layout_marginTop="20dp"
+    android:textIsSelectable="true"
+    android:text="@string/captonTextViewText"
+    android:textAlignment="center"
+    android:textStyle="bold"
+    android:textColor="#ffffff" />
+
+<TextView
+    android:id="@+id/infoip"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:textSize="20dp"
+    android:layout_marginTop="10dp"
+    android:textIsSelectable="true"
+    android:textColor="#ffffff" />
+
+<Button
+    android:id="@+id/clearButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="@string/clearButtonText"
+    android:textSize="20dp" />
+
+<Button
+    android:id="@+id/updateServiceButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/updateServiceButtonText"
+    android:textSize="20dp" />
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="209dp"
+    android:layout_weight="0.50">
+
+    <TextView
+        android:id="@+id/msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp" />
+</ScrollView>
+
+<Button
+    android:id="@+id/backButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="@string/backButtonText"
+    android:textSize="20dp"
+    android:textColor="#ffffff"
+    android:onClick="btnBackClick" />
+
+</LinearLayout>
+
