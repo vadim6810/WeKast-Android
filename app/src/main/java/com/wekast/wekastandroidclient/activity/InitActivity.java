@@ -1,8 +1,8 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
@@ -21,6 +21,7 @@ import java.util.TimerTask;
  */
 public class InitActivity extends Activity {
     private VideoView startVideo;
+    public Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,29 +38,22 @@ public class InitActivity extends Activity {
 
         Utils.initWorkFolder();
 
-        new Timer().schedule(new LoginActivityTimer(), 4000);
-
+        new Timer().schedule(new InitActivityTimer(), 4000);
     }
 
 
-    private class LoginActivityTimer extends TimerTask {
+    private class InitActivityTimer extends TimerTask {
         @Override
         public void run() {
             Intent i;
-            if (getLogin()){
-                i = new Intent(getApplicationContext(), LoginActivity.class);
-            } else {
+            if (Utils.getContainsSP(context, "login")){
                 i = new Intent(getApplicationContext(), ListActivity.class);
+            } else {
+                i = new Intent(getApplicationContext(), LoginActivity.class);
             }
             startActivity(i);
         }
-
-        private boolean getLogin() {
-            SharedPreferences settingsActivity = getSharedPreferences(Utils.SHAREDPREFERNCE, MODE_PRIVATE);
-            String login = settingsActivity.getString("login", "");
-            return (login == "") ? true : false ;
-        }
     }
-    }
+}
 
 
