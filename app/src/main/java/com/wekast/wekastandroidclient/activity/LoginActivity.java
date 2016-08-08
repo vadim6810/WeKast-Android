@@ -52,7 +52,7 @@ public class LoginActivity extends Activity {
 
         //Call async task to login
         m_AccessServiceAPI.taskLogin(txtLogin.getText().toString(), txtPassword.getText().toString(), context);
-}
+    }
 
     public void btnRegister_Click(View v) {
         Intent i = new Intent(LoginActivity.this, RegisterActivity.class);

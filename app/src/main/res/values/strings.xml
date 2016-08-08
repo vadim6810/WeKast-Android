@@ -11,4 +11,6 @@
     <string name="updateServiceButtonText">Service on Dongle update()</string>
     <string name="captonTextViewText">CLIENT</string>
     <string name="backButtonText">backButtonText</string>
+    <string name="back_to_login_page">Back to login page</string>
+    <string name="download_all">Download all</string>
 </resources>

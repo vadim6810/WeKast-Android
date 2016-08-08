@@ -46,9 +46,8 @@ public class AccessServiceAPI {
             Log.w("convertJSONString2Obj", "JsonString=" + jsonString);
             jObj = new JSONObject(jsonString);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.w("convertJSONString2Obj ", e.getMessage());
         }
-
         return jObj;
     }
 
@@ -63,14 +62,7 @@ public class AccessServiceAPI {
         String jsonString = null;
         HttpURLConnection conn = null;
         String line;
-
-        URL url;
-        try {
-            url = new URL(serviceUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("invalid url: " + serviceUrl);
-        }
-
+        URL url = new URL(serviceUrl);
         StringBuilder bodyBuilder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
         // constructs the POST body using the parameters
@@ -84,10 +76,9 @@ public class AccessServiceAPI {
         }
 
         String body = bodyBuilder.toString();
-        Log.w("getJSONStringWithParam", "param=>" + body);
+        Log.w("getJSONStringWithParam", "param => " + body);
         byte[] bytes = body.getBytes();
         try {
-
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
@@ -182,8 +173,8 @@ public class AccessServiceAPI {
             }
             stream.close();
             conn.disconnect();
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return byteArrayOutputStream.toByteArray();
     }
@@ -336,7 +327,7 @@ public class AccessServiceAPI {
                 try {
                     byte[] content = getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
                     Utils.writeFile(content, item.getValue(), LOG_TAG);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     return Utils.RESULT_ERROR;
                 }
             }
