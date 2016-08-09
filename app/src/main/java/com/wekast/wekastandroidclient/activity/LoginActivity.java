@@ -54,6 +54,10 @@ public class LoginActivity extends Activity {
         m_AccessServiceAPI.taskLogin(txtLogin.getText().toString(), txtPassword.getText().toString(), context);
     }
 
+    public void btnBack_Click(View v) {
+        finish();
+    }
+
     public void btnRegister_Click(View v) {
         Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(i);

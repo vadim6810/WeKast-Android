@@ -49,7 +49,7 @@ public class InitActivity extends Activity {
             if (Utils.getContainsSP(context, "login")){
                 i = new Intent(getApplicationContext(), ListActivity.class);
             } else {
-                i = new Intent(getApplicationContext(), LoginActivity.class);
+                i = new Intent(getApplicationContext(), RegisterActivity.class);
             }
             startActivity(i);
         }

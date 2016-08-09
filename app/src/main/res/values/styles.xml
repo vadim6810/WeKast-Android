@@ -2,8 +2,11 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
+    <!--<style name="AppTheme" parent="android:Theme.Holo">-->
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@drawable/background</item>
+        <!-- <item name="android:textColorLink">@color/gray</item>-->
+        <!-- <item name="android:textColorHighlight">@color/green</item>-->
         <!--<item name="colorPrimary">@color/colorPrimary</item>-->
     </style>
 
