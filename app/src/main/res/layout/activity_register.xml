@@ -49,8 +49,7 @@
                 android:text="YOUR COUNTRY CODE &amp; PHONE NUMBER"
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
-                android:textSize="14dp"
-                android:layout_marginBottom="5dp" />
+                android:textSize="14dp" />
 
             <EditText
                 android:id="@+id/txt_login"
@@ -71,9 +70,8 @@
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
                 android:textSize="14dp"
-                android:layout_marginBottom="5dp"
                 android:id="@+id/textView"
-                android:layout_marginTop="15dp" />
+                android:layout_marginTop="10dp" />
 
             <EditText
                 android:id="@+id/txt_email"
@@ -102,7 +100,7 @@
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="25dp"
-                    android:id="@+id/button2"
+                    android:id="@+id/btn_CANCEL"
                     android:layout_marginRight="5dp" />
 
                 <Button
@@ -116,7 +114,8 @@
                     android:textStyle="bold"
                     android:layout_weight="1"
                     android:layout_marginLeft="5dp"
-                    android:onClick="btnRegister_Click" />
+                    android:onClick="btnRegister_Click"
+                    android:id="@+id/btn_REGISTER" />
 
             </LinearLayout>
 
@@ -131,7 +130,7 @@
                 android:textStyle="bold"
                 android:layout_weight="1"
                 android:onClick="btnLogin_Click"
-                android:id="@+id/button3" />
+                android:id="@+id/btn_LOGIN" />
 
         </LinearLayout>
     </ScrollView>

@@ -20,8 +20,9 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="btnBack_Click"
-            android:text="@string/back_to_login_page"
+            android:text="CLEAR PREF"
+            android:onClick="btnClearPref_Click"
+            android:id="@+id/button"
             android:layout_weight="1" />
 
         <Button

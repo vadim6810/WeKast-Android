@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.activity.LoginActivity;
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 
 import org.json.JSONException;
@@ -179,7 +178,7 @@ public class AccessServiceAPI {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void taskLogin (String login, String password, Context context) {
+    public void taskLogin(String login, String password, Context context) {
         this.context = context;
         new TaskLogin().execute(login, password);
     }
@@ -198,15 +197,7 @@ public class AccessServiceAPI {
     public class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
             private String JSONList;
-            ProgressDialog m_ProgressDialog;
             String login;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                //Open progress dialog during login
-                m_ProgressDialog = ProgressDialog.show(context, "Please wait...", "Processing...", true);
-            }
 
             @Override
             protected Integer doInBackground(String... params) {
@@ -219,7 +210,6 @@ public class AccessServiceAPI {
                 JSONObject jsonObject;
 
                 try {
-
                     JSONresponse = getJSONStringWithParam_POST(Utils.SERVICE_API_URL_LIST, param);
                     jsonObject = convertJSONString2Obj(JSONresponse);
 
@@ -238,11 +228,9 @@ public class AccessServiceAPI {
             @Override
             protected void onPostExecute(Integer result) {
                 super.onPostExecute(result);
-                m_ProgressDialog.dismiss();
                 if (result == Utils.RESULT_SUCCESS) {
                     Utils.toastShow(context, "Login success");
                     Intent i = new Intent(context, WelcomeActivity.class);
-                    i.putExtra("login",  login);
                     i.putExtra("answer", JSONList);
                     context.startActivity(i);
                 } else {
@@ -299,9 +287,8 @@ public class AccessServiceAPI {
                 Utils.toastShow(context, "Register success! Password: " + password);
                 Utils.setFieldSP(context,"login", login);
                 Utils.setFieldSP(context,"password",  password.toString());
-                Intent i = new Intent(context, LoginActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                context.startActivity(i);
+                //Call async task to login
+                taskLogin(login, password.toString(), context);
             } else {
                 Utils.toastShow(context, "Registration fail ==> " + JSONresponse);
             }

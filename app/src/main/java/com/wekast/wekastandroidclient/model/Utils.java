@@ -53,6 +53,13 @@ public class Utils {
         return  login;
     }
 
+    public static void clearSP(Context context) {
+        SharedPreferences settingsActivity = context.getSharedPreferences(Utils.SHAREDPREFERNCE, context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = settingsActivity.edit();
+        prefEditor.clear();
+        prefEditor.commit();
+    }
+
     public static void setFieldSP(Context context, String field1, String field2) {
         SharedPreferences settingsActivity = context.getSharedPreferences(Utils.SHAREDPREFERNCE, context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = settingsActivity.edit();

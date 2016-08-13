@@ -30,13 +30,15 @@ public class WelcomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
-        tvWelcome.setText("Welcome: " + getIntent().getStringExtra("login"));
+        tvWelcome.setText("Welcome: " + Utils.getFieldSP(context, "login"));
+
+        String answer = getIntent().getStringExtra("answer");
 
         //для адаптера (возможно будет убрано)
-        arrayList = Utils.parseJSONArray(context, getIntent().getStringExtra("answer"));
+        arrayList = Utils.parseJSONArray(context, answer);
 
         //для загрузки
-        mapList = Utils.parseJSONArrayMap(context, getIntent().getStringExtra("answer"));
+        mapList = Utils.parseJSONArrayMap(context, answer);
 
         // получаем элемент ListView
         ListView presenterList = (ListView) findViewById(R.id.presenterList);
@@ -48,8 +50,9 @@ public class WelcomeActivity extends Activity {
         presenterList.setAdapter(adapter);
     }
 
-    public void btnBack_Click(View v) {
-        finish();
+    public void btnClearPref_Click(View v) {
+        Utils.clearSP(context);
+        Utils.toastShow(context, "Preference cleared");
     }
 
     public void btnDownload_Click(View v) {

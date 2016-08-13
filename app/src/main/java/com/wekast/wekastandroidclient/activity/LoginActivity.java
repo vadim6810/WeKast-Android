@@ -2,7 +2,6 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -58,8 +57,8 @@ public class LoginActivity extends Activity {
         finish();
     }
 
-    public void btnRegister_Click(View v) {
-        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-        startActivity(i);
-    }
+//    public void btnRegister_Click(View v) {
+//        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+//        startActivity(i);
+//    }
 }
