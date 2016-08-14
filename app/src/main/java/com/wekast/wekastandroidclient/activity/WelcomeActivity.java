@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -12,6 +13,7 @@ import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,7 +22,8 @@ import java.util.HashMap;
  */
 public class WelcomeActivity extends Activity {
     private TextView tvWelcome;
-    private ArrayList<String> arrayList = new ArrayList<>();
+    private ArrayList<String> filesServer = new ArrayList<>();
+    private ArrayList<String> filesLocal = new ArrayList<>();
     private HashMap<String, String> mapList = new HashMap<>();
     Context context = this;
     AccessServiceAPI m_AccessServiceAPI;
@@ -35,7 +38,8 @@ public class WelcomeActivity extends Activity {
         String answer = getIntent().getStringExtra("answer");
 
         //для адаптера (возможно будет убрано)
-        arrayList = Utils.parseJSONArray(context, answer);
+        filesServer = Utils.parseJSONArray(context, answer);
+        filesLocal =  Utils.getAllFilesLocal();
 
         //для загрузки
         mapList = Utils.parseJSONArrayMap(context, answer);
@@ -44,7 +48,8 @@ public class WelcomeActivity extends Activity {
         ListView presenterList = (ListView) findViewById(R.id.presenterList);
 
         // создаем адаптер
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, arrayList);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, filesServer);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, filesLocal);
 
         // устанавливаем для списка адаптер
         presenterList.setAdapter(adapter);
@@ -58,6 +63,8 @@ public class WelcomeActivity extends Activity {
     public void btnDownload_Click(View v) {
         String login = Utils.getFieldSP(context, "login");
         String password = Utils.getFieldSP(context, "password");
+        if(mapList.size() > 0)
         m_AccessServiceAPI.taskDownload(login, password, mapList, context);
+        else Utils.toastShow(context, "No presentation on SERVER!");
     }
 }

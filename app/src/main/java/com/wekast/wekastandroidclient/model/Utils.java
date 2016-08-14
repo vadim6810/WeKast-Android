@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static java.security.AccessController.getContext;
+
 
 /**
  * Created by Meztiros on 01.08.2016.
@@ -33,6 +35,7 @@ public class Utils {
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
     public static final File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
+    public static final File[] ALL_FILES_DIRECTORY = Utils.DIRECTORY.listFiles();
 
 
     public static void initWorkFolder() {
@@ -113,5 +116,15 @@ public class Utils {
             toastShow(context, e.toString());
         }
         return arrayList;
+    }
+
+    public static ArrayList<String> getAllFilesLocal() {
+        ArrayList<String> fileList = new ArrayList<>();
+        if (ALL_FILES_DIRECTORY != null && ALL_FILES_DIRECTORY.length > 0) {
+            for (int i = 0; i < ALL_FILES_DIRECTORY.length; i++) {
+                    fileList.add(ALL_FILES_DIRECTORY[i].getName());
+            }
+        }
+        return fileList;
     }
 }
