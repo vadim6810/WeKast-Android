@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.activity.LoginActivity;
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 
 import org.json.JSONException;
@@ -46,9 +45,8 @@ public class AccessServiceAPI {
             Log.w("convertJSONString2Obj", "JsonString=" + jsonString);
             jObj = new JSONObject(jsonString);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.w("convertJSONString2Obj ", e.getMessage());
         }
-
         return jObj;
     }
 
@@ -63,14 +61,7 @@ public class AccessServiceAPI {
         String jsonString = null;
         HttpURLConnection conn = null;
         String line;
-
-        URL url;
-        try {
-            url = new URL(serviceUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("invalid url: " + serviceUrl);
-        }
-
+        URL url = new URL(serviceUrl);
         StringBuilder bodyBuilder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
         // constructs the POST body using the parameters
@@ -84,10 +75,9 @@ public class AccessServiceAPI {
         }
 
         String body = bodyBuilder.toString();
-        Log.w("getJSONStringWithParam", "param=>" + body);
+        Log.w("getJSONStringWithParam", "param => " + body);
         byte[] bytes = body.getBytes();
         try {
-
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
@@ -182,13 +172,13 @@ public class AccessServiceAPI {
             }
             stream.close();
             conn.disconnect();
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void taskLogin (String login, String password, Context context) {
+    public void taskLogin(String login, String password, Context context) {
         this.context = context;
         new TaskLogin().execute(login, password);
     }
@@ -207,15 +197,7 @@ public class AccessServiceAPI {
     public class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
             private String JSONList;
-            ProgressDialog m_ProgressDialog;
             String login;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                //Open progress dialog during login
-                m_ProgressDialog = ProgressDialog.show(context, "Please wait...", "Processing...", true);
-            }
 
             @Override
             protected Integer doInBackground(String... params) {
@@ -228,7 +210,6 @@ public class AccessServiceAPI {
                 JSONObject jsonObject;
 
                 try {
-
                     JSONresponse = getJSONStringWithParam_POST(Utils.SERVICE_API_URL_LIST, param);
                     jsonObject = convertJSONString2Obj(JSONresponse);
 
@@ -247,11 +228,9 @@ public class AccessServiceAPI {
             @Override
             protected void onPostExecute(Integer result) {
                 super.onPostExecute(result);
-                m_ProgressDialog.dismiss();
                 if (result == Utils.RESULT_SUCCESS) {
                     Utils.toastShow(context, "Login success");
                     Intent i = new Intent(context, WelcomeActivity.class);
-                    i.putExtra("login",  login);
                     i.putExtra("answer", JSONList);
                     context.startActivity(i);
                 } else {
@@ -308,9 +287,8 @@ public class AccessServiceAPI {
                 Utils.toastShow(context, "Register success! Password: " + password);
                 Utils.setFieldSP(context,"login", login);
                 Utils.setFieldSP(context,"password",  password.toString());
-                Intent i = new Intent(context, LoginActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                context.startActivity(i);
+                //Call async task to login
+                taskLogin(login, password.toString(), context);
             } else {
                 Utils.toastShow(context, "Registration fail ==> " + JSONresponse);
             }
@@ -336,7 +314,7 @@ public class AccessServiceAPI {
                 try {
                     byte[] content = getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
                     Utils.writeFile(content, item.getValue(), LOG_TAG);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     return Utils.RESULT_ERROR;
                 }
             }

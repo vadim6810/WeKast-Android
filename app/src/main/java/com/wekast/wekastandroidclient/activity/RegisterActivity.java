@@ -2,6 +2,7 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -31,7 +32,7 @@ public class RegisterActivity extends Activity {
     public void btnRegister_Click(View v) {
         //validate input
         if ("".equals(txtLogin.getText().toString())) {
-            txtLogin.setError("Login is required!");
+            txtLogin.setError("Phone number is required!");
             return;
         }
         if ("".equals(txtEmail.getText().toString())) {
@@ -40,5 +41,10 @@ public class RegisterActivity extends Activity {
         }
         //exec task register
         m_AccessServiceAPI.taskRegister(txtLogin.getText().toString(), txtEmail.getText().toString(), context);
+    }
+
+    public void btnLogin_Click(View v) {
+        Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+        startActivity(i);
     }
 }

@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.VideoView;
 
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.Timer;
@@ -22,6 +23,7 @@ import java.util.TimerTask;
 public class InitActivity extends Activity {
     private VideoView startVideo;
     public Context context = this;
+    public AccessServiceAPI m_AccessServiceAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class InitActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        m_AccessServiceAPI = new AccessServiceAPI();
         setContentView(R.layout.activity_init);
 
         startVideo = (VideoView) findViewById(R.id.videoView);
@@ -47,11 +50,12 @@ public class InitActivity extends Activity {
         public void run() {
             Intent i;
             if (Utils.getContainsSP(context, "login")){
-                i = new Intent(getApplicationContext(), ListActivity.class);
+                m_AccessServiceAPI.taskLogin(Utils.getFieldSP(context, "login"), Utils.getFieldSP(context, "password"), context);
             } else {
-                i = new Intent(getApplicationContext(), LoginActivity.class);
+                i = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(i);
             }
-            startActivity(i);
+
         }
     }
 }

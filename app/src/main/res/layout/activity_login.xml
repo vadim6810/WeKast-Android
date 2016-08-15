@@ -5,40 +5,93 @@
     android:orientation="vertical">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PLEASE ENTER"
+        android:textColor="@color/wekast_title"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="22dp"
+        android:id="@+id/textView6" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login:"
-        android:textSize="20dp" />
+        android:text="Phone number:"
+        android:textSize="20dp"
+        android:textColor="@color/wekast_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
     <EditText
         android:id="@+id/txt_username_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edit_text_bg"
+        android:textSize="20dp"
+        android:paddingLeft="10dp"
+        android:inputType="phone"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Password:"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:textColor="@color/wekast_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/txt_pwd_login"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword" />
+        android:layout_height="50dp"
+        android:inputType="textPassword"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edit_text_bg"
+        android:textSize="20dp"
+        android:paddingLeft="10dp" />
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="btnLogin_Click"
-        android:text="Login"
-        android:textAllCaps="false" />
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="btnRegister_Click"
-        android:text="Register for new account"
-        android:textAllCaps="false" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:layout_weight="1"
+            android:background="@drawable/btn_grey_bg"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="25dp"
+            android:id="@+id/btn_CANCEL"
+            android:layout_marginRight="5dp"
+            android:onClick="btnBack_Click" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="btnLogin_Click"
+            android:text="Login"
+            android:textAllCaps="false"
+            android:background="@drawable/btn_orange_bg"
+            android:textColor="@color/black"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/btn_LOGIN" />
+
+    </LinearLayout>
 
 </LinearLayout>
