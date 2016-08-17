@@ -27,6 +27,7 @@ public class WelcomeActivity extends Activity {
     private HashMap<String, String> mapList = new HashMap<>();
     Context context = this;
     AccessServiceAPI m_AccessServiceAPI;
+    private static long back_pressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,15 @@ public class WelcomeActivity extends Activity {
         presenterList.setAdapter(adapter);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis())
+            finishAffinity();
+        else
+            Utils.toastShow(context, "Press once again to exit!");
+        back_pressed = System.currentTimeMillis();
+    }
+
     public void btnClearPref_Click(View v) {
         Utils.clearSP(context);
         Utils.toastShow(context, "Preference cleared");
@@ -65,6 +75,6 @@ public class WelcomeActivity extends Activity {
         String password = Utils.getFieldSP(context, "password");
         if(mapList.size() > 0)
         m_AccessServiceAPI.taskDownload(login, password, mapList, context);
-        else Utils.toastShow(context, "No presentation on SERVER!");
+        else Utils.toastShow(context, "You havn't presentations on server!");
     }
 }

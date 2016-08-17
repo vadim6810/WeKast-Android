@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
 
 /**
  * Created by RDL on 15.07.2016.
@@ -18,6 +19,7 @@ public class RegisterActivity extends Activity {
     private EditText txtEmail;
     private AccessServiceAPI m_AccessServiceAPI;
     Context context = this;
+    private static long back_pressed;
 
 
     @Override
@@ -27,6 +29,16 @@ public class RegisterActivity extends Activity {
         txtLogin = (EditText) findViewById(R.id.txt_login);
         txtEmail = (EditText) findViewById(R.id.txt_email);
         m_AccessServiceAPI = new AccessServiceAPI();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis())
+            finishAffinity();
+        else
+            Utils.toastShow(context, "Press once again to exit!");
+        back_pressed = System.currentTimeMillis();
     }
 
     public void btnRegister_Click(View v) {
@@ -47,4 +59,10 @@ public class RegisterActivity extends Activity {
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i);
     }
+
+    public void btnBack_Click(View v) {
+        finishAffinity();
+    }
+
+
 }
