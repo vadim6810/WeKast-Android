@@ -4,6 +4,7 @@
     <string name="connectButtonText">Connect</string>
     <string name="downloadButtonText">Download</string>
 
+    <!-- Default Access Point settings  -->
     <string name="ssid">wekast</string>
     <string name="pass">12345678</string>
 

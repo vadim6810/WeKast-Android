@@ -3,7 +3,7 @@ package com.wekast.wekastandroidclient.model;
 import android.os.Build;
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.activity.TestActivity;
+import com.wekast.wekastandroidclient.activity.ListActivity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,17 +21,17 @@ import java.util.Enumeration;
  */
 public class Server {
     private static final String TAG = "wekastClient";
-    TestActivity activity;
+    ListActivity activity;
     ServerSocket serverSocket;
     public String message = "";
     static final int socketServerPORT = 8888;
     public static final String APP_PREFERENCES = "mysettings";
     public static final String APP_PREFERENCES_DONGLE_IP = "dongleIp";
 
-    public Server(TestActivity activity) {
+    public Server(ListActivity activity) {
         this.activity = activity;
         Thread socketServerThread = new Thread(new SocketServerThread());
-        socketServerThread.setName("socketServerThread");
+        socketServerThread.setName("AppSocketServerThread");
         socketServerThread.start();
         Log.d(TAG, "socketServerThread.getName(): thread " + socketServerThread.getName() + " started");
     }
@@ -55,6 +55,8 @@ public class Server {
 
         @Override
         public void run() {
+
+
             try {
                 serverSocket = new ServerSocket(socketServerPORT);
                 while (true) {
@@ -66,12 +68,12 @@ public class Server {
                             + ipDongle + ":"
                             + socket.getPort() + "\n";
 
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            activity.msg.setText(message);
-                        }
-                    });
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            activity.msg.setText(message);
+//                        }
+//                    });
 
                     SocketServerReplyThread socketServerReplyThread = new SocketServerReplyThread(
                             socket, count);
@@ -81,17 +83,11 @@ public class Server {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                message += "Something wrong! " + e.toString() + "\n";
             }
-        }
 
-//        private void addIpDongleToSharedPref(String ipDongle) {
-//            SharedPreferences.Editor editor = MainActivity.mySharedPreferences.edit();
-//            editor.putString(APP_PREFERENCES_DONGLE_IP, ipDongle);
-//            editor.apply();
-//            if(MainActivity.mySharedPreferences.contains(APP_PREFERENCES_DONGLE_IP)) {
-//                Log.d("sss", "" + APP_PREFERENCES_DONGLE_IP + ": " + MainActivity.mySharedPreferences.getString(APP_PREFERENCES_DONGLE_IP, ""));
-//            }
-//        }
+
+        }
     }
 
     private class SocketServerReplyThread extends Thread {
@@ -106,33 +102,26 @@ public class Server {
         @Override
         public void run() {
             OutputStream outputStream;
-            String msgReply = "Hello from Client, you are #" + cnt;
+            String msgReply = "Hello from APP, you are #" + cnt;
             try {
                 outputStream = hostThreadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
                 printStream.print(msgReply);
                 printStream.close();
-
-                message += "replayed: " + msgReply + "\n";
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activity.msg.setText(message);
-                    }
-                });
-
+                outputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 message += "Something wrong! " + e.toString() + "\n";
+            } finally {
+
             }
 
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    activity.msg.setText(message);
-                }
-            });
+//            activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    activity.msg.setText(message);
+//                }
+//            });
         }
     }
 
