@@ -23,10 +23,11 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.RegisterActivity"
+           android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activity.WelcomeActivity" />
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.ListActivity" />
-        <activity android:name=".activity.TestActivity" />
+        <!--<activity android:name=".activity.TestActivity" />-->
     </application>
 </manifest>
