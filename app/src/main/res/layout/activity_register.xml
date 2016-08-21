@@ -19,7 +19,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NOTIFICATION"
+                android:text="@string/activityRegisterTextView1"
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
                 android:textSize="18dp"
@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="WeKast will NOT share \nyour phone number with anyone.\nIt will be used internally as unique\nidentifier to convert your files in the\ncloud and optimize for mobile format."
+                android:text="activityRegisterTextView1"
                 android:gravity="center"
                 android:textSize="18dp"
                 android:textColor="@color/white" />

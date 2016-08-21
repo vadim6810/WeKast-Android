@@ -37,6 +37,14 @@ public class Utils {
     public static final File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
     public static final File[] ALL_FILES_DIRECTORY = Utils.DIRECTORY.listFiles();
 
+    // SharedPreferences params
+    // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
+    // DONGLE_PORT      // set when connecting to dongle access point for sending new ssid and pass
+    // WIFI_STATE_BEFORE_LAUNCH_APP             // save state of wifi module
+    // ACCESS_POINT_STATE_BEFORE_LAUNCH_APP     // save state of access point
+    // ACCESS_POINT_SSID_NEW         // new value of ssid
+    // ACCESS_POINT_PASS_NEW         // new value of pass
+
 
     public static void initWorkFolder() {
         File file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
@@ -127,4 +135,23 @@ public class Utils {
         }
         return fileList;
     }
+
+    public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {
+        // TODO: create rundom ssid and pass
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonTask = new JSONArray();
+        JSONObject jsonCommand = new JSONObject();
+        try {
+            jsonCommand.put("command", task);
+            jsonCommand.put("ssid", ssid);
+            jsonCommand.put("pass", pass);
+            jsonTask.put(jsonCommand);
+            jsonObject.put("device", "android");
+            jsonObject.put("task", jsonTask);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
 }

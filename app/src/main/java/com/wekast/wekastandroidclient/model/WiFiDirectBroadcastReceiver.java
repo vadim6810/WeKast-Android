@@ -1,31 +1,31 @@
 package com.wekast.wekastandroidclient.model;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.ListActivity;
-
-import java.lang.reflect.Method;
-
+/**
+ * Created by YEHUDA on 8/1/2016.
+ */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "wekastClient";
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
-    private ListActivity listActivity;
+//    private ListActivity listActivity;
     private WifiP2pManager.PeerListListener myPeerListListener;
 
+//    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
+//                                       ListActivity activity) {
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
-                                       ListActivity activity) {
+                                       Activity activity) {
         super();
         this.mManager = manager;
         this.mChannel = channel;
-        this.listActivity = activity;
+//        this.listActivity = activity;
     }
 
     @Override
@@ -37,11 +37,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wifi P2P is enabled
-                listActivity.setIsWifiP2pEnabled(true);
+//                listActivity.setIsWifiP2pEnabled(true);
                 Log.d(TAG, "WiFiDirectBroadcastReceiver.onReceive(): Wifi P2P is enabled");
             } else {
                 // Wi-Fi P2P is not enabled
-                listActivity.setIsWifiP2pEnabled(false);
+//                listActivity.setIsWifiP2pEnabled(false);
                 Log.d(TAG, "WiFiDirectBroadcastReceiver.onReceive(): Wi-Fi P2P is not enabled");
             }
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
@@ -94,3 +94,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         }
     }
 }
+
+//mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+//        mChannel = mManager.initialize(this, getMainLooper(), null);
+//        mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
+//        mIntentFilter = new IntentFilter();
+//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+//        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);

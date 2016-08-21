@@ -1,6 +1,8 @@
-package com.wekast.wekastandroidclient.model;
+package com.wekast.wekastandroidclient.controllers;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -9,13 +11,13 @@ import android.util.Log;
 /**
  * Created by YEHUDA on 8/1/2016.
  */
-public class ControllerWifi {
+public class WifiController {
 
     private static final String TAG = "wekastdongle";
     public WifiManager wifiManager;
     public WifiConfiguration wifiConfig;
 
-    public ControllerWifi(WifiManager wifiManager) {
+    public WifiController(WifiManager wifiManager) {
         this.wifiManager = wifiManager;
     }
 
@@ -27,7 +29,7 @@ public class ControllerWifi {
      */
     public boolean isWifiOn(Context context) {
         boolean isWifiOn = wifiManager.isWifiEnabled();
-        Log.d(TAG, "ControllerWifi.isWifiOn(): " + isWifiOn);
+        Log.d(TAG, "WifiController.isWifiOn(): " + isWifiOn);
         return isWifiOn;
     }
 
@@ -39,7 +41,7 @@ public class ControllerWifi {
      */
     public void turnOnOffWifi(Context context, boolean b) {
         wifiManager.setWifiEnabled(b);
-        Log.d(TAG, "ControllerWifi.turnOnOffWifi(): " + b);
+        Log.d(TAG, "WifiController.turnOnOffWifi(): " + b);
     }
 
     /**
@@ -50,7 +52,7 @@ public class ControllerWifi {
         wifiConfig.SSID = "\"".concat(ssid).concat("\"");
         wifiConfig.preSharedKey = "\"".concat(pass).concat("\"");
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-//        Log.d(TAG, "ControllerWifi.configureWifiConfig():\n" + wifiConfig);
+//        Log.d(TAG, "WifiController.configureWifiConfig():\n" + wifiConfig);
     }
 
 //    /**
@@ -133,6 +135,38 @@ public class ControllerWifi {
                 (ipAddr >> 16 & 0xff),
                 (ipAddr >> 24 & 0xff));
         return ipString;
+    }
+
+    public void waitWhileWifiLoading() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.d(TAG, "AccessPointController.waitWifi():  " + e);
+        }
+    }
+
+    public void waitWhileWifiLoading(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.d(TAG, "AccessPointController.waitWifi():  " + e);
+        }
+    }
+
+    public boolean isWifiConnected(Context context) {
+        boolean isWifiConnected = true;
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getActiveNetworkInfo();
+        if (mWifi == null) {
+            return false;
+        } else {
+            if (mWifi.isConnected())
+                return isWifiConnected;
+        }
+        // TODO: check when application came here. Or refactor
+        return isWifiConnected;
     }
 
 }

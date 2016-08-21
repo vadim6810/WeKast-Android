@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient.model;
+package com.wekast.wekastandroidclient.controllers;
 
 
 import android.content.Context;
@@ -12,25 +12,20 @@ import java.lang.reflect.Method;
 /**
  * This class is use to handle all Hotspot related information.
  */
-public class ControllerAccessPoint {
+
+/**
+ * Created by YEHUDA on 8/1/2016.
+ */
+public class AccessPointController {
     private static final String TAG = "wekastClient";
     private static Method getWifiApState;
     private static Method isWifiApEnabled;
     private static Method setWifiApEnabled;
     private static Method getWifiApConfiguration;
 
-//    public static final String WIFI_AP_STATE_CHANGED_ACTION = "android.net.wifi.WIFI_AP_STATE_CHANGED";
-//    public static final int WIFI_AP_STATE_DISABLED = WifiManager.WIFI_STATE_DISABLED;
-//    public static final int WIFI_AP_STATE_DISABLING = WifiManager.WIFI_STATE_DISABLING;
-//    public static final int WIFI_AP_STATE_ENABLED = WifiManager.WIFI_STATE_ENABLED;
-//    public static final int WIFI_AP_STATE_ENABLING = WifiManager.WIFI_STATE_ENABLING;
-//    public static final int WIFI_AP_STATE_FAILED = WifiManager.WIFI_STATE_UNKNOWN;
-//    public static final String EXTRA_PREVIOUS_WIFI_AP_STATE = WifiManager.EXTRA_PREVIOUS_WIFI_STATE;
-//    public static final String EXTRA_WIFI_AP_STATE = WifiManager.EXTRA_WIFI_STATE;
-
     public WifiManager wifiManager;
     public WifiConfiguration wifiConfig;
-//    public ControllerWifi wifiController;
+//    public WifiController wifiController;
 
     static {
         // lookup methods and fields not defined publicly in the SDK.
@@ -54,14 +49,14 @@ public class ControllerAccessPoint {
                 && setWifiApEnabled != null && getWifiApConfiguration != null);
     }
 
-    public ControllerAccessPoint(WifiManager wifiManager) {
+    public AccessPointController(WifiManager wifiManager) {
         this.wifiManager = wifiManager;
     }
 
-    public static ControllerAccessPoint getApControl(WifiManager wifiManager) {
+    public static AccessPointController getApControl(WifiManager wifiManager) {
         if (!isApSupported())
             return null;
-        return new ControllerAccessPoint(wifiManager);
+        return new AccessPointController(wifiManager);
     }
 
     public boolean isAccessPointEnabled() {
@@ -70,7 +65,7 @@ public class ControllerAccessPoint {
             Method isWifiApEnabledmethod = wifiManager.getClass().getMethod("isAccessPointEnabled");
            return !(Boolean)isWifiApEnabledmethod.invoke(wifiManager);
         } catch (Exception e) {
-            Log.d(TAG, "ControllerAccessPoint.isAccessPointEnabled(): " + e.toString(), e); // shouldn't happen
+            Log.d(TAG, "AccessPointController.isAccessPointEnabled(): " + e.toString(), e); // shouldn't happen
             return false;
         }
     }
@@ -79,7 +74,7 @@ public class ControllerAccessPoint {
         try {
             return (Integer) getWifiApState.invoke(wifiManager);
         } catch (Exception e) {
-            Log.d(TAG, "ControllerAccessPoint.getWifiApState(): " + e.toString(), e); // shouldn't happen
+            Log.d(TAG, "AccessPointController.getWifiApState(): " + e.toString(), e); // shouldn't happen
             return -1;
         }
     }
@@ -88,7 +83,7 @@ public class ControllerAccessPoint {
         try {
             return (WifiConfiguration) getWifiApConfiguration.invoke(wifiManager);
         } catch (Exception e) {
-            Log.d(TAG, "ControllerAccessPoint.getWifiApConfiguration(): " + e.toString(), e); // shouldn't happen
+            Log.d(TAG, "AccessPointController.getWifiApConfiguration(): " + e.toString(), e); // shouldn't happen
             return null;
         }
     }
@@ -103,20 +98,20 @@ public class ControllerAccessPoint {
                 e.printStackTrace();
             }
             boolean curStatus = (Boolean) setWifiApMethod.invoke(wifiManager, wifiConfig, enabled);
-            Log.d(TAG, "ControllerAccessPoint.setAccessPointEnabled(): " + curStatus);
+            Log.d(TAG, "AccessPointController.setAccessPointEnabled(): " + curStatus);
             return curStatus;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            Log.d(TAG, "ControllerAccessPoint.setAccessPointEnabled(): IllegalAccessException" + e);
+            Log.d(TAG, "AccessPointController.setAccessPointEnabled(): IllegalAccessException" + e);
             return false;
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-            Log.d(TAG, "ControllerAccessPoint.setAccessPointEnabled(): InvocationTargetException" + e);
+            Log.d(TAG, "AccessPointController.setAccessPointEnabled(): InvocationTargetException" + e);
             return false;
         }
 //        catch (NoSuchMethodException e) {
 //            e.printStackTrace();
-//            Log.d(TAG, "ControllerAccessPoint.setAccessPointEnabled(): NoSuchMethodException" + e);
+//            Log.d(TAG, "AccessPointController.setAccessPointEnabled(): NoSuchMethodException" + e);
 //        }
     }
 
@@ -130,7 +125,7 @@ public class ControllerAccessPoint {
         wifiConfig.SSID = ssid;
         wifiConfig.preSharedKey = pass;
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-//        Log.d(TAG, "ControllerAccessPoint.configureWifiConfig():\n" + wifiConfig);
+//        Log.d(TAG, "AccessPointController.configureWifiConfig():\n" + wifiConfig);
     }
 
     /**
@@ -139,26 +134,26 @@ public class ControllerAccessPoint {
      * //@param context
      * @param isTurnToOn
      */
-//    public void turnOnOffHotspot(Context context, boolean isTurnToOn, ControllerAccessPoint apControl) {
-//        Log.d(TAG, "ControllerAccessPoint.turnOnOffHotspot(): started ");
-////        apControl = ControllerAccessPoint.getApControl(wifiManager);
-//        if (apControl != null) {
-//            // Turn off wifi before enable hotspot
-//            if (isWifiOn(context)) {
-//                turnOnOffWifi(context, false);
-//            }
-//            apControl.setAccessPointEnabled(context, isTurnToOn);
-//        }
-//        while(!apControl.isAccessPointEnabled()) {
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    public void turnOnOffHotspot(Context context, boolean isTurnToOn, AccessPointController apControl) {
+        Log.d(TAG, "AccessPointController.turnOnOffHotspot(): started ");
+//        apControl = AccessPointController.getApControl(wifiManager);
+        if (apControl != null) {
+            // Turn off wifi before enable hotspot
+            if (isWifiOn(context)) {
+                turnOnOffWifi(context, false);
+            }
+            apControl.setAccessPointEnabled(context, isTurnToOn);
+        }
+        while(!apControl.isAccessPointEnabled()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void turnOnOffHotspot(Context context, boolean isTurnToOn) {
-        Log.d(TAG, "ControllerAccessPoint.turnOnOffHotspot(): started ");
+        Log.d(TAG, "AccessPointController.turnOnOffHotspot(): started ");
         // Turn off wifi before enabling Access Point
 //        if (wifiController.isWifiOn(context)) {
 //            wifiController.turnOnOffWifi(context, false);
@@ -170,7 +165,7 @@ public class ControllerAccessPoint {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                Log.d(TAG, "ControllerAccessPoint.turnOnOffAccessPoint():  " + e);
+                Log.d(TAG, "AccessPointController.turnOnOffAccessPoint():  " + e);
             }
         }
     }
@@ -196,5 +191,14 @@ public class ControllerAccessPoint {
     private void turnOnOffWifi(Context context, boolean b) {
         wifiManager.setWifiEnabled(b);
         Log.d(TAG, "MainActivity.turnOnOffWifi(): " + b);
+    }
+
+    public void waitAccessPoint() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.d(TAG, "AccessPointController.waitAccessPoint():  " + e);
+        }
     }
 }

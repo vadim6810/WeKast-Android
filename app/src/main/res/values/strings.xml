@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">WeKast</string>
 
-    <string name="connectButtonText">Connect</string>
-    <string name="downloadButtonText">Download</string>
+    <!-- activity_register.xml -->
+    <string name="activityRegisterTextView1">NOTIFICATION</string>
+    <string name="activityRegisterTextView2">WeKast will NOT share \nyour phone number with anyone.\n
+        It will be used internally as unique\nidentifier to convert your files in the\n
+        cloud and optimize for mobile format."</string>
 
     <!-- Default Access Point settings  -->
     <string name="ssid">wekast</string>
