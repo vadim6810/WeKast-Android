@@ -188,12 +188,6 @@ public class AccessServiceAPI {
         new TaskRegister().execute(login, email);
     }
 
-    public void taskDownload(String login, String password, HashMap<String, String> mapList, Context context) {
-        this.context = context;
-        this.mapList = mapList;
-        new TaskDownload().execute(login, password);
-    }
-
     public class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
             private String JSONList;
@@ -291,44 +285,6 @@ public class AccessServiceAPI {
                 taskLogin(login, password.toString(), context);
             } else {
                 Utils.toastShow(context, "Registration fail ==> " + JSONresponse);
-            }
-        }
-    }
-
-    public class TaskDownload extends AsyncTask<String, Void, Integer> {
-        ProgressDialog m_ProgressDialog;
-        String LOG_TAG = "WelcomeActivity = ";
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Open progress dialog during downloading
-            m_ProgressDialog = ProgressDialog.show(context, "Please wait...", "Downloading...", true);
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HashMap<String, String> param = new HashMap<>();
-            param.put("login", params[0]);
-            param.put("password", params[1]);
-            for (Map.Entry<String, String> item : mapList.entrySet()) {
-                try {
-                    byte[] content = getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                    Utils.writeFile(content, item.getValue(), LOG_TAG);
-                } catch (Exception e) {
-                    return Utils.RESULT_ERROR;
-                }
-            }
-            return Utils.RESULT_SUCCESS;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            m_ProgressDialog.dismiss();
-            if (result == Utils.RESULT_SUCCESS) {
-                Utils.toastShow(context, "Download completed.");
-            } else {
-                Utils.toastShow(context, "Download fail!!!");
             }
         }
     }

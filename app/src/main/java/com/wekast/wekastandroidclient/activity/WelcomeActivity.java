@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,18 +24,22 @@ import com.wekast.wekastandroidclient.models.Wifi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by RDL on 15.07.2016.
  */
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends Activity  implements SwipeRefreshLayout.OnRefreshListener {
+    private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvWelcome;
     private ArrayList<String> filesLocal = new ArrayList<>();
     private HashMap<String, String> mapDownload = new HashMap<>();
     Context context = this;
     AccessServiceAPI m_AccessServiceAPI;
     private static long back_pressed;
+    private String answer;
+    ListView presenterList;
+    ArrayAdapter<String> adapter;
 
     WifiManager wifiManager = null;
     WifiController wifiController = null;
@@ -46,20 +53,19 @@ public class WelcomeActivity extends Activity {
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
         tvWelcome.setText("Welcome: " + Utils.getFieldSP(context, "login"));
         m_AccessServiceAPI = new AccessServiceAPI();
-        ListView presenterList = (ListView) findViewById(R.id.presenterList);
+        presenterList = (ListView) findViewById(R.id.presenterList);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
-        String answer = getIntent().getStringExtra("answer");
+        answer = getIntent().getStringExtra("answer");
 
-        //для загрузки
-        mapDownload = Utils.parseJSONArrayMap(context, answer);
+        //генератор списка презентаций
+        initPresenterList();
 
-        //для адаптера
-        filesLocal =  Utils.getAllFilesLocal();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, filesLocal);
-        presenterList.setAdapter(adapter);
+        //синхронизация с сервером
+        initDownload();
 
-        mappingPresentations();
-
+        //какойто код )))
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         wifiController = new WifiController(wifiManager);
         accessPointController = new AccessPointController(wifiManager);
@@ -71,6 +77,85 @@ public class WelcomeActivity extends Activity {
                 networkManipulations();
             }
         }).start();
+
+        presenterList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Utils.toastShow(context, ((TextView) view).getText().toString());
+                initPresenterList();
+            }
+        });
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(false);
+        initDownload();
+    }
+
+    private void initPresenterList() {
+        //для адаптера
+        filesLocal =  Utils.getAllFilesLocal();
+        adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, filesLocal);
+        presenterList.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void initDownload() {
+        mapDownload = Utils.parseJSONArrayMap(answer);
+        filesLocal =  Utils.getAllFilesLocal();
+        mapDownload = Utils.mappingPresentations(mapDownload, filesLocal);
+        String login = Utils.getFieldSP(context, "login");
+        String password = Utils.getFieldSP(context, "password");
+        if(mapDownload.size() > 0)
+            new TaskDownload().execute(login, password);
+        else Utils.toastShow(context, "You havn't new presentations on server!");
+    }
+
+    public class TaskDownload extends AsyncTask<String, Void, Integer> {
+        String LOG_TAG = "WelcomeActivity = ";
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            swipeRefreshLayout.setRefreshing(true);
+            initPresenterList();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            HashMap<String, String> param = new HashMap<>();
+            param.put("login", params[0]);
+            param.put("password", params[1]);
+            for (Map.Entry<String, String> item : mapDownload.entrySet()) {
+                try {
+                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
+                    Utils.writeFile(content, item.getValue(), LOG_TAG);
+                    publishProgress();
+                } catch (Exception e) {
+                    return Utils.RESULT_ERROR;
+                }
+            }
+            return Utils.RESULT_SUCCESS;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            initPresenterList();
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            if (result == Utils.RESULT_SUCCESS) {
+                Utils.toastShow(context, "Download completed.");
+            } else {
+                Utils.toastShow(context, "Download fail!!!");
+            }
+            initPresenterList();
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
 //    @Override
@@ -98,14 +183,6 @@ public class WelcomeActivity extends Activity {
     public void btnClearPref_Click(View v) {
         Utils.clearSP(context);
         Utils.toastShow(context, "Preference cleared");
-    }
-
-    public void btnDownload_Click(View v) {
-        String login = Utils.getFieldSP(context, "login");
-        String password = Utils.getFieldSP(context, "password");
-        if(mapDownload.size() > 0)
-        m_AccessServiceAPI.taskDownload(login, password, mapDownload, context);
-        else Utils.toastShow(context, "You havn't presentations on server!");
     }
 
     /**
@@ -142,19 +219,6 @@ public class WelcomeActivity extends Activity {
         String curDongleIp = wifiController.getIpAddr(dhcpInfo.serverAddress);
         Utils.setFieldSP(context, "DONGLE_IP", curDongleIp);
         Utils.setFieldSP(context, "DONGLE_PORT", "8888");
-    }
-
-    private void mappingPresentations() {
-        if (mapDownload.size() > 0) {
-            for (String s: filesLocal) {
-                for(Iterator<HashMap.Entry<String, String>> it = mapDownload.entrySet().iterator(); it.hasNext(); ) {
-                    HashMap.Entry<String, String> entry = it.next();
-                    if (entry.getValue().equals(s)) {
-                        it.remove();
-                    }
-                }
-            }
-        }
     }
 
     private void saveWifiAdapterState() {

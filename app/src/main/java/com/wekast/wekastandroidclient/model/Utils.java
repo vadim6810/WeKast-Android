@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -16,8 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static java.security.AccessController.getContext;
+import java.util.Iterator;
 
 
 /**
@@ -34,8 +32,8 @@ public class Utils {
     public static final String SHAREDPREFERNCE = "WeKastPreference";
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
-    public static final File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
-    public static final File[] ALL_FILES_DIRECTORY = Utils.DIRECTORY.listFiles();
+    public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
+
 
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
@@ -79,8 +77,8 @@ public class Utils {
     }
 
     public static void toastShow(Context context, String s) {
-        Toast toast = Toast.makeText(context, s, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
+        Toast toast = Toast.makeText(context, s, Toast.LENGTH_SHORT);
+//        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
@@ -98,7 +96,7 @@ public class Utils {
         }
     }
 
-    public static HashMap<String, String> parseJSONArrayMap(Context context, String answer) {
+    public static HashMap<String, String> parseJSONArrayMap(String answer) {
         HashMap<String, String> mapList = new HashMap<>();
         try {
             JSONArray jsonArray = new JSONArray(answer);
@@ -107,7 +105,7 @@ public class Utils {
                 mapList.put(index.getString("id"), index.getString("name"));
             }
         } catch (JSONException e) {
-            toastShow(context, e.toString());
+            Log.d("parseJSONArrayMap ", "error!!!");
         }
         return mapList;
     }
@@ -128,9 +126,10 @@ public class Utils {
 
     public static ArrayList<String> getAllFilesLocal() {
         ArrayList<String> fileList = new ArrayList<>();
-        if (ALL_FILES_DIRECTORY != null && ALL_FILES_DIRECTORY.length > 0) {
-            for (int i = 0; i < ALL_FILES_DIRECTORY.length; i++) {
-                    fileList.add(ALL_FILES_DIRECTORY[i].getName());
+        File[] filesList = DIRECTORY.listFiles();;
+        if (filesList != null && filesList.length > 0) {
+            for (int i = 0; i < filesList.length; i++) {
+                    fileList.add(filesList[i].getName());
             }
         }
         return fileList;
@@ -154,4 +153,17 @@ public class Utils {
         return jsonObject;
     }
 
+    public static HashMap<String, String>  mappingPresentations(HashMap<String, String> mapDownload, ArrayList<String> filesLocal) {
+        if (mapDownload.size() > 0) {
+            for (String s: filesLocal) {
+                for(Iterator<HashMap.Entry<String, String>> it = mapDownload.entrySet().iterator(); it.hasNext(); ) {
+                    HashMap.Entry<String, String> entry = it.next();
+                    if (entry.getValue().equals(s)) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+        return mapDownload;
+    }
 }
