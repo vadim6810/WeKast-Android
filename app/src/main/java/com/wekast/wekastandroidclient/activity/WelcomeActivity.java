@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
@@ -29,7 +30,7 @@ import java.util.Map;
 /**
  * Created by RDL on 15.07.2016.
  */
-public class WelcomeActivity extends Activity  implements SwipeRefreshLayout.OnRefreshListener {
+public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvWelcome;
     private ArrayList<String> filesLocal = new ArrayList<>();
@@ -58,8 +59,7 @@ public class WelcomeActivity extends Activity  implements SwipeRefreshLayout.OnR
         swipeRefreshLayout.setOnRefreshListener(this);
 
         answer = getIntent().getStringExtra("answer");
-
-        //генератор списка презентаций
+       //список презентаций
         initPresenterList();
 
         //синхронизация с сервером
@@ -78,12 +78,13 @@ public class WelcomeActivity extends Activity  implements SwipeRefreshLayout.OnR
             }
         }).start();
 
+//        new Thread(() ->  networkManipulations()).start();
+
         presenterList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 Utils.toastShow(context, ((TextView) view).getText().toString());
-                initPresenterList();
             }
         });
     }

@@ -30,9 +30,6 @@ import java.util.Map;
  * Created by RDL on 15.07.2016.
  */
 public class AccessServiceAPI {
-    private Context context;
-    private HashMap<String, String> mapList;
-
     /**
      * Convert json string to json object
      *
@@ -178,24 +175,30 @@ public class AccessServiceAPI {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void taskLogin(String login, String password, Context context) {
-        this.context = context;
-        new TaskLogin().execute(login, password);
+    public void taskLogin(String login, String password, Context context, int whoCalled) {
+        new TaskLogin(whoCalled, context).execute(login, password);
     }
 
     public void taskRegister (String login, String email, Context context) {
-        this.context = context;
-        new TaskRegister().execute(login, email);
+        new TaskRegister(context).execute(login, email);
     }
 
     public class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
-            private String JSONList;
+            public String JSONList;
             String login;
+            String password;
+        int whoCalled;
+        Context context;
+        public TaskLogin(int whoCalled, Context context) {
+            this.whoCalled = whoCalled;
+            this.context = context;
+        }
 
-            @Override
+        @Override
             protected Integer doInBackground(String... params) {
                 login = params[0];
+                password = params[1];
                 //Create date to pass in param
                 Map<String, String> param = new HashMap<>();
                 param.put("login", params[0]);
@@ -224,20 +227,40 @@ public class AccessServiceAPI {
                 super.onPostExecute(result);
                 if (result == Utils.RESULT_SUCCESS) {
                     Utils.toastShow(context, "Login success");
-                    Intent i = new Intent(context, WelcomeActivity.class);
-                    i.putExtra("answer", JSONList);
-                    context.startActivity(i);
+                    if (whoCalled == 1) {
+                        startWelcome();
+                    }
+                    if (whoCalled == 2){
+                        Utils.setFieldSP(context,"login", login);
+                        Utils.setFieldSP(context,"password", password);
+                        startWelcome();
+                    }
+                    if (whoCalled == 3) {
+                        startWelcome();
+                    }
                 } else {
                     Utils.toastShow(context, "Login fail ==> " + JSONresponse);
                 }
             }
+
+        private void startWelcome() {
+            Intent i = new Intent(context, WelcomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            i.putExtra("answer", JSONList);
+            context.startActivity(i);
+        }
     }
 
     public class TaskRegister extends AsyncTask<String, Void, Integer> {
+         private Context context;
         private String JSONresponse;
         private String password;
         ProgressDialog m_ProgressDialog;
         String login;
+
+        public TaskRegister(Context context) {
+            this.context = context;
+        }
+
 
         @Override
         protected void onPreExecute() {
@@ -282,7 +305,7 @@ public class AccessServiceAPI {
                 Utils.setFieldSP(context,"login", login);
                 Utils.setFieldSP(context,"password",  password.toString());
                 //Call async task to login
-                taskLogin(login, password.toString(), context);
+                taskLogin(login, password.toString(), context, 1);
             } else {
                 Utils.toastShow(context, "Registration fail ==> " + JSONresponse);
             }

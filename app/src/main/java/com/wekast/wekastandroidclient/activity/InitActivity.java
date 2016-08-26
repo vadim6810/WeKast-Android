@@ -41,20 +41,20 @@ public class InitActivity extends Activity {
 
         Utils.initWorkFolder();
 
-        new Timer().schedule(new InitActivityTimer(), 4000);
+        new Timer().schedule(new InitActivityTimer(), 3500);
     }
 
 
     private class InitActivityTimer extends TimerTask {
         @Override
         public void run() {
-            Intent i;
             if (Utils.getContainsSP(context, "login")){
-                m_AccessServiceAPI.taskLogin(Utils.getFieldSP(context, "login"), Utils.getFieldSP(context, "password"), context);
+                 m_AccessServiceAPI.taskLogin(Utils.getFieldSP(context, "login"), Utils.getFieldSP(context, "password"), context, 1);
             } else {
-                i = new Intent(getApplicationContext(), RegisterActivity.class);
+                Intent  i = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(i);
             }
+
 
         }
     }
