@@ -7,6 +7,8 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -87,6 +89,28 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
                 Utils.toastShow(context, ((TextView) view).getText().toString());
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_welcome, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // получим идентификатор выбранного пункта меню
+        int id = item.getItemId();
+
+       // Операции для выбранного пункта меню
+        switch (id) {
+            case R.id.action_clear:
+                Utils.clearSP(context);
+                Utils.toastShow(context, "Preference cleared");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -179,11 +203,6 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
         else
             Utils.toastShow(context, "Press once again to exit!");
         back_pressed = System.currentTimeMillis();
-    }
-
-    public void btnClearPref_Click(View v) {
-        Utils.clearSP(context);
-        Utils.toastShow(context, "Preference cleared");
     }
 
     /**

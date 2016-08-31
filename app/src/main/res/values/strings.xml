@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">WeKast</string>
 
+    <string name="action_menu">Settings</string>
+    <string name="action_menu_clear">clear setting</string>
+
     <!-- activity_register.xml -->
     <string name="activityRegisterTextView1">NOTIFICATION</string>
     <string name="activityRegisterTextView2">WeKast will NOT share \nyour phone number with anyone.\n
