@@ -36,7 +36,7 @@ public class AccessServiceAPI {
      * @param jsonString
      * @return JSONObject
      */
-    public JSONObject convertJSONString2Obj(String jsonString) {
+    public static JSONObject convertJSONString2Obj(String jsonString) {
         JSONObject jObj = null;
         try {
             Log.w("convertJSONString2Obj", "JsonString=" + jsonString);
@@ -54,7 +54,7 @@ public class AccessServiceAPI {
      * @param params     post data
      * @return json string
      */
-    public String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
+    public static String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
         String jsonString = null;
         HttpURLConnection conn = null;
         String line;
@@ -183,19 +183,20 @@ public class AccessServiceAPI {
         new TaskRegister(context).execute(login, email);
     }
 
-    public class TaskLogin extends AsyncTask<String, Void, Integer> {
+    public static class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
             public String JSONList;
             String login;
             String password;
-        int whoCalled;
-        Context context;
+            int whoCalled;
+            Context context;
+
         public TaskLogin(int whoCalled, Context context) {
             this.whoCalled = whoCalled;
             this.context = context;
         }
 
-        @Override
+         @Override
             protected Integer doInBackground(String... params) {
                 login = params[0];
                 password = params[1];
@@ -235,9 +236,6 @@ public class AccessServiceAPI {
                         Utils.setFieldSP(context,"password", password);
                         startWelcome();
                     }
-                    if (whoCalled == 3) {
-                        startWelcome();
-                    }
                 } else {
                     Utils.toastShow(context, "Login fail ==> " + JSONresponse);
                 }
@@ -245,7 +243,6 @@ public class AccessServiceAPI {
 
         private void startWelcome() {
             Intent i = new Intent(context, WelcomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            i.putExtra("answer", JSONList);
             context.startActivity(i);
         }
     }
@@ -311,4 +308,5 @@ public class AccessServiceAPI {
             }
         }
     }
+
 }

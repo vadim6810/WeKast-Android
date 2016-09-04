@@ -1,48 +1,34 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-
 
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
-import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.models.DongleReconfig;
 import com.wekast.wekastandroidclient.models.Wifi;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
 
 /**
  * Created by RDL on 15.07.2016.
  */
-public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRefreshListener {
-    private SwipeRefreshLayout swipeRefreshLayout;
+public class WelcomeActivity extends Activity {
     private TextView tvWelcome;
-    private ArrayList<String> filesLocal = new ArrayList<>();
-    private HashMap<String, String> mapDownload = new HashMap<>();
     Context context = this;
-    AccessServiceAPI m_AccessServiceAPI;
+    FragmentListPresentations fragmentListPresentations;
+    FragmentTransaction fragmentTransaction;
     private static long back_pressed;
-    private String answer;
-    ListView presenterList;
-    ArrayAdapter<String> adapter;
 
     WifiManager wifiManager = null;
     WifiController wifiController = null;
@@ -54,18 +40,13 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
-        tvWelcome.setText("Welcome: " + Utils.getFieldSP(context, "login"));
-        m_AccessServiceAPI = new AccessServiceAPI();
-        presenterList = (ListView) findViewById(R.id.presenterList);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        swipeRefreshLayout.setOnRefreshListener(this);
+        tvWelcome.setText("Welcome: " + getFieldSP(context, "login"));
 
-        answer = getIntent().getStringExtra("answer");
-       //список презентаций
-        initPresenterList();
-
-        //синхронизация с сервером
-        initDownload();
+        fragmentListPresentations = new FragmentListPresentations();
+        fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.fragmContainer, fragmentListPresentations, "fragmentListPresentations");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
 
         //какойто код )))
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
@@ -81,14 +62,6 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
         }).start();
 
 //        new Thread(() ->  networkManipulations()).start();
-
-        presenterList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                Utils.toastShow(context, ((TextView) view).getText().toString());
-            }
-        });
     }
 
     @Override
@@ -112,81 +85,6 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(false);
-        initDownload();
-    }
-
-    private void initPresenterList() {
-        //для адаптера
-        filesLocal =  Utils.getAllFilesLocal();
-        adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, filesLocal);
-        presenterList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
-    public void initDownload() {
-        mapDownload = Utils.parseJSONArrayMap(answer);
-        filesLocal =  Utils.getAllFilesLocal();
-        mapDownload = Utils.mappingPresentations(mapDownload, filesLocal);
-        String login = Utils.getFieldSP(context, "login");
-        String password = Utils.getFieldSP(context, "password");
-        if(mapDownload.size() > 0)
-            new TaskDownload().execute(login, password);
-        else Utils.toastShow(context, "You havn't new presentations on server!");
-    }
-
-    public class TaskDownload extends AsyncTask<String, Void, Integer> {
-        String LOG_TAG = "WelcomeActivity = ";
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            swipeRefreshLayout.setRefreshing(true);
-            initPresenterList();
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HashMap<String, String> param = new HashMap<>();
-            param.put("login", params[0]);
-            param.put("password", params[1]);
-            for (Map.Entry<String, String> item : mapDownload.entrySet()) {
-                try {
-                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                    Utils.writeFile(content, item.getValue(), LOG_TAG);
-                    publishProgress();
-                } catch (Exception e) {
-                    return Utils.RESULT_ERROR;
-                }
-            }
-            return Utils.RESULT_SUCCESS;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-            initPresenterList();
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            if (result == Utils.RESULT_SUCCESS) {
-                Utils.toastShow(context, "Download completed.");
-            } else {
-                Utils.toastShow(context, "Download fail!!!");
-            }
-            initPresenterList();
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//    }
 
     @Override
     protected void onDestroy() {
@@ -257,7 +155,7 @@ public class WelcomeActivity extends Activity implements SwipeRefreshLayout.OnRe
 
     private void restoreWifiAdapterState() {
         // TODO: finish this method
-        String isWifiEnabled = Utils.getFieldSP(this, "WIFI_STATE_BEFORE_LAUNCH_APP");
+        String isWifiEnabled = getFieldSP(this, "WIFI_STATE_BEFORE_LAUNCH_APP");
 //        if (isWifiEnabled.equals("true")) {
         wifiController.turnOnOffWifi(context, true);
 //        }
