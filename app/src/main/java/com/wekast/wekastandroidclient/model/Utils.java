@@ -6,16 +6,22 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.activity.FragmentListPresentations;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 
 /**
@@ -32,8 +38,8 @@ public class Utils {
     public static final String SHAREDPREFERNCE = "WeKastPreference";
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
+    public static final String CASH_DIRECTORY = "Cash/";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
-
 
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
@@ -43,12 +49,25 @@ public class Utils {
     // ACCESS_POINT_SSID_NEW         // new value of ssid
     // ACCESS_POINT_PASS_NEW         // new value of pass
 
-
     public static void initWorkFolder() {
         File file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
         if (!file.isDirectory()) {
             file.mkdir();
             Log.d("Create directory", DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
+        }
+
+        file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+        if (!file.isDirectory()) {
+            file.mkdir();
+            Log.d("Create directory", DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+        }
+    }
+
+    public static void clearWorkDirectory(){
+        File[] clearWorkDirectory = (new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY)).listFiles();
+         for (File tmp : clearWorkDirectory) {
+            if (!tmp.isDirectory())
+                tmp.delete();
         }
     }
 
@@ -126,13 +145,57 @@ public class Utils {
 
     public static ArrayList<String> getAllFilesLocal() {
         ArrayList<String> fileList = new ArrayList<>();
-        File[] filesList = DIRECTORY.listFiles();;
+        File[] filesList = DIRECTORY.listFiles();
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
                     fileList.add(filesList[i].getName());
             }
         }
         return fileList;
+    }
+
+    public static ArrayList<String> getAllFilesLocalPath() {
+        ArrayList<String> fileList = new ArrayList<>();
+        File[] filesList = DIRECTORY.listFiles();
+        if (filesList != null && filesList.length > 0) {
+            for (int i = 0; i < filesList.length; i++) {
+                fileList.add(filesList[i].getAbsolutePath());
+            }
+        }
+        return fileList;
+    }
+
+    public static boolean unZipPresentation(String path) {
+        boolean status = false;
+        try {
+            FileInputStream fin = new FileInputStream(path);
+            ZipInputStream zin = new ZipInputStream(fin);
+            ZipEntry ze = null;
+            File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+            final int BUFFER_SIZE = 1024*40;
+            byte[] buf = new byte[BUFFER_SIZE];
+            int c = 0;
+            while ((ze = zin.getNextEntry()) != null) {
+                try {
+                    FileOutputStream fout = new FileOutputStream(
+                            targetDirectory.getAbsolutePath() + "/" + ze.getName());
+                    c = zin.read(buf, 0, BUFFER_SIZE - 1);
+                    for (; c != -1; c = zin.read(buf, 0, BUFFER_SIZE - 1)) {
+                        fout.write(buf, 0, c);
+                    }
+                    fout.close();
+                    zin.closeEntry();
+                }catch (IOException ex){
+                    ex.printStackTrace();
+                }
+            }
+            zin.close();
+            status = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return status;
     }
 
     public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {

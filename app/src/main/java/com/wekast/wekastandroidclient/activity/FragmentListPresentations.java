@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
@@ -38,6 +39,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private String password;
 
     private List<RowItem> rowItems;
+    private UnzipAsyncTask unzipAsyncTask;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,15 +47,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         login = getFieldSP(getActivity(), "login");
         password = getFieldSP(getActivity(), "password");
 
-        rowItems = new ArrayList<>();
-        ArrayList<String> local = getAllFilesLocal();
-        for (int i = 0; i < local.size(); i++) {
-            RowItem items = new RowItem(local.get(i), R.drawable.wekastbrand);
-            rowItems.add(items);
-        }
-
         initListPresentations();
-//        new TaskDownload().execute(login, password);
+        new TaskDownload().execute(login, password);
     }
 
     @Override
@@ -65,20 +60,31 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         return view;
     }
 
-//    private void initListPresentations() {
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, getAllFilesLocal());
-//        setListAdapter(adapter);
-//        adapter.notifyDataSetChanged();
-//    }
     private void initListPresentations() {
+        rowItems = new ArrayList<>();
+        ArrayList<String> localName = getAllFilesLocal();
+        ArrayList<String> localPath = getAllFilesLocalPath();
+        for (int i = 0; i < localName.size(); i++) {
+            RowItem items = new RowItem(localName.get(i), localPath.get(i), R.drawable.wekastbrand);
+            rowItems.add(items);
+        }
         CustomAdapter adapter = new CustomAdapter(getActivity(), rowItems);
         setListAdapter(adapter);
-//        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        toastShow(getActivity(), "fragment: " + ((TextView) v).getText().toString());
+        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
+        if(!rowItems.get(position).isSelected()){
+            rowItems.get(position).setSelected(true);
+            clearWorkDirectory();
+            if(unzipAsyncTask!=null){
+                unzipAsyncTask.cancel(true);
+            }
+            unzipAsyncTask = new UnzipAsyncTask(position);
+            unzipAsyncTask.execute();
+        }
     }
 
     @Override
@@ -149,12 +155,32 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     public class RowItem {
 
         private String title;
+        private String path;
         private int icon;
+        private boolean isSelected;
 
-        public RowItem(String title, int icon) {
+
+        public RowItem(String title, String path, int icon) {
             this.title = title;
+            this.path = path;
             this.icon = icon;
+            this.isSelected = false;
+        }
 
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public void setSelected(boolean isSelected) {
+            this.isSelected = isSelected;
+        }
+
+        public boolean isSelected() {
+            return isSelected;
         }
 
         public String getTitle() {
@@ -224,5 +250,37 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
         }
 
+    }
+
+    private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean>{
+        private int position;
+
+        private UnzipAsyncTask(int position) {
+            this.position = position;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            toastShow(getActivity(), "Cash unzip run!");
+//            unzipProgress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return unZipPresentation(rowItems.get(position).getPath());
+        }
+
+        @Override
+        protected void onPostExecute(Boolean unzipResult) {
+//            unzipProgress.setVisibility(View.GONE);
+            if (unzipResult) {
+//                presentationListEvent.presentationListEvent(list.get(position).getPresName(), list.get(position).getPresPath());
+                toastShow(getActivity(), "Cash unziped!");
+            } else {
+                rowItems.get(position).setSelected(false);
+                toastShow(getActivity(), "Try again!");
+            }
+        }
     }
 }
