@@ -39,6 +39,7 @@ public class Utils {
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
     public static final String CASH_DIRECTORY = "Cash/";
+    public static final String FORMAT = ".ezs";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
 
     // SharedPreferences params
@@ -148,6 +149,7 @@ public class Utils {
         File[] filesList = DIRECTORY.listFiles();
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
+                if(filesList[i].getName().endsWith(FORMAT))
                     fileList.add(filesList[i].getName());
             }
         }
@@ -159,7 +161,8 @@ public class Utils {
         File[] filesList = DIRECTORY.listFiles();
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
-                fileList.add(filesList[i].getAbsolutePath());
+                if(filesList[i].getName().endsWith(FORMAT))
+                    fileList.add(filesList[i].getAbsolutePath());
             }
         }
         return fileList;

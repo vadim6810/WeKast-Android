@@ -163,7 +163,7 @@ public class AccessServiceAPI {
 
             InputStream stream = conn.getInputStream();
             int c;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[8192];
             while ((c = stream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, c);
             }
