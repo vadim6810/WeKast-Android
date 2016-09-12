@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,10 +67,20 @@ public class Utils {
 
     public static void clearWorkDirectory(){
         File[] clearWorkDirectory = (new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY)).listFiles();
-         for (File tmp : clearWorkDirectory) {
-            if (!tmp.isDirectory())
-                tmp.delete();
+        for (File tmp : clearWorkDirectory) {
+            clearDirectory(tmp);
         }
+    }
+
+    private static void clearDirectory(File file) {
+        if (!file.exists())
+            return;
+        if(file.isDirectory()){
+            for (File tmp2: file.listFiles()) {
+                clearDirectory(tmp2);
+                file.delete();
+            }
+        } else file.delete();
     }
 
     public static boolean getContainsSP(Context context, String field) {
@@ -169,36 +180,65 @@ public class Utils {
     }
 
     public static boolean unZipPresentation(String path) {
-        boolean status = false;
-        try {
-            FileInputStream fin = new FileInputStream(path);
-            ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry ze = null;
+        boolean res = false;
+        try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
+        {
+            ZipEntry zipEntry;
             File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
             final int BUFFER_SIZE = 1024*40;
             byte[] buf = new byte[BUFFER_SIZE];
             int c = 0;
-            while ((ze = zin.getNextEntry()) != null) {
-                try {
-                    FileOutputStream fout = new FileOutputStream(
-                            targetDirectory.getAbsolutePath() + "/" + ze.getName());
+            while ((zipEntry = zin.getNextEntry()) != null) {
+                try (FileOutputStream fout = new FileOutputStream(targetDirectory.getAbsolutePath() + "/" + zipEntry.getName()))
+                {
                     c = zin.read(buf, 0, BUFFER_SIZE - 1);
                     for (; c != -1; c = zin.read(buf, 0, BUFFER_SIZE - 1)) {
                         fout.write(buf, 0, c);
                     }
-                    fout.close();
                     zin.closeEntry();
-                }catch (IOException ex){
-                    ex.printStackTrace();
+                }catch (IOException e){
+                    e.printStackTrace();
                 }
             }
-            zin.close();
-            status = true;
+            res = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return res;
+    }
 
-        return status;
+
+    public static boolean unZipPresentation2(String path) {
+        boolean res = false;
+        try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
+        {
+            ZipEntry zipEntry;
+            File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+            while ((zipEntry = zin.getNextEntry()) != null) {
+                String filePath = targetDirectory + File.separator + zipEntry.getName();
+                if (!zipEntry.isDirectory()) {
+                    extractFile(zin, filePath);
+                } else {  File dir = new File(filePath);
+                    dir.mkdir();
+                }
+                zin.closeEntry();
+            }
+            res = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        final int BUFFER_SIZE = 1024*40;
+        byte[] bytesIn = new byte[BUFFER_SIZE];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
     }
 
     public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {

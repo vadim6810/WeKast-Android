@@ -247,9 +247,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             txtTitle.setText(row_pos.getTitle());
 
             return convertView;
-
         }
-
     }
 
     private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean>{
@@ -268,7 +266,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return unZipPresentation(rowItems.get(position).getPath());
+            return unZipPresentation2(rowItems.get(position).getPath());
         }
 
         @Override
