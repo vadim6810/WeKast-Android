@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 /**
  * Created by RDL on 03.09.2016.
  */
-public class Equations {
+public class EquationsBitmap {
 
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image

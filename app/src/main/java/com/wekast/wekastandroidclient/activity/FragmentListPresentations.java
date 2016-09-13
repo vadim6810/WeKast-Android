@@ -14,11 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
-import com.wekast.wekastandroidclient.model.Equations;
+import com.wekast.wekastandroidclient.model.EquationsBitmap;
 import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
@@ -167,7 +166,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             this.path = path;
             this.isSelected = false;
             byte[] image = unZipPreview(path);
-            this.logo = Equations.decodeSampledBitmapFromFile(image, 80, 60);
+            this.logo = EquationsBitmap.decodeSampledBitmapFromFile(image, 80, 60);
         }
 
         public Bitmap getLogo() {
@@ -242,7 +241,6 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
             RowItem row_pos = rowItem.get(position);
             // setting the image resource and title
-//            imgIcon.setImageResource(row_pos.getIcon());
             imgIcon.setImageBitmap(row_pos.getLogo());
             imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
             txtTitle.setText(row_pos.getTitle());
