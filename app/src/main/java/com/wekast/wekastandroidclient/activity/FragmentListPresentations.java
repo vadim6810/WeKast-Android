@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.activity;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
+import com.wekast.wekastandroidclient.model.Equations;
 import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
@@ -65,7 +67,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         ArrayList<String> localName = getAllFilesLocal();
         ArrayList<String> localPath = getAllFilesLocalPath();
         for (int i = 0; i < localName.size(); i++) {
-            RowItem items = new RowItem(localName.get(i), localPath.get(i), R.drawable.wekastbrand);
+            RowItem items = new RowItem(localName.get(i), localPath.get(i));
             rowItems.add(items);
         }
         CustomAdapter adapter = new CustomAdapter(getActivity(), rowItems);
@@ -156,15 +158,20 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
         private String title;
         private String path;
-        private int icon;
         private boolean isSelected;
+        private Bitmap logo;
 
 
-        public RowItem(String title, String path, int icon) {
+        public RowItem(String title, String path) {
             this.title = title;
             this.path = path;
-            this.icon = icon;
             this.isSelected = false;
+            byte[] image = unZipPreview(path);
+            this.logo = Equations.decodeSampledBitmapFromFile(image, 80, 60);
+        }
+
+        public Bitmap getLogo() {
+            return logo;
         }
 
         public String getPath() {
@@ -189,14 +196,6 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
         public void setTitle(String title) {
             this.title = title;
-        }
-
-        public int getIcon() {
-            return icon;
-        }
-
-        public void setIcon(int icon) {
-            this.icon = icon;
         }
 
     }
@@ -243,7 +242,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
             RowItem row_pos = rowItem.get(position);
             // setting the image resource and title
-            imgIcon.setImageResource(row_pos.getIcon());
+//            imgIcon.setImageResource(row_pos.getIcon());
+            imgIcon.setImageBitmap(row_pos.getLogo());
+            imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
             txtTitle.setText(row_pos.getTitle());
 
             return convertView;

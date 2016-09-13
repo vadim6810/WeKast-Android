@@ -241,6 +241,27 @@ public class Utils {
         bos.close();
     }
 
+    public static byte[] unZipPreview(String path) {
+        byte[] result = null;
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
+        {
+            ZipEntry zipEntry;
+            while ((zipEntry = zin.getNextEntry()) != null) {
+                if(zipEntry.getName().endsWith("preview.jpeg")){
+                    result = new byte[(int) zipEntry.getSize()];
+                    for (int c = zin.read(),j=0; c != -1; c = zin.read(),j++) {
+                        result[j] = (byte) c;
+                    }
+                    break;
+                }
+                zin.closeEntry();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {
         // TODO: create rundom ssid and pass
         JSONObject jsonObject = new JSONObject();
