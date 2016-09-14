@@ -31,7 +31,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 
 
 /**
- * Created by Gregory on 04.05.2014.
+ * Created by RDL on 03.09.2016.
  */
 public class FragmentSlider extends Fragment implements View.OnTouchListener {
     float y;
@@ -57,7 +57,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     public FragmentSlider() {
 
-        slidesList = new ArrayList<Slide>();
+        slidesList = new ArrayList<>();
         commentsFragment = new CommentsFragment();
         handler = new Handler();
         applicationManager = ApplicationManager.getInstance();

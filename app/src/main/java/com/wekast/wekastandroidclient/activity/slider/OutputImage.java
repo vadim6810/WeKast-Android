@@ -18,7 +18,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 
 
 /**
- * Created by Gregory on 04.05.2014.
+ * Created by RDL on 03.09.2016.
  */
 public class OutputImage extends Fragment {
     View view;

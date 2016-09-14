@@ -4,22 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/images_frame_border">
-    <TextView
-        android:id="@+id/output_slide_title"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="5"
-        android:text="test"
-        android:gravity="center|center_vertical"/>
+    android:background="@drawable/images_frame_border"
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/output_slide_picture"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
+        android:gravity="center|center_vertical" />
+
+    <TextView
+        android:id="@+id/output_slide_title"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="5"
+        android:text="test"
         android:gravity="center|center_vertical"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"/>
+        android:textColor="@color/black" />
 
 </LinearLayout>

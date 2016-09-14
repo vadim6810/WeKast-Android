@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
@@ -18,14 +19,15 @@ import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.models.DongleReconfig;
 import com.wekast.wekastandroidclient.models.Wifi;
 
-import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.*;
 
 /**
  * Created by RDL on 15.07.2016.
  */
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends Activity implements FragmentListPresentations.onSomeEventListener {
     private TextView tvWelcome;
     Context context = this;
+    private int activityState;
     FragmentListPresentations fragmentListPresentations;
     FragmentTransaction fragmentTransaction;
     private static long back_pressed;
@@ -44,8 +46,9 @@ public class WelcomeActivity extends Activity {
 
         fragmentListPresentations = new FragmentListPresentations();
         fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragmContainer, fragmentListPresentations, "fragmentListPresentations");
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.add(R.id.fragmContainer, fragmentListPresentations);
+//        fragmentTransaction.addToBackStack(null);
+        activityState = PRESENTATION_LIST;
         fragmentTransaction.commit();
 
         //какойто код )))
@@ -87,6 +90,15 @@ public class WelcomeActivity extends Activity {
     }
 
     @Override
+    public void someEvent(String presPath) {
+        fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
+//        fragmentTransaction.addToBackStack(null);
+        activityState = SLIDER;
+        fragmentTransaction.commit();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         // TODO: think if needed
@@ -96,11 +108,22 @@ public class WelcomeActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (back_pressed + 2000 > System.currentTimeMillis())
-            finishAffinity();
-        else
-            Utils.toastShow(context, "Press once again to exit!");
-        back_pressed = System.currentTimeMillis();
+        switch (activityState) {
+            case PRESENTATION_LIST:
+                if (back_pressed + 2000 > System.currentTimeMillis())
+                    finishAffinity();
+                else
+                    Utils.toastShow(context, "Please click BACK again to exit!");
+                back_pressed = System.currentTimeMillis();
+                break;
+            case SLIDER:
+                fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmContainer, fragmentListPresentations);
+//                fragmentTransaction.addToBackStack(null);
+                activityState = PRESENTATION_LIST;
+                fragmentTransaction.commit();
+                break;
+        }
     }
 
     /**

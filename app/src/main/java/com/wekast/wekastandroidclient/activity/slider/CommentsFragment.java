@@ -12,7 +12,7 @@ import com.wekast.wekastandroidclient.activity.FragmentSlider;
 
 
 /**
- * Created by Gregory on 04.05.2014.
+ * Created by RDL on 03.09.2016.
  */
 public class CommentsFragment extends Fragment {
     View view;

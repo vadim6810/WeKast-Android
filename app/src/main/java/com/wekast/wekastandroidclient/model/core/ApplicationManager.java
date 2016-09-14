@@ -1,8 +1,5 @@
 package com.wekast.wekastandroidclient.model.core;
 
-
-import com.wekast.wekastandroidclient.model.Utils;
-
 import java.util.Observable;
 
 
@@ -56,7 +53,7 @@ public class ApplicationManager extends Observable {
     public void setCurrentSlide(int currentSlide) {
         this.currentSlide = currentSlide;
         super.setChanged();
-        super.notifyObservers(Utils.CURRENT_SLIDE_STATE_CHANGED);
+//        super.notifyObservers(Utils.CURRENT_SLIDE_STATE_CHANGED);
     }
 
     public String getCurrentPresentationName() {
@@ -67,7 +64,7 @@ public class ApplicationManager extends Observable {
         this.currentPresentationName = currentPresentationName;
         currentSlide = 1;
         super.setChanged();
-        super.notifyObservers(Utils.CURRENT_PRESENTATION_STATE_CHANGED);
+//        super.notifyObservers(Utils.CURRENT_PRESENTATION_STATE_CHANGED);
     }
 
 //    public int getUpdateServerState() {
@@ -105,6 +102,6 @@ public class ApplicationManager extends Observable {
     public void setUploadStatus(String uploadStatus) {
         this.uploadStatus = uploadStatus;
         super.setChanged();
-        super.notifyObservers(Utils.UPLOAD_PRESENTATION_STATUS);
+//        super.notifyObservers(Utils.UPLOAD_PRESENTATION_STATUS);
     }
 }

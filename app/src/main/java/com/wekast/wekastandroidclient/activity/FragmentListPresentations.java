@@ -1,10 +1,12 @@
 package com.wekast.wekastandroidclient.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -38,9 +40,49 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private HashMap<String, String> mapDownload = new HashMap<>();
     private String login;
     private String password;
+    private onSomeEventListener someEventListener;
 
     private List<RowItem> rowItems;
     private UnzipAsyncTask unzipAsyncTask;
+
+    public interface onSomeEventListener {
+        public void someEvent(String presPath);
+    }
+
+    /*
+     * onAttach(Context) не вызовется до API 23 версии вместо этого будет вызван onAttach(Activity), который устарел с 23 API
+     * Так что вызовем onAttachToContext
+     */
+    @TargetApi(23)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onAttachToContext(context);
+    }
+
+    /*
+     * устарел с 23 API
+     * Так что вызовем onAttachToContext
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            onAttachToContext(activity);
+        }
+    }
+
+    /*
+     * Вызовется в момент присоединения фрагмента к активити
+     */
+    protected void onAttachToContext(Context context) {
+        try {
+            someEventListener = (onSomeEventListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement deviceListEventListener");
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -80,12 +122,12 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         if(!rowItems.get(position).isSelected()){
             rowItems.get(position).setSelected(true);
             clearWorkDirectory();
-            if(unzipAsyncTask!=null){
+            if(unzipAsyncTask != null){
                 unzipAsyncTask.cancel(true);
             }
             unzipAsyncTask = new UnzipAsyncTask(position);
             unzipAsyncTask.execute();
-        }
+        } else someEventListener.someEvent(rowItems.get(position).getPath());
     }
 
     @Override
@@ -272,8 +314,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         protected void onPostExecute(Boolean unzipResult) {
 //            unzipProgress.setVisibility(View.GONE);
             if (unzipResult) {
-//                presentationListEvent.presentationListEvent(list.get(position).getPresName(), list.get(position).getPresPath());
                 toastShow(getActivity(), "Cash unziped!");
+                someEventListener.someEvent(rowItems.get(position).getPath());
             } else {
                 rowItems.get(position).setSelected(false);
                 toastShow(getActivity(), "Try again!");

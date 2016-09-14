@@ -43,14 +43,9 @@ public class Utils {
     public static final String FORMAT = ".ezs";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
 
-      /* Application Manager Changed Notification */
-    public final int CONNECTION_STATE_CHANGED = 0x00100000;
-    public final int UPLOAD_PRESENTATION_STATE_CHANGED = 0x00100001;
-    public final int CURRENT_SLIDE_STATE_CHANGED = 0x00100002;
-    public final int CURRENT_PRESENTATION_STATE_CHANGED = 0x00100003;
-    public final int UPDATE_SERVER_STATE_CHANGED = 0x00100004;
-    public final int UI_STATE_CHANGED = 0x00100005;
-    public final int UPLOAD_PRESENTATION_STATUS = 0x00100006;
+    /** StateMachine **/
+    public static final int PRESENTATION_LIST = 0x00000100;
+    public static final int SLIDER = 0x00000200;
 
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
