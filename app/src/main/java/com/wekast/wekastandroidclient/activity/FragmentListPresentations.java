@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
@@ -42,14 +41,15 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private String password;
     private onSomeEventListener someEventListener;
 
-    private List<RowItem> rowItems;
+    private ArrayList<RowItem> rowItems;
+    private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
 
     public interface onSomeEventListener {
         public void someEvent(String presPath);
     }
 
-    /*
+    /**
      * onAttach(Context) не вызовется до API 23 версии вместо этого будет вызван onAttach(Activity), который устарел с 23 API
      * Так что вызовем onAttachToContext
      */
@@ -60,7 +60,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         onAttachToContext(context);
     }
 
-    /*
+    /**
      * устарел с 23 API
      * Так что вызовем onAttachToContext
      */
@@ -73,14 +73,14 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         }
     }
 
-    /*
+    /**
      * Вызовется в момент присоединения фрагмента к активити
      */
     protected void onAttachToContext(Context context) {
         try {
             someEventListener = (onSomeEventListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement deviceListEventListener");
+            throw new ClassCastException(context.toString() + " must implement onSomeEventListener");
         }
     }
 
@@ -89,9 +89,20 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         super.onActivityCreated(savedInstanceState);
         login = getFieldSP(getActivity(), "login");
         password = getFieldSP(getActivity(), "password");
-
-        initListPresentations();
+        rowItems = new ArrayList<>();
+        createListPresentations();
+        adapter = new CustomAdapter(getActivity(), rowItems);
+        setListAdapter(adapter);
         new TaskDownload().execute(login, password);
+    }
+
+    private void createListPresentations() {
+        ArrayList<String> localName = getAllFilesLocal();
+        ArrayList<String> localPath = getAllFilesLocalPath();
+        for (int i = 0; i < localName.size(); i++) {
+            RowItem items = new RowItem(localName.get(i), localPath.get(i));
+            rowItems.add(items);
+        }
     }
 
     @Override
@@ -103,16 +114,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         return view;
     }
 
-    private void initListPresentations() {
-        rowItems = new ArrayList<>();
-        ArrayList<String> localName = getAllFilesLocal();
-        ArrayList<String> localPath = getAllFilesLocalPath();
-        for (int i = 0; i < localName.size(); i++) {
-            RowItem items = new RowItem(localName.get(i), localPath.get(i));
-            rowItems.add(items);
-        }
-        CustomAdapter adapter = new CustomAdapter(getActivity(), rowItems);
-        setListAdapter(adapter);
+    private void updateListPresentations() {
+        if(!rowItems.isEmpty())
+            rowItems.clear();
+        createListPresentations();
         adapter.notifyDataSetChanged();
     }
 
@@ -141,7 +146,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            initListPresentations();
+            updateListPresentations();
         }
 
         @Override
@@ -179,7 +184,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
-            initListPresentations();
+            updateListPresentations();
         }
 
         @Override
@@ -190,7 +195,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             } else {
                 toastShow(getActivity(), "Download fail!!!");
             }
-            initListPresentations();
+            updateListPresentations();
             swipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -244,9 +249,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     public class CustomAdapter extends BaseAdapter {
 
         Context context;
-        List<RowItem> rowItem;
+        ArrayList<RowItem> rowItem;
 
-        CustomAdapter(Context context, List<RowItem> rowItem) {
+        CustomAdapter(Context context, ArrayList<RowItem> rowItem) {
             this.context = context;
             this.rowItem = rowItem;
 

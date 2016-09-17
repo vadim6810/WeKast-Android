@@ -119,12 +119,8 @@ public class Utils {
 
     public static void writeFile(byte[] content, String FILENAME, String LOG_TAG) {
         Log.d(LOG_TAG, "writeToFile");
-        FileOutputStream fos;
-        try {
-            fos = new FileOutputStream(new File(Utils.DIRECTORY, FILENAME));
+        try (FileOutputStream fos = new FileOutputStream(new File(Utils.DIRECTORY, FILENAME))){
             fos.write(content);
-            fos.flush();
-            fos.close();
             Log.d(LOG_TAG, "finish write!!!");
         } catch (IOException e) {
             Log.d(LOG_TAG, "error write!!!");

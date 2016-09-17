@@ -56,13 +56,13 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         wifiController = new WifiController(wifiManager);
         accessPointController = new AccessPointController(wifiManager);
 
-        new Thread(new Runnable() {
-            public void run() {
-                // TODO: think where better to place networkManipulations, maybe at the end
-                // Manipulations with network
-                networkManipulations();
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            public void run() {
+//                // TODO: think where better to place networkManipulations, maybe at the end
+//                // Manipulations with network
+//                networkManipulations();
+//            }
+//        }).start();
 
 //        new Thread(() ->  networkManipulations()).start();
     }
@@ -98,13 +98,13 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         fragmentTransaction.commit();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // TODO: think if needed
-        accessPoint.destroyAccessPoint();
-        restoreWifiAdapterState();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        // TODO: think if needed
+//        accessPoint.destroyAccessPoint();
+//        restoreWifiAdapterState();
+//    }
 
     @Override
     public void onBackPressed() {
