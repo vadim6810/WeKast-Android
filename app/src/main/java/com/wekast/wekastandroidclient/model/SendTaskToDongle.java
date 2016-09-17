@@ -83,5 +83,6 @@ public class SendTaskToDongle extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(result);
         Log.d(TAG, "response: " + response);
         Utils.toastShow(context, "TASK sended, inputStreamBytes: " + inputStreamBytes);
+
     }
 }
