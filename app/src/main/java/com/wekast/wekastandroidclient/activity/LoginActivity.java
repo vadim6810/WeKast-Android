@@ -29,13 +29,6 @@ public class LoginActivity extends Activity {
         m_AccessServiceAPI = new AccessServiceAPI();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        txtLogin.setText(Utils.getFieldSP(context, "login"));
-        txtPassword.setText(Utils.getFieldSP(context, "password"));
-    }
-
     public void btnLogin_Click(View v) {
         //validate input
         if ("".equals(txtLogin.getText().toString())) {
@@ -46,19 +39,12 @@ public class LoginActivity extends Activity {
             txtPassword.setError("Password is required!");
             return;
         }
-        Utils.setFieldSP(context, "login", txtLogin.getText().toString());
-        Utils.setFieldSP(context, "password", txtPassword.getText().toString());
 
         //Call async task to login
-        m_AccessServiceAPI.taskLogin(txtLogin.getText().toString(), txtPassword.getText().toString(), context);
+        m_AccessServiceAPI.taskLogin(txtLogin.getText().toString(), txtPassword.getText().toString(), context, 2);
     }
 
     public void btnBack_Click(View v) {
         finish();
     }
-
-//    public void btnRegister_Click(View v) {
-//        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-//        startActivity(i);
-//    }
 }

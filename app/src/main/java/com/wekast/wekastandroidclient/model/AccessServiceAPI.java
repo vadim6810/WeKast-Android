@@ -30,16 +30,13 @@ import java.util.Map;
  * Created by RDL on 15.07.2016.
  */
 public class AccessServiceAPI {
-    private Context context;
-    private HashMap<String, String> mapList;
-
     /**
      * Convert json string to json object
      *
      * @param jsonString
      * @return JSONObject
      */
-    public JSONObject convertJSONString2Obj(String jsonString) {
+    public static JSONObject convertJSONString2Obj(String jsonString) {
         JSONObject jObj = null;
         try {
             Log.w("convertJSONString2Obj", "JsonString=" + jsonString);
@@ -57,7 +54,7 @@ public class AccessServiceAPI {
      * @param params     post data
      * @return json string
      */
-    public String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
+    public static String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
         String jsonString = null;
         HttpURLConnection conn = null;
         String line;
@@ -166,7 +163,7 @@ public class AccessServiceAPI {
 
             InputStream stream = conn.getInputStream();
             int c;
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[8192];
             while ((c = stream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, c);
             }
@@ -178,30 +175,31 @@ public class AccessServiceAPI {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void taskLogin(String login, String password, Context context) {
-        this.context = context;
-        new TaskLogin().execute(login, password);
+    public void taskLogin(String login, String password, Context context, int whoCalled) {
+        new TaskLogin(whoCalled, context).execute(login, password);
     }
 
     public void taskRegister (String login, String email, Context context) {
-        this.context = context;
-        new TaskRegister().execute(login, email);
+        new TaskRegister(context).execute(login, email);
     }
 
-    public void taskDownload(String login, String password, HashMap<String, String> mapList, Context context) {
-        this.context = context;
-        this.mapList = mapList;
-        new TaskDownload().execute(login, password);
-    }
-
-    public class TaskLogin extends AsyncTask<String, Void, Integer> {
+    public static class TaskLogin extends AsyncTask<String, Void, Integer> {
             private String JSONresponse;
-            private String JSONList;
+            public String JSONList;
             String login;
+            String password;
+            int whoCalled;
+            Context context;
 
-            @Override
+        public TaskLogin(int whoCalled, Context context) {
+            this.whoCalled = whoCalled;
+            this.context = context;
+        }
+
+         @Override
             protected Integer doInBackground(String... params) {
                 login = params[0];
+                password = params[1];
                 //Create date to pass in param
                 Map<String, String> param = new HashMap<>();
                 param.put("login", params[0]);
@@ -230,20 +228,36 @@ public class AccessServiceAPI {
                 super.onPostExecute(result);
                 if (result == Utils.RESULT_SUCCESS) {
                     Utils.toastShow(context, "Login success");
-                    Intent i = new Intent(context, WelcomeActivity.class);
-                    i.putExtra("answer", JSONList);
-                    context.startActivity(i);
+                    if (whoCalled == 1) {
+                        startWelcome();
+                    }
+                    if (whoCalled == 2){
+                        Utils.setFieldSP(context,"login", login);
+                        Utils.setFieldSP(context,"password", password);
+                        startWelcome();
+                    }
                 } else {
                     Utils.toastShow(context, "Login fail ==> " + JSONresponse);
                 }
             }
+
+        private void startWelcome() {
+            Intent i = new Intent(context, WelcomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            context.startActivity(i);
+        }
     }
 
     public class TaskRegister extends AsyncTask<String, Void, Integer> {
+         private Context context;
         private String JSONresponse;
         private String password;
         ProgressDialog m_ProgressDialog;
         String login;
+
+        public TaskRegister(Context context) {
+            this.context = context;
+        }
+
 
         @Override
         protected void onPreExecute() {
@@ -288,48 +302,11 @@ public class AccessServiceAPI {
                 Utils.setFieldSP(context,"login", login);
                 Utils.setFieldSP(context,"password",  password.toString());
                 //Call async task to login
-                taskLogin(login, password.toString(), context);
+                taskLogin(login, password.toString(), context, 1);
             } else {
                 Utils.toastShow(context, "Registration fail ==> " + JSONresponse);
             }
         }
     }
 
-    public class TaskDownload extends AsyncTask<String, Void, Integer> {
-        ProgressDialog m_ProgressDialog;
-        String LOG_TAG = "WelcomeActivity = ";
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Open progress dialog during downloading
-            m_ProgressDialog = ProgressDialog.show(context, "Please wait...", "Downloading...", true);
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HashMap<String, String> param = new HashMap<>();
-            param.put("login", params[0]);
-            param.put("password", params[1]);
-            for (Map.Entry<String, String> item : mapList.entrySet()) {
-                try {
-                    byte[] content = getDownloadWithParam_POST(Utils.SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                    Utils.writeFile(content, item.getValue(), LOG_TAG);
-                } catch (Exception e) {
-                    return Utils.RESULT_ERROR;
-                }
-            }
-            return Utils.RESULT_SUCCESS;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            m_ProgressDialog.dismiss();
-            if (result == Utils.RESULT_SUCCESS) {
-                Utils.toastShow(context, "Download completed.");
-            } else {
-                Utils.toastShow(context, "Download fail!!!");
-            }
-        }
-    }
 }

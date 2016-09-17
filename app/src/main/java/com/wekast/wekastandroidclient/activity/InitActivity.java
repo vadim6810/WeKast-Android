@@ -10,7 +10,6 @@ import android.view.WindowManager;
 import android.widget.VideoView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.Timer;
@@ -23,7 +22,6 @@ import java.util.TimerTask;
 public class InitActivity extends Activity {
     private VideoView startVideo;
     public Context context = this;
-    public AccessServiceAPI m_AccessServiceAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +29,6 @@ public class InitActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        m_AccessServiceAPI = new AccessServiceAPI();
         setContentView(R.layout.activity_init);
 
         startVideo = (VideoView) findViewById(R.id.videoView);
@@ -41,21 +38,19 @@ public class InitActivity extends Activity {
 
         Utils.initWorkFolder();
 
-        new Timer().schedule(new InitActivityTimer(), 4000);
+        new Timer().schedule(new InitActivityTimer(), 3500);
     }
-
 
     private class InitActivityTimer extends TimerTask {
         @Override
         public void run() {
-            Intent i;
+            Intent intent;
             if (Utils.getContainsSP(context, "login")){
-                m_AccessServiceAPI.taskLogin(Utils.getFieldSP(context, "login"), Utils.getFieldSP(context, "password"), context);
+                intent = new Intent(getApplicationContext(), WelcomeActivity.class);
             } else {
-                i = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(i);
+                intent = new Intent(getApplicationContext(), RegisterActivity.class);
             }
-
+            startActivity(intent);
         }
     }
 }
