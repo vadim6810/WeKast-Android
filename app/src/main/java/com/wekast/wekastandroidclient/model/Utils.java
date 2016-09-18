@@ -40,7 +40,9 @@ public class Utils {
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
     public static final String CASH_DIRECTORY = "Cash/";
+    public static final String CASH_ABSOLUTE_PATH = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY;
     public static final String FORMAT = ".ezs";
+    public static final String infoXML = CASH_ABSOLUTE_PATH + "/info.xml";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
 
     /** StateMachine **/

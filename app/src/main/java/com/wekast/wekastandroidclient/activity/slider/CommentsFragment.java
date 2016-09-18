@@ -20,6 +20,7 @@ public class CommentsFragment extends Fragment {
     String title;
     TextView commentsTitle;
     TextView commentsBody;
+
     public CommentsFragment() {
         comments = "";
         title = "Slide 1 comments";
@@ -35,7 +36,7 @@ public class CommentsFragment extends Fragment {
         return view;
     }
     public void setComments(FragmentSlider.Slide slide){
-        if(slide!=null){
+        if(slide != null){
             comments = slide.getComments();
             title = "Slide "+slide.getSlideNumber()+" comments";
         }

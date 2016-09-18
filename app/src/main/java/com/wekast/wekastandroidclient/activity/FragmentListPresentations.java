@@ -123,7 +123,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
+//        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
         if(!rowItems.get(position).isSelected()){
             rowItems.get(position).setSelected(true);
             clearWorkDirectory();
@@ -168,7 +168,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 return RESULT_ERROR;
             }
 
-            //downloadOfServer
+            //download from server
             for (Map.Entry<String, String> item : mapDownload.entrySet()) {
                 try {
                     byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);

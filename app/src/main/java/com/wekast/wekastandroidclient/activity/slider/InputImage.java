@@ -26,10 +26,11 @@ public class InputImage extends Fragment {
     String mTitle;
     TextView title;
     ImageView image;
+
     public InputImage() {
         if(ApplicationManager.getInstance().getCurrentSlide() < ApplicationManager.getInstance().getSlidesSize()) {
 
-            imagePath = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY + (ApplicationManager.getInstance().getCurrentSlide()+1) + ".jpg";
+            imagePath = CASH_ABSOLUTE_PATH + (ApplicationManager.getInstance().getCurrentSlide()+1) + ".jpg";
             mTitle = "Slide "+(ApplicationManager.getInstance().getCurrentSlide()+1);
         }
     }
@@ -51,7 +52,7 @@ public class InputImage extends Fragment {
         if(slide == null){
             imagePath = null;
         }else{
-            imagePath = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY + slide.getSlideNumber() + ".jpg";
+            imagePath = slide.getFilePath();
             mTitle = "Slide" + slide.getSlideNumber();
         }
     }

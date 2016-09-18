@@ -17,13 +17,15 @@ import com.wekast.wekastandroidclient.activity.slider.CommentsFragment;
 import com.wekast.wekastandroidclient.activity.slider.InputImage;
 import com.wekast.wekastandroidclient.activity.slider.MainImage;
 import com.wekast.wekastandroidclient.activity.slider.OutputImage;
+import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.model.core.ApplicationManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
@@ -56,14 +58,11 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
 
     public FragmentSlider() {
-
         slidesList = new ArrayList<>();
         commentsFragment = new CommentsFragment();
         handler = new Handler();
         applicationManager = ApplicationManager.getInstance();
         currentSlide = applicationManager.getCurrentSlide()-1;
-
-
     }
 
 
@@ -120,40 +119,79 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         });
         return view;
     }
+//    public void createWorkArray(){
+//        File targetDirectory = new File(CASH_ABSOLUTE_PATH);
+//        FilenameFilter fileFilter = new FilenameFilter() {
+//
+//            @Override
+//            public boolean accept(File dir, String filename) {
+//
+//                return filename.contains(".jpg");
+//            }
+//        };
+//        for(int i = 0;i<targetDirectory.listFiles(fileFilter).length;i++){
+//            slidesList.add(new Slide("",i+1,getComments(i+1),CASH_ABSOLUTE_PATH+(i+1)+".jpg"));
+//        }
+//    }
+
     public void createWorkArray(){
-        File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
-        FilenameFilter fileFilter = new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String filename) {
-
-                return filename.contains(".jpg");
-            }
-        };
-        for(int i = 0;i<targetDirectory.listFiles(fileFilter).length;i++){
-            slidesList.add(new Slide("",i+1,getComments(i+1),DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY+(i+1)+".jpg"));
-        }
-    }
-
-    private String getComments(int commentsNumber){
-        String comments = "";
-        File file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY,"s"+commentsNumber+".txt");
-
-        StringBuilder text = new StringBuilder();
+        String tmp = "";
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
+            XmlPullParser parser = prepareXpp();
 
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
+            while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG
+                        && parser.getName().equals("slide")) {
+                    tmp =(parser.getAttributeValue(0) + " "
+                            + parser.getAttributeValue(1) + " "
+                            + parser.getAttributeValue(2));
+                    slidesList.add(new Slide("", Integer.parseInt(parser.getAttributeValue(0)),
+                                                    parser.getAttributeValue(2),
+                            CASH_ABSOLUTE_PATH + parser.getAttributeValue(1)));
+                    Log.d("XML parser: ", tmp);
+                }
+                parser.next();
             }
-            comments = text.toString();
-        }catch (IOException ex){
-            ex.printStackTrace();
+        } catch (Throwable t) {
+            Utils.toastShow(getActivity(), "Ошибка при загрузке XML-документа: " + t.toString() );
         }
-        return comments;
     }
+
+    XmlPullParser prepareXpp() throws XmlPullParserException {
+        // получаем фабрику
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        // включаем поддержку namespace (по умолчанию выключена)
+        factory.setNamespaceAware(true);
+        // создаем парсер
+        XmlPullParser xpp = factory.newPullParser();
+        // даем парсеру на вход Reader
+        try {
+            xpp.setInput(new FileInputStream(infoXML), null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return xpp;
+    }
+
+//    private String getComments(int commentsNumber){
+//        String comments = "";
+//        File file = new File(CASH_ABSOLUTE_PATH,"s"+commentsNumber+".txt");
+//
+//        StringBuilder text = new StringBuilder();
+//        try {
+//            BufferedReader br = new BufferedReader(new FileReader(file));
+//            String line;
+//
+//            while ((line = br.readLine()) != null) {
+//                text.append(line);
+//                text.append('\n');
+//            }
+//            comments = text.toString();
+//        }catch (IOException ex){
+//            ex.printStackTrace();
+//        }
+//        return comments;
+//    }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -280,7 +318,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     @Override
     public void onPause() {
-
         super.onPause();
     }
 
@@ -294,9 +331,9 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
     }
+
     public class Slide {
         private String title;
         private int slideNumber;

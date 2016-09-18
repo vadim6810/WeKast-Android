@@ -50,7 +50,7 @@ public class MainImage extends Fragment {
         if(slide == null){
             imagePath = null;
         }else{
-            imagePath = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY + slide.getSlideNumber() + ".jpg";
+            imagePath = slide.getFilePath();
             mTitle = "Slide" + slide.getSlideNumber();
         }
     }
