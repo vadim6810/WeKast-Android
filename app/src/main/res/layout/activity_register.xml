@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="activityRegisterTextView1"
+                android:text="@string/activityRegisterTextView2"
                 android:gravity="center"
                 android:textSize="18dp"
                 android:textColor="@color/white" />
