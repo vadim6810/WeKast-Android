@@ -125,7 +125,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         super.onListItemClick(l, v, position, id);
 //        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
         if(!rowItems.get(position).isSelected()){
-            rowItems.get(position).setSelected(true);
+//            rowItems.get(position).setSelected(true);
             clearWorkDirectory();
             if(unzipAsyncTask != null){
                 unzipAsyncTask.cancel(true);

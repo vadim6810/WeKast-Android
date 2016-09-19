@@ -215,7 +215,7 @@ public class Utils {
         try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
         {
             ZipEntry zipEntry;
-            File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+            File targetDirectory = new File(CASH_ABSOLUTE_PATH);
             while ((zipEntry = zin.getNextEntry()) != null) {
                 String filePath = targetDirectory + File.separator + zipEntry.getName();
                 if (!zipEntry.isDirectory()) {
