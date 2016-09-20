@@ -3,7 +3,6 @@ package com.wekast.wekastandroidclient.activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,7 +16,6 @@ import com.wekast.wekastandroidclient.activity.slider.CommentsFragment;
 import com.wekast.wekastandroidclient.activity.slider.InputImage;
 import com.wekast.wekastandroidclient.activity.slider.MainImage;
 import com.wekast.wekastandroidclient.activity.slider.OutputImage;
-import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.model.core.ApplicationManager;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -51,7 +49,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FragmentTransaction tr;
     int currentSlide = 0;
     ArrayList<Slide> slidesList;
-    final Handler handler;
     ApplicationManager applicationManager;
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
@@ -60,7 +57,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     public FragmentSlider() {
         slidesList = new ArrayList<>();
         commentsFragment = new CommentsFragment();
-        handler = new Handler();
         applicationManager = ApplicationManager.getInstance();
         currentSlide = applicationManager.getCurrentSlide()-1;
     }
@@ -82,6 +78,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         mainImage = new MainImage();
         outputImage = new OutputImage();
 
+        inputImage.setImagePath(slidesList.get(currentSlide+1));
+        mainImage.setImagePath(slidesList.get(currentSlide));
         commentsFragment.setComments(slidesList.get(currentSlide));
 
         tr = getFragmentManager().beginTransaction();
@@ -121,25 +119,22 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     }
 
     public void createWorkArray(){
-        String tmp = "";
         try {
             XmlPullParser parser = prepareXpp();
-
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG
                         && parser.getName().equals("slide")) {
-                    tmp =(parser.getAttributeValue(0) + " "
-                            + parser.getAttributeValue(1) + " "
-                            + parser.getAttributeValue(2));
                     slidesList.add(new Slide("", Integer.parseInt(parser.getAttributeValue(0)),
                                                     parser.getAttributeValue(2),
                             CASH_ABSOLUTE_PATH + parser.getAttributeValue(1)));
-                    Log.d("XML parser: ", tmp);
+                    Log.d("XML parser: ", (parser.getAttributeValue(0) + " "
+                            + parser.getAttributeValue(1) + " "
+                            + parser.getAttributeValue(2)));
                 }
                 parser.next();
             }
         } catch (Throwable t) {
-            Utils.toastShow(getActivity(), "Ошибка при загрузке XML-документа: " + t.toString() );
+            Log.d( "Error XML parser: ", t.toString());
         }
     }
 
