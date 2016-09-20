@@ -119,20 +119,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         });
         return view;
     }
-//    public void createWorkArray(){
-//        File targetDirectory = new File(CASH_ABSOLUTE_PATH);
-//        FilenameFilter fileFilter = new FilenameFilter() {
-//
-//            @Override
-//            public boolean accept(File dir, String filename) {
-//
-//                return filename.contains(".jpg");
-//            }
-//        };
-//        for(int i = 0;i<targetDirectory.listFiles(fileFilter).length;i++){
-//            slidesList.add(new Slide("",i+1,getComments(i+1),CASH_ABSOLUTE_PATH+(i+1)+".jpg"));
-//        }
-//    }
 
     public void createWorkArray(){
         String tmp = "";

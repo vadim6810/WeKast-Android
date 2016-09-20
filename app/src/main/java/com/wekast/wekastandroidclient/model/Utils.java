@@ -6,9 +6,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.FragmentListPresentations;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -58,16 +56,24 @@ public class Utils {
     // ACCESS_POINT_PASS_NEW         // new value of pass
 
     public static void initWorkFolder() {
-        File file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
-        if (!file.isDirectory()) {
-            file.mkdir();
-            Log.d("Create directory", DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
-        }
+        ArrayList<String> workFolder = new ArrayList<>();
+        workFolder.add(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
+        workFolder.add(CASH_ABSOLUTE_PATH);
+        workFolder.add(CASH_ABSOLUTE_PATH + "animations");
+        workFolder.add(CASH_ABSOLUTE_PATH + "audio");
+        workFolder.add(CASH_ABSOLUTE_PATH + "slides");
+        workFolder.add(CASH_ABSOLUTE_PATH + "video");
 
-        file = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
-        if (!file.isDirectory()) {
-            file.mkdir();
-            Log.d("Create directory", DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
+        createFolder(workFolder);
+   }
+
+    private static void createFolder(ArrayList<String> workFolder) {
+        for (String str: workFolder) {
+            File file = new File(str);
+            if (!file.isDirectory()) {
+                file.mkdir();
+                Log.d("Create directory", str);
+            }
         }
     }
 
@@ -84,7 +90,6 @@ public class Utils {
         if(file.isDirectory()){
             for (File tmp2: file.listFiles()) {
                 clearDirectory(tmp2);
-                file.delete();
             }
         } else file.delete();
     }
@@ -181,35 +186,6 @@ public class Utils {
         return fileList;
     }
 
-    public static boolean unZipPresentation(String path) {
-        boolean res = false;
-        try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
-        {
-            ZipEntry zipEntry;
-            File targetDirectory = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY);
-            final int BUFFER_SIZE = 1024*40;
-            byte[] buf = new byte[BUFFER_SIZE];
-            int c = 0;
-            while ((zipEntry = zin.getNextEntry()) != null) {
-                try (FileOutputStream fout = new FileOutputStream(targetDirectory.getAbsolutePath() + "/" + zipEntry.getName()))
-                {
-                    c = zin.read(buf, 0, BUFFER_SIZE - 1);
-                    for (; c != -1; c = zin.read(buf, 0, BUFFER_SIZE - 1)) {
-                        fout.write(buf, 0, c);
-                    }
-                    zin.closeEntry();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-            res = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-
     public static boolean unZipPresentation2(String path) {
         boolean res = false;
         try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
@@ -220,14 +196,16 @@ public class Utils {
                 String filePath = targetDirectory + File.separator + zipEntry.getName();
                 if (!zipEntry.isDirectory()) {
                     extractFile(zin, filePath);
-                } else {  File dir = new File(filePath);
-                    dir.mkdir();
                 }
+//                else {
+//                    File dir = new File(filePath);
+//                    dir.mkdir();
+//                }
                 zin.closeEntry();
             }
             res = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("UnzipError = ", e.toString());
         }
         return res;
     }
