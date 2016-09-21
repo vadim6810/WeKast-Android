@@ -21,11 +21,6 @@ public class CommentsFragment extends Fragment {
     TextView commentsTitle;
     TextView commentsBody;
 
-    public CommentsFragment() {
-        comments = "";
-        title = "Slide 1 comments";
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_comments, null);

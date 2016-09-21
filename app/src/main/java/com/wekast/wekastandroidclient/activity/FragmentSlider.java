@@ -16,7 +16,6 @@ import com.wekast.wekastandroidclient.activity.slider.CommentsFragment;
 import com.wekast.wekastandroidclient.activity.slider.InputImage;
 import com.wekast.wekastandroidclient.activity.slider.MainImage;
 import com.wekast.wekastandroidclient.activity.slider.OutputImage;
-import com.wekast.wekastandroidclient.model.core.ApplicationManager;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -49,16 +48,12 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FragmentTransaction tr;
     int currentSlide = 0;
     ArrayList<Slide> slidesList;
-    ApplicationManager applicationManager;
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
 
 
     public FragmentSlider() {
         slidesList = new ArrayList<>();
-        commentsFragment = new CommentsFragment();
-        applicationManager = ApplicationManager.getInstance();
-        currentSlide = applicationManager.getCurrentSlide()-1;
     }
 
 
@@ -72,14 +67,16 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSize = (FrameLayout)view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView)view.findViewById(R.id.comments_full_size_text);
         createWorkArray();
-        applicationManager.setSlidesSize(slidesList.size());
 
         inputImage = new InputImage();
         mainImage = new MainImage();
         outputImage = new OutputImage();
+        commentsFragment = new CommentsFragment();
 
         inputImage.setImagePath(slidesList.get(currentSlide+1));
         mainImage.setImagePath(slidesList.get(currentSlide));
+        if (currentSlide < 0)
+            outputImage.setImagePath(slidesList.get(currentSlide));
         commentsFragment.setComments(slidesList.get(currentSlide));
 
         tr = getFragmentManager().beginTransaction();
@@ -106,7 +103,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    // We're only interested in anything if our speak button is currently pressed.
                     if(fullCommentVisible){
                         commentsFullSize.setVisibility(View.GONE);
                         fullCommentVisible = false;
@@ -154,26 +150,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         return xpp;
     }
 
-//    private String getComments(int commentsNumber){
-//        String comments = "";
-//        File file = new File(CASH_ABSOLUTE_PATH,"s"+commentsNumber+".txt");
-//
-//        StringBuilder text = new StringBuilder();
-//        try {
-//            BufferedReader br = new BufferedReader(new FileReader(file));
-//            String line;
-//
-//            while ((line = br.readLine()) != null) {
-//                text.append(line);
-//                text.append('\n');
-//            }
-//            comments = text.toString();
-//        }catch (IOException ex){
-//            ex.printStackTrace();
-//        }
-//        return comments;
-//    }
-
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
@@ -205,7 +181,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
         if(currentSlide>0){
             currentSlide  = currentSlide -1;
-            applicationManager.setCurrentSlide(currentSlide+1);
             if(currentSlide == 0){
                 inputImage.setImagePath(slidesList.get(currentSlide+1));
                 mainImage.setImagePath(slidesList.get(currentSlide));
@@ -253,7 +228,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
         if(currentSlide<slidesList.size()-1){
             currentSlide = currentSlide + 1;
-            applicationManager.setCurrentSlide(currentSlide+1);
             if(currentSlide == slidesList.size()-1){
                 outputImage.setImagePath(slidesList.get(currentSlide-1));
                 mainImage.setImagePath(slidesList.get(currentSlide));
