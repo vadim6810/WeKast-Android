@@ -44,12 +44,12 @@ public class DongleReconfig {
         dongleSendTask.execute();
 
         // wait while dongle receive new AP config
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Log.d(TAG, "ListActivity.btnWelcome_Click():  " + e);
-        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//            Log.d(TAG, "ListActivity.btnWelcome_Click():  " + e);
+//        }
         return true;
     }
 
