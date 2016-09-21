@@ -75,8 +75,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
         inputImage.setImagePath(slidesList.get(currentSlide+1));
         mainImage.setImagePath(slidesList.get(currentSlide));
-        if (currentSlide < 0)
-            outputImage.setImagePath(slidesList.get(currentSlide));
         commentsFragment.setComments(slidesList.get(currentSlide));
 
         tr = getFragmentManager().beginTransaction();
@@ -85,7 +83,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         tr.add(R.id.input_slide_container, inputImage);
         tr.add(R.id.current_slide_container, mainImage);
         tr.add(R.id.comments_container,commentsFragment);
-        tr.addToBackStack(null);
+//        tr.addToBackStack(null);
         tr.commit();
 
         view.setOnTouchListener(this);
@@ -186,17 +184,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 mainImage.setImagePath(slidesList.get(currentSlide));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
                 tr.replace(R.id.input_slide_container, inputImage);
                 tr.replace(R.id.current_slide_container, mainImage);
                 tr.replace(R.id.comments_container,commentsFragment);
-                tr.addToBackStack(null);
+//                tr.addToBackStack(null);
                 tr.commit();
 
             }else{
@@ -205,18 +196,11 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide-1));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.input_slide_container, inputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container,commentsFragment);
-                tr.add(R.id.output_slide_container,outputImage);
-                tr.addToBackStack(null);
+                tr.replace(R.id.input_slide_container, inputImage);
+                tr.replace(R.id.current_slide_container, mainImage);
+                tr.replace(R.id.comments_container,commentsFragment);
+                tr.replace(R.id.output_slide_container,outputImage);
+//                tr.addToBackStack(null);
                 tr.commit();
             }
 
@@ -233,17 +217,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 mainImage.setImagePath(slidesList.get(currentSlide));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(outputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(inputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.output_slide_container, outputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container,commentsFragment);
-                tr.addToBackStack(null);
+                tr.replace(R.id.output_slide_container, outputImage);
+                tr.replace(R.id.current_slide_container, mainImage);
+                tr.replace(R.id.comments_container,commentsFragment);
+//                tr.addToBackStack(null);
                 tr.commit();
 
 
@@ -253,18 +230,11 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide-1));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.input_slide_container, inputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container,commentsFragment);
-                tr.add(R.id.output_slide_container,outputImage);
-                tr.addToBackStack(null);
+                tr.replace(R.id.input_slide_container, inputImage);
+                tr.replace(R.id.current_slide_container, mainImage);
+                tr.replace(R.id.comments_container,commentsFragment);
+                tr.replace(R.id.output_slide_container,outputImage);
+//                tr.addToBackStack(null);
                 tr.commit();
             }
         }
