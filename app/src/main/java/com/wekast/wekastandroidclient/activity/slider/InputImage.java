@@ -12,10 +12,6 @@ import android.widget.TextView;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.activity.FragmentSlider;
 import com.wekast.wekastandroidclient.model.EquationsBitmap;
-import com.wekast.wekastandroidclient.model.core.ApplicationManager;
-
-import static com.wekast.wekastandroidclient.model.Utils.*;
-
 
 /**
  * Created by RDL on 03.09.2016.
@@ -26,14 +22,6 @@ public class InputImage extends Fragment {
     String mTitle;
     TextView title;
     ImageView image;
-
-    public InputImage() {
-        if(ApplicationManager.getInstance().getCurrentSlide() < ApplicationManager.getInstance().getSlidesSize()) {
-
-            imagePath = CASH_ABSOLUTE_PATH + (ApplicationManager.getInstance().getCurrentSlide()+1) + ".jpg";
-            mTitle = "Slide "+(ApplicationManager.getInstance().getCurrentSlide()+1);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,9 +37,7 @@ public class InputImage extends Fragment {
     }
 
     public void setImagePath(FragmentSlider.Slide slide){
-        if(slide == null){
-            imagePath = null;
-        }else{
+        if(slide != null){
             imagePath = slide.getFilePath();
             mTitle = "Slide" + slide.getSlideNumber();
         }

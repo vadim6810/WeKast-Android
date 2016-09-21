@@ -12,9 +12,6 @@ import android.widget.TextView;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.activity.FragmentSlider;
 import com.wekast.wekastandroidclient.model.EquationsBitmap;
-import com.wekast.wekastandroidclient.model.core.ApplicationManager;
-
-import static com.wekast.wekastandroidclient.model.Utils.*;
 
 
 /**
@@ -24,18 +21,8 @@ public class OutputImage extends Fragment {
     View view;
     private String imagePath;
     TextView title;
-    TextView comments;
     ImageView image;
     private String mTitle;
-    private String mComments;
-
-    public OutputImage() {
-        if(ApplicationManager.getInstance().getCurrentSlide()> 1) {
-
-            imagePath = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY + (ApplicationManager.getInstance().getCurrentSlide() -1) + ".jpg";
-            mTitle = "Slide "+(ApplicationManager.getInstance().getCurrentSlide() - 1) ;
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,15 +34,11 @@ public class OutputImage extends Fragment {
             image.setImageBitmap(btm);
             title.setText(mTitle);
         }
-
         return view;
     }
 
     public void setImagePath(FragmentSlider.Slide slide){
-        if(slide == null){
-
-
-        }else{
+        if(slide != null){
             imagePath = slide.getFilePath();
             mTitle = "Slide" + slide.getSlideNumber();
         }
