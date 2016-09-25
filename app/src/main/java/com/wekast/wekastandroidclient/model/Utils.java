@@ -65,7 +65,7 @@ public class Utils {
         workFolder.add(CASH_ABSOLUTE_PATH + "video");
 
         createFolder(workFolder);
-   }
+    }
 
     private static void createFolder(ArrayList<String> workFolder) {
         for (String str: workFolder) {
@@ -195,12 +195,8 @@ public class Utils {
             while ((zipEntry = zin.getNextEntry()) != null) {
                 String filePath = targetDirectory + File.separator + zipEntry.getName();
                 if (!zipEntry.isDirectory()) {
-                    extractFile(zin, filePath);
+                    extractFile(zin, filePath, (int) zipEntry.getSize());
                 }
-//                else {
-//                    File dir = new File(filePath);
-//                    dir.mkdir();
-//                }
                 zin.closeEntry();
             }
             res = true;
@@ -210,10 +206,9 @@ public class Utils {
         return res;
     }
 
-    private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+    private static void extractFile(ZipInputStream zipIn, String filePath, int size) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-        final int BUFFER_SIZE = 1024*40;
-        byte[] bytesIn = new byte[BUFFER_SIZE];
+        byte[] bytesIn = new byte[size];
         int read = 0;
         while ((read = zipIn.read(bytesIn)) != -1) {
             bos.write(bytesIn, 0, read);
