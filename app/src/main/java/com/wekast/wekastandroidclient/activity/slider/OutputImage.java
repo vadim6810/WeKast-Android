@@ -32,6 +32,7 @@ public class OutputImage extends Fragment {
         if(imagePath != null){
             Bitmap btm = EquationsBitmap.decodeSampledBitmapFromFile(imagePath, 400, 224);
             image.setImageBitmap(btm);
+            image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             title.setText(mTitle);
         }
         return view;
@@ -40,7 +41,7 @@ public class OutputImage extends Fragment {
     public void setImagePath(FragmentSlider.Slide slide){
         if(slide != null){
             imagePath = slide.getFilePath();
-            mTitle = "Slide" + slide.getSlideNumber();
+            mTitle = "Slide " + slide.getSlideNumber();
         }
     }
 

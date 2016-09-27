@@ -287,17 +287,24 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         super.onDestroy();
     }
 
-    public class Slide {
+    public static class Slide {
         private String title;
         private int slideNumber;
         private String comments;
         private String filePath;
+        private static int count = 0;
 
         public Slide(String title, int slideNumber, String comments, String filePath) {
             this.title = title;
             this.slideNumber = slideNumber;
             this.comments = comments;
             this.filePath = filePath;
+            count++;
+
+        }
+
+        public int getCount() {
+            return count;
         }
 
         public String getFilePath() {

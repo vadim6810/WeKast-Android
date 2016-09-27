@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.activity.slider;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,9 @@ public class MainImage extends Fragment {
         image = (ImageView)view.findViewById(R.id.current_slide_picture);
         if(imagePath != null){
             Bitmap btm = EquationsBitmap.decodeSampledBitmapFromFile(imagePath, 400, 224);
+            Log.d("MainImage = ", String.valueOf(btm.getWidth()) + ":" + btm.getHeight());
             image.setImageBitmap(btm);
+            image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             title.setText(mTitle);
         }
         return view;
@@ -39,7 +42,7 @@ public class MainImage extends Fragment {
     public void setImagePath(FragmentSlider.Slide slide){
         if(slide != null){
             imagePath = slide.getFilePath();
-            mTitle = "Slide" + slide.getSlideNumber();
+            mTitle = "Slide " + slide.getSlideNumber() + "/" + slide.getCount();
         }
     }
 
