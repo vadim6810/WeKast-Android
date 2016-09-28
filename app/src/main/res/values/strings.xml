@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">WeKast</string>
 
-    <string name="action_menu">Settings</string>
-    <string name="action_menu_clear">clear setting</string>
+    <string name="action_menu1">Change Phone Number</string>
+    <string name="action_menu2">Buy WeKast</string>
+    <string name="action_menu3">Share WeKast</string>
+    <string name="action_menu4">FAQ</string>
+    <string name="action_menu5">Contact Us</string>
+    <string name="action_menu6">Privacy &amp; Terms</string>
+    <string name="action_menu7">Software Update</string>
+
+    <string name="action_menu_clear">Clear setting</string>
     <string name="empty">no data</string>
     <string name="imgdesc">imgdesc</string>
 
