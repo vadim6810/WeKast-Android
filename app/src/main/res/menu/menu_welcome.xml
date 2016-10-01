@@ -6,38 +6,32 @@
     <item
         android:id="@+id/action_menu1"
         android:title="@string/action_menu1"
-        android:icon="@android:drawable/ic_dialog_email"/>
+        app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu2"
-        android:title="@string/action_menu2" />
+        android:title="@string/action_menu2"
+        app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu3"
         android:title="@string/action_menu3"
         app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu4"
         android:title="@string/action_menu4"
         app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu5"
         android:title="@string/action_menu5"
         app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu6"
         android:title="@string/action_menu6"
         app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_menu7"
         android:title="@string/action_menu7"
         app:showAsAction="never"/>
     <item
-        android:icon="@drawable/contact"
         android:id="@+id/action_clear"
         android:title="@string/action_menu_clear"
         app:showAsAction="never"/>
