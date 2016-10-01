@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo">
+    <style name="AppTheme" parent="Theme.AppCompat.CompactMenu">
     <!--<style name="AppTheme" parent="android:Theme.Holo">-->
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@drawable/background</item>
