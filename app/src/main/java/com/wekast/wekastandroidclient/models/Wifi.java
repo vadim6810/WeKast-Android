@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class Wifi {
 
-    private static final String TAG = "wekastdongle";
+    private static final String TAG = "wekastlog";
     private Context mainActivityContext = null;
     private Activity mainActivity = null;
     private WifiManager wifiManager = null;
@@ -85,7 +85,7 @@ public class Wifi {
         // TODO: maybe remove
         isWifiLoaded();
         showMessage("Connected to WiFi " + curSsid);
-        Log.d(TAG, "AccessPointService.onHandleIntent(): end ");
+        Log.d(TAG, "Wifi.connectToAccessPoint(): end ");
         return true;
     }
 
@@ -106,5 +106,6 @@ public class Wifi {
                 Utils.toastShow(mainActivityContext, message);
             }
         });
+        Log.d(TAG, message);
     }
 }

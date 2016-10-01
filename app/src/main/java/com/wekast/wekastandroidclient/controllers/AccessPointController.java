@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  * Created by YEHUDA on 8/1/2016.
  */
 public class AccessPointController {
-    private static final String TAG = "wekastClient";
+    private static final String TAG = "wekastlog";
     private static Method getWifiApState;
     private static Method isWifiApEnabled;
     private static Method setWifiApEnabled;
@@ -178,7 +178,7 @@ public class AccessPointController {
      */
     private boolean isWifiOn(Context context) {
         boolean isWifiOn = wifiManager.isWifiEnabled();
-        Log.d(TAG, "MainActivity.isWifiOn(): " + isWifiOn);
+        Log.d(TAG, "AccessPointController.isWifiOn(): " + isWifiOn);
         return isWifiOn;
     }
 
@@ -190,7 +190,7 @@ public class AccessPointController {
      */
     private void turnOnOffWifi(Context context, boolean b) {
         wifiManager.setWifiEnabled(b);
-        Log.d(TAG, "MainActivity.turnOnOffWifi(): " + b);
+        Log.d(TAG, "AccessPointController.turnOnOffWifi(): " + b);
     }
 
     public void waitAccessPoint() {

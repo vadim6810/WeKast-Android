@@ -12,7 +12,7 @@ import android.util.Log;
  * Created by YEHUDA on 8/1/2016.
  */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = "wekastClient";
+    private static final String TAG = "wekastlog";
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
 //    private ListActivity listActivity;

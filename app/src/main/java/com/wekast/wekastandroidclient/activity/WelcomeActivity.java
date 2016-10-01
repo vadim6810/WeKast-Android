@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  * Created by RDL on 15.07.2016.
  */
 public class WelcomeActivity extends Activity implements FragmentListPresentations.onSomeEventListener {
+    private static final String TAG = "wekastlog";
     private TextView tvWelcome;
     Context context = this;
     private int activityState;
@@ -36,6 +38,8 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     WifiController wifiController = null;
     AccessPointController accessPointController = null;
     AccessPoint accessPoint = null;
+
+    String curPresPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +60,13 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         wifiController = new WifiController(wifiManager);
         accessPointController = new AccessPointController(wifiManager);
 
-//        new Thread(new Runnable() {
-//            public void run() {
-//                // TODO: think where better to place networkManipulations, maybe at the end
-//                // Manipulations with network
-//                networkManipulations();
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            public void run() {
+                // TODO: think where better to place networkManipulations, maybe at the end
+                // Manipulations with network
+                networkManipulations();
+            }
+        }).start();
 
 //        new Thread(() ->  networkManipulations()).start();
     }
@@ -91,11 +95,18 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     @Override
     public void someEvent(String presPath) {
+
         fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;
         fragmentTransaction.commit();
+        uploadPresentationToDongle(presPath);
+    }
+
+    private void uploadPresentationToDongle(String presPath) {
+        String curPresPath = presPath;
+        int i = 0;
     }
 
 //    @Override
@@ -144,12 +155,32 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         DongleReconfig reconfigDongle = new DongleReconfig(this);
         reconfigDongle.reconfigure();
 
+        waitWileDongleReceiveNewConfig();
+
         // Create and run Access Point with new ssid and pass
         accessPoint = new AccessPoint(this);
         accessPoint.createAccessPoint();
 
         // Saving to SharedPreferences current ip of dongle (wifi client)
         saveDongleIp();
+    }
+
+    private void waitWileDongleReceiveNewConfig() {
+        String isConfigSended = "";
+        boolean received = false;
+        while (!received) {
+            isConfigSended = Utils.getFieldSP(context, "IS_CONFIG_SENDED");
+            if (isConfigSended.equals("1")) {
+                received = true;
+            } else {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Log.d(TAG, "WelcomeActivity.waitWileDongleReceiveNewConfig():  " + e);
+                }
+            }
+        }
     }
 
     /**

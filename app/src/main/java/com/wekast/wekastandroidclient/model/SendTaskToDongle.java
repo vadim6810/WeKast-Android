@@ -16,11 +16,12 @@ import java.net.UnknownHostException;
 /**
  * Created by ELAD on 7/27/2016.
  */
-public class SendTaskToDongle extends AsyncTask<Void, Void, Void> {
-    private static final String TAG = "wekastClient";
+//public class SendTaskToDongle extends AsyncTask<Void, Void, Void> {
+public class SendTaskToDongle extends AsyncTask<Void, Void, String> {
+    private static final String TAG = "wekastlog";
     String dstAddress;
     String dstPort;
-    String response = "";
+//    String response = "";
     TextView msg;
     JSONObject jsonObject;
     Context context;
@@ -31,35 +32,40 @@ public class SendTaskToDongle extends AsyncTask<Void, Void, Void> {
         dstPort = port;
         this.jsonObject = jsonObject;
         this.context = context;
-        Log.d(TAG, addr + ":" + port);
+        Log.d(TAG, "SendTaskToDongle " + addr + ":" + port + " - " + jsonObject);
     }
 
     @Override
-    protected Void doInBackground(Void... arg0) {
+    protected String doInBackground(Void... args) {
         Thread.currentThread().setName("SendTaskToDongle");
         Socket socket = null;
         OutputStream outputStream = null;
         InputStream inputStream = null;
 
+        String response;
         try {
             socket = new Socket(dstAddress, Integer.valueOf(dstPort));
-            inputStream = socket.getInputStream();
-//            int isAvailable = inputStream.available();
-            inputStreamBytes = inputStream.available();
+
             // Send TASK to Dongle
             outputStream = socket.getOutputStream();
             outputStream.write(jsonObject.toString().getBytes());
             outputStream.flush();
 
-            Log.d(TAG, "JSON: " + jsonObject.toString());
+            inputStream = socket.getInputStream();
+//            int isAvailable = inputStream.available();
+            inputStreamBytes = inputStream.available();
+
+            Log.d(TAG, "SendTaskToDongle.doInBackground() JSON: " + jsonObject.toString());
 
             response = "JSON: " + jsonObject.toString();
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            Log.d(TAG, "SendTaskToDongle.doInBackground() UnknownHostException: " + e.getMessage());
             response = "UnknownHostException: " + e.toString();
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d(TAG, "SendTaskToDongle.doInBackground() IOException: " + e.getMessage());
             response = "IOException: " + e.toString();
         } finally {
             try {
@@ -68,20 +74,26 @@ public class SendTaskToDongle extends AsyncTask<Void, Void, Void> {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d(TAG, "SendTaskToDongle.doInBackground() IOException: " + e.getMessage());
                 response = "IOException: " + e.toString();
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.d(TAG, "SendTaskToDongle.doInBackground() Exception: " + e.getMessage());
                 response = "Exception: " + e.toString();
             }
-            Log.i("SendTaskToDongle", "doInBackground: Finished");
+            Log.d(TAG, "SendTaskToDongle.doInBackground(): Finished");
         }
-        return null;
+//        return null;
+//        return;
+//        return null;
+        return response;
     }
 
     @Override
-    protected void onPostExecute(Void result) {
-        super.onPostExecute(result);
-        Log.d(TAG, "response: " + response);
+//    protected void onPostExecute(Void result) {
+    protected void onPostExecute(String response) {
+//        super.onPostExecute(result);
+        Log.d(TAG, "SendTaskToDongle.onPostExecute() response: " + response);
         Utils.toastShow(context, "TASK sended, inputStreamBytes: " + inputStreamBytes);
 
     }
