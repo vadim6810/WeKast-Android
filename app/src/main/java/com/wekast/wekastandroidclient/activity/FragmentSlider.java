@@ -74,7 +74,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFragment = new CommentsFragment();
 
         inputImage.setImagePath(slidesList.get(currentSlide+1));
-        mainImage.setImagePath(slidesList.get(currentSlide));
+        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
         commentsFragment.setComments(slidesList.get(currentSlide));
 
         tr = getFragmentManager().beginTransaction();
@@ -181,7 +181,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             currentSlide  = currentSlide - 1;
             if(currentSlide == 0){
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide));
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
                 tr.remove(inputImage);
@@ -199,7 +199,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
             }else{
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide));
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
                 outputImage.setImagePath(slidesList.get(currentSlide - 1));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
@@ -228,7 +228,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             currentSlide = currentSlide + 1;
             if(currentSlide == slidesList.size() - 1){
                 outputImage.setImagePath(slidesList.get(currentSlide - 1));
-                mainImage.setImagePath(slidesList.get(currentSlide));
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
                 tr.remove(outputImage);
@@ -247,7 +247,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
             }else{
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide));
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
                 outputImage.setImagePath(slidesList.get(currentSlide - 1));
                 commentsFragment.setComments(slidesList.get(currentSlide));
                 FragmentTransaction tr = getFragmentManager().beginTransaction();
@@ -292,19 +292,12 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         private int slideNumber;
         private String comments;
         private String filePath;
-        private static int count = 0;
 
         public Slide(String title, int slideNumber, String comments, String filePath) {
             this.title = title;
             this.slideNumber = slideNumber;
             this.comments = comments;
             this.filePath = filePath;
-            count++;
-
-        }
-
-        public int getCount() {
-            return count;
         }
 
         public String getFilePath() {

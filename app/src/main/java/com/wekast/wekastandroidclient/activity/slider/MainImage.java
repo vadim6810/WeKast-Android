@@ -39,10 +39,10 @@ public class MainImage extends Fragment {
         return view;
     }
 
-    public void setImagePath(FragmentSlider.Slide slide){
+    public void setImagePath(FragmentSlider.Slide slide, int size){
         if(slide != null){
             imagePath = slide.getFilePath();
-            mTitle = "Slide " + slide.getSlideNumber() + "/" + slide.getCount();
+            mTitle = "Slide " + slide.getSlideNumber() + "/" + size;
         }
     }
 
