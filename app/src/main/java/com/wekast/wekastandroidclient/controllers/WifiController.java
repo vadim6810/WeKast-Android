@@ -13,7 +13,7 @@ import android.util.Log;
  */
 public class WifiController {
 
-    private static final String TAG = "wekastdongle";
+    private static final String TAG = "wekastlog";
     public WifiManager wifiManager;
     public WifiConfiguration wifiConfig;
 

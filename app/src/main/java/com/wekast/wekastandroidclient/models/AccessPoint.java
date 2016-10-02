@@ -17,7 +17,7 @@ import com.wekast.wekastandroidclient.model.Utils;
  */
 public class AccessPoint {
 
-    private static final String TAG = "wekastdongle";
+    private static final String TAG = "wekastlog";
     private Context mainActivityContext = null;
     private Activity mainActivity = null;
     private WifiManager wifiManager = null;
@@ -47,11 +47,11 @@ public class AccessPoint {
         // Compatibility with android 5, android 6
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.System.canWrite(mainActivity)) {
-                Log.d(TAG, "MainActivity.startAccessPoint() Settings.System.canWrite(context)? true");
+                Log.d(TAG, "AccessPoint.createAccessPoint() Settings.System.canWrite(context)? true");
             } else {
                 Intent grantIntent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 mainActivity.startActivity(grantIntent);
-                Log.d(TAG, "MainActivity.startAccessPoint() Settings.System.canWrite(context)? false");
+                Log.d(TAG, "AccessPoint.createAccessPoint() Settings.System.canWrite(context)? false");
             }
         }
 
