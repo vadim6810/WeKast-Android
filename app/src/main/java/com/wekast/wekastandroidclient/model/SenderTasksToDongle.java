@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -53,10 +54,61 @@ public class SenderTasksToDongle extends Thread {
             socket = new Socket(dstAddress, Integer.valueOf(dstPort));
             outputStream = socket.getOutputStream();
 
+            inputStream = socket.getInputStream();
 
-            outputStream.write(jsonObject.toString().getBytes());
-            outputStream.flush();
-            outputStream.close();
+            PrintWriter printWriter = new PrintWriter(outputStream, true);
+            printWriter.println(jsonObject.toString());
+//            printWriter.flush();
+//            printWriter.close();
+
+//            inputStreamBytes = inputStream.available();
+//            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+//            String curMessage = br.readLine();
+            // if ok and task uploadFile -> uploadFile
+
+//            String curResponseStatus = Utils.getResponseStatus(Utils.createJsonTask(curMessage));
+            String curCommand = Utils.getTaskCommand(jsonObject);
+
+            if (curCommand.equals("accessPointConfig")) {
+                Utils.setFieldSP(context, "IS_CONFIG_SENDED", "1");
+            }
+
+            // that means that dongle received request for receiving EZS file
+//            if (curCommand.equals("uploadFile") && curResponseStatus.equals("ok")) {
+//                // sending EZS file
+//                printWriter.println(jsonObject.toString());
+//            }
+            if (curCommand.equals("uploadFile")) {
+                // sending EZS file
+                printWriter.println("FILE FILE FILE FILE FILE FILE FILE FILE FILE FILE");
+            }
+
+            inputStreamBytes = inputStream.available();
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+            String curMessage = br.readLine();
+
+
+
+
+//
+
+//            outputStream.write(jsonObject.toString().getBytes());
+//            outputStream.flush();
+//            outputStream.close();
+
+//            inputStreamBytes = inputStream.available();
+//            inputStreamReader = new InputStreamReader(inputStream);
+//            BufferedReader r = new BufferedReader(inputStreamReader);
+//            String str = null;
+//            StringBuilder sb = new StringBuilder(8192);
+//            while ((str = r.readLine()) != null) {
+//                sb.append(str);
+//            }
+
+
+
+
+
 
 //            inputStream = socket.getInputStream();
 //            inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -79,9 +131,15 @@ public class SenderTasksToDongle extends Thread {
             Log.d(TAG, "SenderTasksToDongle.send() IOException: " + e.getMessage());
             response = "IOException: " + e.toString();
         } finally {
-
+            try {
+                if (inputStream != null) inputStream.close();
+                if (outputStream != null) outputStream.close();
+                if (socket != null) socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        Utils.setFieldSP(context, "IS_CONFIG_SENDED", "1");
+
         Log.d(TAG, "SenderTasksToDongle.send(): Finished");
 //        Utils.toastShow(context, "TASK sended, inputStreamBytes: " + inputStreamBytes);
     }

@@ -15,10 +15,13 @@ import android.widget.TextView;
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.SenderTasksToDongle;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.models.DongleReconfig;
 import com.wekast.wekastandroidclient.models.Wifi;
+
+import org.json.JSONObject;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -106,6 +109,13 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     private void uploadPresentationToDongle(String presPath) {
         String curPresPath = presPath;
+        JSONObject task = Utils.createJsonTask("uploadFile");
+        // TODO: why ip 192.168.1.1? must be 192.168.43.48
+//        String curDongleIp = Utils.getFieldSP(context, "DONGLE_IP");
+        String curDongleIp = "192.168.43.48";
+        String curDonglePort = Utils.getFieldSP(context, "DONGLE_PORT");
+        SenderTasksToDongle dongleSenderTasks = new SenderTasksToDongle(curDongleIp, curDonglePort, task , context);
+        dongleSenderTasks.start();
         int i = 0;
     }
 
@@ -162,6 +172,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         accessPoint.createAccessPoint();
 
         // Saving to SharedPreferences current ip of dongle (wifi client)
+        // TODO: wait while donle will connect to Access Point of Client
         saveDongleIp();
     }
 
@@ -172,6 +183,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
             isConfigSended = Utils.getFieldSP(context, "IS_CONFIG_SENDED");
             if (isConfigSended.equals("1")) {
                 received = true;
+                Utils.setFieldSP(context, "IS_CONFIG_SENDED", "0");
             } else {
                 try {
                     Thread.sleep(3000);
