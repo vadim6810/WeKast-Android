@@ -255,6 +255,60 @@ public class Utils {
         return jsonObject;
     }
 
+    public static JSONObject createJsonTask(String task) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonTask = new JSONArray();
+        JSONObject jsonCommand = new JSONObject();
+        try {
+            jsonCommand.put("command", task);
+            jsonTask.put(jsonCommand);
+            jsonObject.put("device", "android");
+            jsonObject.put("task", jsonTask);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+    public static String getTaskCommand(JSONObject curJsonObject) {
+        JSONObject jsonRootObject = curJsonObject;
+        JSONArray jsonTask = jsonRootObject.optJSONArray("task");;
+        String curCommand = "";
+//        try {
+        for (int i = 0; i < jsonTask.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonTask.getJSONObject(i);
+                curCommand = jsonObject.getString("command").toString();
+            } catch (JSONException e) {
+            e.printStackTrace();
+////            Log.d(TAG, e.printStackTrace());
+            }
+        }
+
+        return curCommand;
+    }
+
+    public static String getResponseStatus(JSONObject curJsonObject) {
+        JSONObject jsonRootObject = curJsonObject;
+        JSONArray jsonTask = jsonRootObject.optJSONArray("task");;
+        String curCommand = "";
+//        try {
+        for (int i = 0; i < jsonTask.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonTask.getJSONObject(i);
+                curCommand = jsonObject.getString("command").toString();
+                if (curCommand.equals("jsonResponse")) {
+                    curCommand = jsonObject.getString("status").toString();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+////            Log.d(TAG, e.printStackTrace());
+            }
+        }
+
+        return curCommand;
+    }
+
     public static HashMap<String, String>  mappingPresentations(HashMap<String, String> mapDownload, ArrayList<String> filesLocal) {
         if (mapDownload.size() > 0) {
             for (String s: filesLocal) {
