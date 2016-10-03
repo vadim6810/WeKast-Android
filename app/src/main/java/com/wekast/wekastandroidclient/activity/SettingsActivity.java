@@ -1,7 +1,10 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -9,6 +12,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +69,26 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            HashMap<String, Object> itemHashMap = (HashMap <String, Object>) parent.getItemAtPosition(position);
-            String titleItem = itemHashMap.get(TITLE).toString();
-            String descriptionItem = itemHashMap.get(SUBTITLE).toString();
-            int imageItem = (int)itemHashMap.get(ICON);
-            Toast.makeText(getApplicationContext(),
-                    titleItem + " : " + descriptionItem, Toast.LENGTH_SHORT).show();
+        switch (position) {
+            case 0:
+                Intent i = new Intent(SettingsActivity.this, LoginActivity.class);
+                startActivity(i);
+            case 8:
+                Utils.clearSP(this);
+                Utils.toastShow(this, "All settings cleared.");
+            default:
+                Utils.toastShow(this, "Pushed item " + position);
+
+        }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_close, menu);
+        return true;
+    }
 
-
+    public void onClickClose(MenuItem item) {
+        finish();
+    }
 }

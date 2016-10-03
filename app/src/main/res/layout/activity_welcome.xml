@@ -9,7 +9,8 @@
         android:id="@+id/tv_welcome"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:textColor="@color/white"/>
 
     <FrameLayout
         android:id="@+id/fragmContainer"
