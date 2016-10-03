@@ -31,6 +31,7 @@
         android:layout_marginRight="20dp"
         android:background="@drawable/edit_text_bg"
         android:textSize="20dp"
+        android:textColor="@color/white"
         android:paddingLeft="10dp"
         android:inputType="phone"
         />
@@ -54,6 +55,7 @@
         android:layout_marginRight="20dp"
         android:background="@drawable/edit_text_bg"
         android:textSize="20dp"
+        android:textColor="@color/white"
         android:paddingLeft="10dp" />
 
     <LinearLayout

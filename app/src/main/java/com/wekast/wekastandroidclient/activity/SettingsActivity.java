@@ -20,6 +20,9 @@ import java.util.HashMap;
 public class SettingsActivity extends Activity  implements AdapterView.OnItemClickListener{
 
     private ArrayList<HashMap<String, Object>> mSettingsList;
+    private String[] sTitle;
+    private String[] sSubtitle;
+    private Object[] sIcon;
     private static final String TITLE = "title";
     private static final String SUBTITLE = "subtitle";
     private static final String ICON = "icon";
@@ -30,33 +33,28 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
         setContentView(R.layout.activity_settings);
         ListView listView = (ListView) findViewById(R.id.listSettings);
 
-        // создаем массив списков
+        sTitle = getResources().getStringArray(R.array.settings_title);
+        sSubtitle = getResources().getStringArray(R.array.settings_subtitle);
+        sIcon = new Object[] {
+                R.drawable.ic_phone,
+                R.drawable.ic_curt,
+                R.drawable.ic_share,
+                R.drawable.ic_help,
+                R.drawable.ic_mail,
+                R.drawable.ic_info,
+                R.drawable.ic_sync,
+                R.drawable.ic_settings
+        };
+
         mSettingsList = new ArrayList<>();
         HashMap<String, Object> hm;
-
-        hm = new HashMap<>();
-        hm.put(TITLE, "Рыжик"); // Название
-        hm.put(SUBTITLE, "Рыжий и хитрый"); // Описание
-        hm.put(ICON, R.drawable.ic_curt); // Картинка
-        mSettingsList.add(hm);
-
-        hm = new HashMap<>();
-        hm.put(TITLE, "Васька");
-        hm.put(SUBTITLE, "Слушает да ест");
-        hm.put(ICON, R.drawable.ic_share);
-        mSettingsList.add(hm);
-
-        hm = new HashMap<>();
-        hm.put(TITLE, "Мурзик");
-        hm.put(SUBTITLE, "Спит и мурлыкает");
-        hm.put(ICON, R.drawable.ic_share);
-        mSettingsList.add(hm);
-
-        hm = new HashMap<>();
-        hm.put(TITLE, "Барсик");
-        hm.put(SUBTITLE, "Болеет за Барселону");
-        hm.put(ICON, R.drawable.ic_share);
-        mSettingsList.add(hm);
+        for(int i = 0; i < sTitle.length; i++){
+            hm = new HashMap<>();
+            hm.put(TITLE, sTitle[i]); // Название
+            hm.put(SUBTITLE, sSubtitle[i]); // Описание
+            hm.put(ICON, sIcon[i]); // Картинка
+            mSettingsList.add(hm);
+        }
 
         SimpleAdapter adapter = new SimpleAdapter(this, mSettingsList,
                 R.layout.activity_settingsitems, new String[]{TITLE, SUBTITLE, ICON},

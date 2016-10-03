@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">WeKast</string>
 
-    <string-array name="settings">
+    <string-array name="settings_title">
         <item>Change Phone Number</item>
         <item>Buy WeKast</item>
         <item>Share WeKast</item>
@@ -9,7 +9,18 @@
         <item>Contact Us</item>
         <item>Privacy &amp; Terms</item>
         <item>Software Update</item>
-        <item>Clear setting</item>
+        <item>Clear settings</item>
+    </string-array>
+
+    <string-array name="settings_subtitle">
+        <item>Edit your number where files will be received</item>
+        <item>Order your personal presentation device</item>
+        <item>Sharing is caring</item>
+        <item>Frequently Asked Questions</item>
+        <item>Get in touch with the WeKast team</item>
+        <item>Privacy policy &amp; Terms of use</item>
+        <item>V 1.0  |  Latest Version</item>
+        <item>Clear all settings</item>
     </string-array>
 
     <string name="empty">no data</string>
