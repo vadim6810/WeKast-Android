@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.activity;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -73,24 +74,15 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_welcome, menu);
+        getMenuInflater().inflate(R.menu.menu_settings, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // получим идентификатор выбранного пункта меню
-        int id = item.getItemId();
-
-       // Операции для выбранного пункта меню
-        switch (id) {
-            case R.id.action_clear:
-                Utils.clearSP(context);
-                Utils.toastShow(context, "Preference cleared");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
