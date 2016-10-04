@@ -73,12 +73,14 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
             case 0:
                 Intent i = new Intent(SettingsActivity.this, LoginActivity.class);
                 startActivity(i);
+                break;
             case 8:
                 Utils.clearSP(this);
                 Utils.toastShow(this, "All settings cleared.");
+                break;
             default:
                 Utils.toastShow(this, "Pushed item " + position);
-
+                break;
         }
     }
 

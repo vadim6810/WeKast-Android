@@ -11,6 +11,7 @@ import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
 
+
 /**
  * Created by RDL on 15.07.2016.
  */
@@ -29,6 +30,9 @@ public class RegisterActivity extends Activity {
         txtLogin = (EditText) findViewById(R.id.txt_login);
         txtEmail = (EditText) findViewById(R.id.txt_email);
         m_AccessServiceAPI = new AccessServiceAPI();
+
+        txtLogin.setText(Utils.getFieldSP(context, "login"));
+        txtEmail.setText(Utils.getFieldSP(context,"email"));
 
     }
 

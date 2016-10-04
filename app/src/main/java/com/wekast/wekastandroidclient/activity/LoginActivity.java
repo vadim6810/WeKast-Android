@@ -11,6 +11,7 @@ import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
 
 
+
 /**
  * Created by RDL on 15.07.2016.
  */
@@ -27,6 +28,10 @@ public class LoginActivity extends Activity {
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
         m_AccessServiceAPI = new AccessServiceAPI();
+
+        txtLogin.setText(Utils.getFieldSP(context, "login"));
+        txtPassword.setText(Utils.getFieldSP(context,"password"));
+
     }
 
     public void btnLogin_Click(View v) {
