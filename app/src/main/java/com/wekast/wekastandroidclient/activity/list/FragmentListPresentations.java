@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient.activity;
+package com.wekast.wekastandroidclient.activity.list;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -91,8 +91,15 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         password = getFieldSP(getActivity(), "password");
         rowItems = new ArrayList<>();
         createListPresentations();
-        adapter = new CustomAdapter(getActivity(), rowItems);
-        setListAdapter(adapter);
+
+        ListView listView = getListView();
+        adapter = new CustomAdapter(getActivity(), rowItems, listView);
+        listView.setAdapter(adapter);
+        //Указываем ListView хотим режим с мультивыделеним
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        //Указываем обработчик такого режима
+        listView.setMultiChoiceModeListener(new MultiChoice(listView));
+
         new TaskDownload().execute(login, password);
     }
 
@@ -247,13 +254,14 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     }
 
     public class CustomAdapter extends BaseAdapter {
-
+        private ListView listView;
         Context context;
         ArrayList<RowItem> rowItem;
 
-        CustomAdapter(Context context, ArrayList<RowItem> rowItem) {
+        CustomAdapter(Context context, ArrayList<RowItem> rowItem, ListView listView) {
             this.context = context;
             this.rowItem = rowItem;
+            this.listView = listView;
 
         }
 

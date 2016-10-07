@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient.activity;
+package com.wekast.wekastandroidclient.activity.slider;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;

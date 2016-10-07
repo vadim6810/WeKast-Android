@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.FragmentSlider;
 
 
 /**

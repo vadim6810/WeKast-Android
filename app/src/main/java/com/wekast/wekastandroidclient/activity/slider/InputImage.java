@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.FragmentSlider;
 import com.wekast.wekastandroidclient.model.EquationsBitmap;
 
 /**

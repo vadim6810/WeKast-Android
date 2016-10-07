@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 
+import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
+import com.wekast.wekastandroidclient.activity.list.SettingsActivity;
+import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
