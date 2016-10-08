@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AbsListView;
-import android.widget.Toast;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
@@ -55,7 +54,8 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
 
     @Override
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        Utils.toastShow(listView.getContext(),  "Action - " + menuItem.getTitle() + " ; Selected items: " + getSelectedFiles());
+        Utils.toastShow(listView.getContext(), "Selected items: " + getSelectedEzs());
+        actionMode.finish();
         return false;
     }
 
@@ -75,16 +75,15 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
         }
     }
 
-    private List<String> getSelectedFiles() {
-        List<String> selectedFiles = new ArrayList<>();
+    private List<String> getSelectedEzs() {
+        List<String> selectedEzs = new ArrayList<>();
 
         SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
         for (int i = 0; i < sparseBooleanArray.size(); i++) {
             if (sparseBooleanArray.valueAt(i)) {
-                Integer selectedItem = (Integer) listView.getItemAtPosition(sparseBooleanArray.keyAt(i));
-                selectedFiles.add("#" + Integer.toHexString(selectedItem).replaceFirst("ff", ""));
+               selectedEzs.add(String.valueOf(sparseBooleanArray.keyAt(i)));
             }
         }
-        return selectedFiles;
+        return selectedEzs;
     }
 }
