@@ -24,8 +24,10 @@ import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
@@ -33,20 +35,38 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 /**
  * Created by RDL on 03.09.2016.
  */
-public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
     private SwipeRefreshLayout swipeRefreshLayout;
     private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
     private HashMap<String, String> mapDownload = new HashMap<>();
     private String login;
     private String password;
     private onSomeEventListener someEventListener;
+    private ArrayList<String> localName = getAllFilesLocal();
+    private ArrayList<String> localPath = getAllFilesLocalPath();
 
     private ArrayList<RowItem> rowItems;
     private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
 
+    @Override
+    public void callingBackMultiChoice(List<Integer> selectedEzs) {
+        toastShow(getActivity(), "Selected items: " + selectedEzs);
+        for (Integer id : selectedEzs)
+            deleteEzsLocal(localPath.get(id));
+        updateListPresentations();
+    }
+
+    private void deleteEzsLocal(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+            toastShow(getActivity(), "Deleting "+ path);
+        }
+    }
+
     public interface onSomeEventListener {
-        public void someEvent(String presPath);
+        void someEvent(String presPath);
     }
 
     /**
@@ -97,15 +117,18 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         listView.setAdapter(adapter);
         //Указываем ListView хотим режим с мультивыделеним
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        //Указываем обработчик такого режима
-        listView.setMultiChoiceModeListener(new MultiChoice(listView));
+        //Указываем callback и обработчик такого режима
+        MultiChoice multiChoice = new MultiChoice(listView);
+        multiChoice.registerCallBack(this);
+        listView.setMultiChoiceModeListener(multiChoice);
+
 
         new TaskDownload().execute(login, password);
     }
 
     private void createListPresentations() {
-        ArrayList<String> localName = getAllFilesLocal();
-        ArrayList<String> localPath = getAllFilesLocalPath();
+        localName = getAllFilesLocal();
+        localPath = getAllFilesLocalPath();
         for (int i = 0; i < localName.size(); i++) {
             RowItem items = new RowItem(localName.get(i), localPath.get(i));
             rowItems.add(items);

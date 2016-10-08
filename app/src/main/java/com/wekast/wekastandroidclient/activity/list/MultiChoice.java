@@ -28,6 +28,16 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
         this.listView = listView;
     }
 
+    interface Callback{
+        void callingBackMultiChoice(List<Integer> selectedEzs);
+    }
+
+    Callback callback;
+
+    public void registerCallBack(Callback callback){
+        this.callback = callback;
+    }
+
     @Override
     //Метод вызывается при любом изменения состояния выделения рядов
     public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
@@ -54,7 +64,8 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
 
     @Override
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        Utils.toastShow(listView.getContext(), "Selected items: " + getSelectedEzs());
+//        Utils.toastShow(listView.getContext(), "Selected items: " + getSelectedEzs());
+        callback.callingBackMultiChoice(getSelectedEzs());
         actionMode.finish();
         return false;
     }
@@ -75,13 +86,13 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
         }
     }
 
-    private List<String> getSelectedEzs() {
-        List<String> selectedEzs = new ArrayList<>();
+    private List<Integer> getSelectedEzs() {
+        List<Integer> selectedEzs = new ArrayList<>();
 
         SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
         for (int i = 0; i < sparseBooleanArray.size(); i++) {
             if (sparseBooleanArray.valueAt(i)) {
-               selectedEzs.add(String.valueOf(sparseBooleanArray.keyAt(i)));
+               selectedEzs.add(sparseBooleanArray.keyAt(i));
             }
         }
         return selectedEzs;
