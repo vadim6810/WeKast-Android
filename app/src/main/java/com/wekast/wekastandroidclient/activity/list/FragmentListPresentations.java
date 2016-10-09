@@ -42,8 +42,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private String login;
     private String password;
     private onSomeEventListener someEventListener;
-    private ArrayList<String> localName = getAllFilesLocal();
-    private ArrayList<String> localPath = getAllFilesLocalPath();
+    private ArrayList<String[]> localEzs;
 
     private ArrayList<RowItem> rowItems;
     private CustomAdapter adapter;
@@ -53,16 +52,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
         toastShow(getActivity(), "Selected items: " + selectedEzs);
         for (Integer id : selectedEzs)
-            deleteEzsLocal(localPath.get(id));
+            Utils.deleteEzsLocal(localEzs.get(id)[1]);
         updateListPresentations();
-    }
-
-    private void deleteEzsLocal(String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
-            toastShow(getActivity(), "Deleting "+ path);
-        }
     }
 
     public interface onSomeEventListener {
@@ -122,15 +113,13 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
 
-
         new TaskDownload().execute(login, password);
     }
 
     private void createListPresentations() {
-        localName = getAllFilesLocal();
-        localPath = getAllFilesLocalPath();
-        for (int i = 0; i < localName.size(); i++) {
-            RowItem items = new RowItem(localName.get(i), localPath.get(i));
+        localEzs = getAllFilesList();
+        for (int i = 0; i < localEzs.size(); i++) {
+            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1]);
             rowItems.add(items);
         }
     }
@@ -190,7 +179,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
-                    mapDownload = mappingPresentations(parseJSONArrayMap(response), getAllFilesLocal());
+                    mapDownload = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
                 } else {
                     return RESULT_ERROR;
                 }

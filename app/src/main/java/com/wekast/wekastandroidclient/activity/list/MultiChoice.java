@@ -64,7 +64,6 @@ public class MultiChoice implements AbsListView.MultiChoiceModeListener {
 
     @Override
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-//        Utils.toastShow(listView.getContext(), "Selected items: " + getSelectedEzs());
         callback.callingBackMultiChoice(getSelectedEzs());
         actionMode.finish();
         return false;

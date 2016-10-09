@@ -162,6 +162,18 @@ public class Utils {
         return arrayList;
     }
 
+    public static ArrayList<String[]> getAllFilesList() {
+        ArrayList<String[]> fileList = new ArrayList<>();
+        File[] filesList = DIRECTORY.listFiles();
+        if (filesList != null && filesList.length > 0) {
+            for (int i = 0; i < filesList.length; i++) {
+                if(filesList[i].getName().endsWith(FORMAT))
+                    fileList.add(new String[]{filesList[i].getName(), filesList[i].getAbsolutePath()});
+            }
+        }
+        return fileList;
+    }
+
     public static ArrayList<String> getAllFilesLocal() {
         ArrayList<String> fileList = new ArrayList<>();
         File[] filesList = DIRECTORY.listFiles();
@@ -169,18 +181,6 @@ public class Utils {
             for (int i = 0; i < filesList.length; i++) {
                 if(filesList[i].getName().endsWith(FORMAT))
                     fileList.add(filesList[i].getName());
-            }
-        }
-        return fileList;
-    }
-
-    public static ArrayList<String> getAllFilesLocalPath() {
-        ArrayList<String> fileList = new ArrayList<>();
-        File[] filesList = DIRECTORY.listFiles();
-        if (filesList != null && filesList.length > 0) {
-            for (int i = 0; i < filesList.length; i++) {
-                if(filesList[i].getName().endsWith(FORMAT))
-                    fileList.add(filesList[i].getAbsolutePath());
             }
         }
         return fileList;
@@ -309,17 +309,24 @@ public class Utils {
         return curCommand;
     }
 
-    public static HashMap<String, String>  mappingPresentations(HashMap<String, String> mapDownload, ArrayList<String> filesLocal) {
+    public static HashMap<String, String> mapEzsForDownload(HashMap<String, String> mapDownload, ArrayList<String[]> filesLocal) {
         if (mapDownload.size() > 0) {
-            for (String s: filesLocal) {
+            for (String[] s: filesLocal) {
                 for(Iterator<HashMap.Entry<String, String>> it = mapDownload.entrySet().iterator(); it.hasNext(); ) {
                     HashMap.Entry<String, String> entry = it.next();
-                    if (entry.getValue().equals(s)) {
+                    if (entry.getValue().equals(s[0])) {
                         it.remove();
                     }
                 }
             }
         }
         return mapDownload;
+    }
+
+    public static void deleteEzsLocal(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 }
