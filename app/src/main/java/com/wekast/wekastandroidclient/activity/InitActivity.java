@@ -15,6 +15,8 @@ import com.wekast.wekastandroidclient.model.Utils;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+
 
 /**
  * Created by RDL on 23.07.2016.
@@ -45,7 +47,7 @@ public class InitActivity extends Activity {
         @Override
         public void run() {
             Intent intent;
-            if (Utils.getContainsSP(context, "login")){
+            if (Utils.getContainsSP(context, LOGIN)){
                 intent = new Intent(getApplicationContext(), WelcomeActivity.class);
             } else {
                 intent = new Intent(getApplicationContext(), RegisterActivity.class);

@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,6 @@ import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,22 +38,30 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
     private SwipeRefreshLayout swipeRefreshLayout;
     private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
-    private HashMap<String, String> mapDownload = new HashMap<>();
+    private HashMap<String, String> mapDelete = new HashMap<>();
     private String login;
     private String password;
     private onSomeEventListener someEventListener;
     private ArrayList<String[]> localEzs;
-
+    private ArrayList<String> serverEzsDel;
     private ArrayList<RowItem> rowItems;
     private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
+    private DownloadAsyncTask downloadAsyncTask;
+    private DeleteAsyncTask deleteAsyncTask;
 
     @Override
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
         toastShow(getActivity(), "Selected items: " + selectedEzs);
-        for (Integer id : selectedEzs)
+        serverEzsDel = new ArrayList<>();
+        for (Integer id : selectedEzs) {
+            serverEzsDel.add(localEzs.get(id)[0]);
             Utils.deleteEzsLocal(localEzs.get(id)[1]);
+        }
         updateListPresentations();
+
+        deleteAsyncTask = new DeleteAsyncTask(serverEzsDel);
+        deleteAsyncTask.execute(login, password);
     }
 
     public interface onSomeEventListener {
@@ -98,8 +106,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        login = getFieldSP(getActivity(), "login");
-        password = getFieldSP(getActivity(), "password");
+        login = getFieldSP(getActivity(), LOGIN);
+        password = getFieldSP(getActivity(), PASSWORD);
         rowItems = new ArrayList<>();
         createListPresentations();
 
@@ -113,7 +121,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
 
-        new TaskDownload().execute(login, password);
+        downloadAsyncTask = new DownloadAsyncTask();
+        downloadAsyncTask.execute(login, password);
     }
 
     private void createListPresentations() {
@@ -157,10 +166,14 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        new TaskDownload().execute(login, password);
+
+        if (downloadAsyncTask != null)
+            downloadAsyncTask.cancel(true);
+        downloadAsyncTask = new DownloadAsyncTask();
+        downloadAsyncTask.execute(login, password);
     }
 
-    public class TaskDownload extends AsyncTask<String, Void, Integer> {
+    public class DownloadAsyncTask extends AsyncTask<String, Void, Integer> {
         String LOG_TAG = "FragmentListPresentations = ";
         @Override
         protected void onPreExecute() {
@@ -171,15 +184,15 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         @Override
         protected Integer doInBackground(String... params) {
             HashMap<String, String> param = new HashMap<>();
-            param.put("login", params[0]);
-            param.put("password", params[1]);
+            param.put(LOGIN, params[0]);
+            param.put(PASSWORD, params[1]);
             //getListOnServer
             try {
                 String response = m_AccessServiceAPI.getJSONStringWithParam_POST(Utils.SERVICE_API_URL_LIST, param);
                 JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
-                    mapDownload = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
+                    mapDelete = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
                 } else {
                     return RESULT_ERROR;
                 }
@@ -188,7 +201,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             }
 
             //download from server
-            for (Map.Entry<String, String> item : mapDownload.entrySet()) {
+            for (Map.Entry<String, String> item : mapDelete.entrySet()) {
                 try {
                     byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
                     writeFile(content, item.getValue(), LOG_TAG);
@@ -343,7 +356,65 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 someEventListener.someEvent(rowItems.get(position).getPath());
             } else {
                 rowItems.get(position).setSelected(false);
-                toastShow(getActivity(), "Try again!");
+                toastShow(getActivity(), "Unzip error!");
+            }
+        }
+    }
+
+    public class DeleteAsyncTask extends AsyncTask<String, Void, Integer> {
+        private final ArrayList<String> serverEzsDel;
+        String LOG_TAG = "deleteAsyncTask = ";
+
+        public DeleteAsyncTask(ArrayList<String> serverEzsDel) {
+            this.serverEzsDel = serverEzsDel;
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            HashMap<String, String> param = new HashMap<>();
+            param.put(LOGIN, params[0]);
+            param.put(PASSWORD, params[1]);
+            //getEZSOnServer
+            try {
+                String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+                JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
+                if (jsonObject.getInt("status") == 0) {
+                    response = jsonObject.getString("answer");
+                    mapDelete = mapEzsForDeleted(parseJSONArrayMap(response), localEzs);
+                } else {
+                    return RESULT_ERROR;
+                }
+            } catch (Exception e) {
+                return RESULT_ERROR;
+            }
+
+            //delete EZS on server
+            for (Map.Entry<String, String> item : mapDelete.entrySet()) {
+                try {
+                    String response2 = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
+                    JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response2);
+                    if (jsonObject.getInt("status") == 0) {
+                        response2 = jsonObject.getString("answer");
+                        mapDelete = mapEzsForDeleted(parseJSONArrayMap(response2), localEzs);
+                    } else {
+                        return RESULT_ERROR;
+                    }
+                } catch (Exception e) {
+                    return RESULT_ERROR;
+                }
+            }
+            return RESULT_SUCCESS;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            if (result == RESULT_SUCCESS) {
+                Log.d(LOG_TAG, "Deleted on server." );
+                toastShow(getActivity(), "Deleted on server.");
+            } else {
+                Log.d(LOG_TAG, "Deleted on server fail!!!" );
+                toastShow(getActivity(), "Deleted on server fail!!!");
             }
         }
     }

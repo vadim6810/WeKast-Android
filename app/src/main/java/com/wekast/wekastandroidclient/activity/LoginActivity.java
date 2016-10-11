@@ -10,6 +10,7 @@ import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Utils;
 
+import static com.wekast.wekastandroidclient.model.Utils.*;
 
 
 /**
@@ -29,8 +30,8 @@ public class LoginActivity extends Activity {
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
         m_AccessServiceAPI = new AccessServiceAPI();
 
-        txtLogin.setText(Utils.getFieldSP(context, "login"));
-        txtPassword.setText(Utils.getFieldSP(context,"password"));
+        txtLogin.setText(Utils.getFieldSP(context, LOGIN));
+        txtPassword.setText(Utils.getFieldSP(context,PASSWORD));
 
     }
 

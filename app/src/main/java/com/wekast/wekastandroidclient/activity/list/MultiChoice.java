@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,7 @@ import com.wekast.wekastandroidclient.model.Utils;
 public class RegisterActivity extends Activity {
     private EditText txtLogin;
     private EditText txtEmail;
-    private AccessServiceAPI m_AccessServiceAPI;
+    private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
     Context context = this;
     private static long back_pressed;
 

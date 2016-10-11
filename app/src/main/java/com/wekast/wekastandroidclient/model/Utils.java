@@ -32,6 +32,10 @@ public class Utils {
     public static final String SERVICE_API_URL_LIST = SERVICE_API_URL + "/list";
     public static final String SERVICE_API_URL_REGISTER = SERVICE_API_URL + "/register";
     public static final String SERVICE_API_URL_DOWNLOAD = SERVICE_API_URL + "/download/";
+    public static final String SERVICE_API_URL_DELETE = SERVICE_API_URL + "/delete/";
+    public static final String LOGIN = "login";
+    public static final String EMAIL = "email";
+    public static final String PASSWORD = "password";
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ERROR = -1;
     public static final String SHAREDPREFERNCE = "WeKastPreference";
@@ -321,6 +325,20 @@ public class Utils {
             }
         }
         return mapDownload;
+    }
+
+    public static HashMap<String, String> mapEzsForDeleted(HashMap<String, String> mapDeleted, ArrayList<String[]> filesLocal) {
+        if (mapDeleted.size() > 0) {
+            for (String[] s: filesLocal) {
+                for(Iterator<HashMap.Entry<String, String>> it = mapDeleted.entrySet().iterator(); it.hasNext(); ) {
+                    HashMap.Entry<String, String> entry = it.next();
+                    if (!entry.getValue().equals(s[0])) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+        return mapDeleted;
     }
 
     public static void deleteEzsLocal(String path) {
