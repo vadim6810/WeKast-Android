@@ -327,12 +327,12 @@ public class Utils {
         return mapDownload;
     }
 
-    public static HashMap<String, String> mapEzsForDeleted(HashMap<String, String> mapDeleted, ArrayList<String[]> filesLocal) {
+    public static HashMap<String, String> mapEzsForDeleted(HashMap<String, String> mapDeleted, ArrayList<String> serverEzsDel) {
         if (mapDeleted.size() > 0) {
-            for (String[] s: filesLocal) {
+            for (String s: serverEzsDel) {
                 for(Iterator<HashMap.Entry<String, String>> it = mapDeleted.entrySet().iterator(); it.hasNext(); ) {
                     HashMap.Entry<String, String> entry = it.next();
-                    if (!entry.getValue().equals(s[0])) {
+                    if (!entry.getValue().equals(s)) {
                         it.remove();
                     }
                 }

@@ -38,7 +38,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
     private SwipeRefreshLayout swipeRefreshLayout;
     private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
-    private HashMap<String, String> mapDelete = new HashMap<>();
+    private HashMap<String, String> hashMap = new HashMap<>();
     private String login;
     private String password;
     private onSomeEventListener someEventListener;
@@ -173,8 +173,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         downloadAsyncTask.execute(login, password);
     }
 
-    public class DownloadAsyncTask extends AsyncTask<String, Void, Integer> {
-        String LOG_TAG = "FragmentListPresentations = ";
+    private class DownloadAsyncTask extends AsyncTask<String, Void, Integer> {
+        String LOG_TAG = "DownloadAsyncTask = ";
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -192,7 +192,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
-                    mapDelete = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
+                    hashMap = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
                 } else {
                     return RESULT_ERROR;
                 }
@@ -201,7 +201,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             }
 
             //download from server
-            for (Map.Entry<String, String> item : mapDelete.entrySet()) {
+            for (Map.Entry<String, String> item : hashMap.entrySet()) {
                 try {
                     byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
                     writeFile(content, item.getValue(), LOG_TAG);
@@ -224,8 +224,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             super.onPostExecute(result);
             if (result == RESULT_SUCCESS) {
                 toastShow(getActivity(), "Download completed.");
+                Log.d(LOG_TAG, "Download completed.");
             } else {
                 toastShow(getActivity(), "Download fail!!!");
+                Log.d(LOG_TAG, "Download fail");
             }
             updateListPresentations();
             swipeRefreshLayout.setRefreshing(false);
@@ -361,7 +363,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         }
     }
 
-    public class DeleteAsyncTask extends AsyncTask<String, Void, Integer> {
+    private class DeleteAsyncTask extends AsyncTask<String, Void, Integer> {
         private final ArrayList<String> serverEzsDel;
         String LOG_TAG = "deleteAsyncTask = ";
 
@@ -380,7 +382,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
-                    mapDelete = mapEzsForDeleted(parseJSONArrayMap(response), localEzs);
+                    hashMap = mapEzsForDeleted(parseJSONArrayMap(response), serverEzsDel);
+                    if(hashMap.isEmpty())
+                        return RESULT_SUCCESS;
                 } else {
                     return RESULT_ERROR;
                 }
@@ -389,14 +393,12 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             }
 
             //delete EZS on server
-            for (Map.Entry<String, String> item : mapDelete.entrySet()) {
+            for (Map.Entry<String, String> item : hashMap.entrySet()) {
                 try {
                     String response2 = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
                     JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response2);
-                    if (jsonObject.getInt("status") == 0) {
-                        response2 = jsonObject.getString("answer");
-                        mapDelete = mapEzsForDeleted(parseJSONArrayMap(response2), localEzs);
-                    } else {
+                    if (jsonObject.getInt("status") != 0){
+                        Log.d(LOG_TAG, jsonObject.toString());
                         return RESULT_ERROR;
                     }
                 } catch (Exception e) {
