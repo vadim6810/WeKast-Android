@@ -2,8 +2,10 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -21,6 +23,8 @@ import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
+import com.wekast.wekastandroidclient.model.ProccesCall;
 import com.wekast.wekastandroidclient.model.Sender;
 import com.wekast.wekastandroidclient.model.SenderTasksToDongle;
 import com.wekast.wekastandroidclient.model.Utils;
@@ -40,6 +44,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     private TextView tvWelcome;
     Context context = this;
     private int activityState;
+    private BroadcastReceiver processCall;
     FragmentListPresentations fragmentListPresentations;
     FragmentTransaction fragmentTransaction;
     private static long back_pressed;
@@ -97,6 +102,11 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     @Override
     public void someEvent(String presPath) {
+        processCall = new ProccesCall();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.intent.action.PHONE_STATE");
+        intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
+        registerReceiver(processCall, intentFilter);
 
         fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
@@ -120,13 +130,15 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         int i = 0;
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        // TODO: think if needed
-//        accessPoint.destroyAccessPoint();
-//        restoreWifiAdapterState();
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(processCall);
+
+        // TODO: think if needed
+        accessPoint.destroyAccessPoint();
+        restoreWifiAdapterState();
+    }
 
     @Override
     public void onBackPressed() {
@@ -135,10 +147,12 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
                 if (back_pressed + 2000 > System.currentTimeMillis())
                     finishAffinity();
                 else
-                    Utils.toastShow(context, "Please click BACK again to exit!");
+                    toastShow(context, "Please click BACK again to exit!");
                 back_pressed = System.currentTimeMillis();
                 break;
             case SLIDER:
+                CustomPhoneStateListener.blockingCall = false;
+                unregisterReceiver(processCall);
                 fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragmContainer, fragmentListPresentations);
 //                fragmentTransaction.addToBackStack(null);
