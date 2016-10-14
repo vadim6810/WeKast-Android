@@ -140,7 +140,7 @@ public class AccessServiceAPI {
         }
 
         String body = bodyBuilder.toString();
-        Log.w("getJSONStringWithParam", "param=>" + body);
+        Log.w("getJSONStringWithParam", body);
         byte[] bytes = body.getBytes();
         try {
             conn = (HttpURLConnection) url.openConnection();
@@ -156,17 +156,16 @@ public class AccessServiceAPI {
 
             // handle the response
             int status = conn.getResponseCode();
-            Log.w("getJSONStringWithParam", "Response Status = " + status);
+            Log.w("getJSONStringWithParam", "Response = " + status);
             if (status != 200) {
                 throw new IOException("Post failed with error code " + status);
             }
 
             InputStream stream = conn.getInputStream();
-            int c;
+            int bufferLength ;
             byte[] buffer = new byte[100*1024];
-//            byte[] buffer = new byte[stream.available()];
-            while ((c = stream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, c);
+            while ((bufferLength = stream.read(buffer)) > 0) {
+                byteArrayOutputStream.write(buffer, 0, bufferLength );
             }
             stream.close();
             conn.disconnect();

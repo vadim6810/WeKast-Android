@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 
@@ -54,6 +55,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
         tvWelcome.setText("Welcome: " + getFieldSP(context, "login"));
 
@@ -69,15 +71,13 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         wifiController = new WifiController(wifiManager);
         accessPointController = new AccessPointController(wifiManager);
 
-        AsyncTask.execute(new Runnable() {
-            public void run() {
-                // TODO: think where better to place networkManipulations, maybe at the end
-                // Manipulations with network
-                networkManipulations();
-            }
-        });
-
-//        new Thread(() ->  networkManipulations()).start();
+//        AsyncTask.execute(new Runnable() {
+//            public void run() {
+//                // TODO: think where better to place networkManipulations, maybe at the end
+//                // Manipulations with network
+//                networkManipulations();
+//            }
+//        });
 
         Sender sender = new Sender(context);
     }
@@ -99,8 +99,6 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     public void someEvent(String presPath) {
 
         fragmentTransaction = getFragmentManager().beginTransaction();
-//        fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
-        // temporarily to show messages from fragmetSlider
         fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;

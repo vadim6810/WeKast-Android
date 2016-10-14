@@ -104,6 +104,14 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_listpresentations, null);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        return view;
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         login = getFieldSP(getActivity(), LOGIN);
@@ -120,26 +128,15 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         MultiChoice multiChoice = new MultiChoice(listView);
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
-
         downloadAsyncTask = new DownloadAsyncTask();
         downloadAsyncTask.execute(login, password);
     }
-
     private void createListPresentations() {
         localEzs = getAllFilesList();
         for (int i = 0; i < localEzs.size(); i++) {
             RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1]);
             rowItems.add(items);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_listpresentations, null);
-
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        return view;
     }
 
     private void updateListPresentations() {
@@ -154,10 +151,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 //        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
         if(!rowItems.get(position).isSelected()){
 //            rowItems.get(position).setSelected(true);
-            clearWorkDirectory();
             if(unzipAsyncTask != null){
                 unzipAsyncTask.cancel(true);
             }
+            clearWorkDirectory();
             unzipAsyncTask = new UnzipAsyncTask(position);
             unzipAsyncTask.execute();
         } else someEventListener.someEvent(rowItems.get(position).getPath());
@@ -166,19 +163,20 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-
-        if (downloadAsyncTask != null)
+        updateListPresentations();
+        if (downloadAsyncTask != null) {
             downloadAsyncTask.cancel(true);
+            Log.d(getClass().getSimpleName(), "onRefresh: downloadAsyncTask.cancel(true)");
+        }
         downloadAsyncTask = new DownloadAsyncTask();
         downloadAsyncTask.execute(login, password);
     }
 
     private class DownloadAsyncTask extends AsyncTask<String, Void, Integer> {
-        String LOG_TAG = "DownloadAsyncTask = ";
+        String LOG_TAG = getClass().getSimpleName();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            updateListPresentations();
         }
 
         @Override
@@ -188,7 +186,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             param.put(PASSWORD, params[1]);
             //getListOnServer
             try {
-                String response = m_AccessServiceAPI.getJSONStringWithParam_POST(Utils.SERVICE_API_URL_LIST, param);
+                String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
                 JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
@@ -365,7 +363,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
     private class DeleteAsyncTask extends AsyncTask<String, Void, Integer> {
         private final ArrayList<String> serverEzsDel;
-        String LOG_TAG = "deleteAsyncTask = ";
+        String LOG_TAG = getClass().getSimpleName();
 
         public DeleteAsyncTask(ArrayList<String> serverEzsDel) {
             this.serverEzsDel = serverEzsDel;

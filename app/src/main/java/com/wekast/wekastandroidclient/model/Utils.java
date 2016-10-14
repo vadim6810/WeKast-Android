@@ -130,7 +130,7 @@ public class Utils {
 
     public static void writeFile(byte[] content, String FILENAME, String LOG_TAG) {
         Log.d(LOG_TAG, "writeToFile");
-        try (FileOutputStream fos = new FileOutputStream(new File(Utils.DIRECTORY, FILENAME))){
+        try (FileOutputStream fos = new FileOutputStream(new File(DIRECTORY, FILENAME))){
             fos.write(content);
             Log.d(LOG_TAG, "finish write!!!");
         } catch (IOException e) {
