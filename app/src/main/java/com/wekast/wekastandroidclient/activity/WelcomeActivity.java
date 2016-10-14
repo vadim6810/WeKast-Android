@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.model.Sender;
 import com.wekast.wekastandroidclient.model.SenderTasksToDongle;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.models.AccessPoint;
@@ -67,15 +69,17 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         wifiController = new WifiController(wifiManager);
         accessPointController = new AccessPointController(wifiManager);
 
-        new Thread(new Runnable() {
+        AsyncTask.execute(new Runnable() {
             public void run() {
                 // TODO: think where better to place networkManipulations, maybe at the end
                 // Manipulations with network
                 networkManipulations();
             }
-        }).start();
+        });
 
 //        new Thread(() ->  networkManipulations()).start();
+
+        Sender sender = new Sender(context);
     }
 
     @Override
@@ -95,6 +99,8 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     public void someEvent(String presPath) {
 
         fragmentTransaction = getFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
+        // temporarily to show messages from fragmetSlider
         fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;
@@ -108,7 +114,9 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         // TODO: why ip 192.168.1.1? must be 192.168.43.48
 //        String curDongleIp = Utils.getFieldSP(context, "DONGLE_IP");
         String curDongleIp = "192.168.43.48";
+//        String curDongleIp = "192.168.43.248";
         String curDonglePort = Utils.getFieldSP(context, "DONGLE_PORT");
+        Utils.setFieldSP(context, "EZS_TO_DONGLE_PATH", presPath);
         SenderTasksToDongle dongleSenderTasks = new SenderTasksToDongle(curDongleIp, curDonglePort, task , context);
         dongleSenderTasks.start();
         int i = 0;

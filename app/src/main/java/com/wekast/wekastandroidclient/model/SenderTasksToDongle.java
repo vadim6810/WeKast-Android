@@ -6,7 +6,10 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -80,7 +83,38 @@ public class SenderTasksToDongle extends Thread {
 //            }
             if (curCommand.equals("uploadFile")) {
                 // sending EZS file
-                printWriter.println("FILE FILE FILE FILE FILE FILE FILE FILE FILE FILE");
+
+                String curEzsPath = Utils.getFieldSP(context, "EZS_TO_DONGLE_PATH");
+                // send file
+
+
+                FileInputStream fileInputStream = null;
+                BufferedInputStream bufferedInputStream = null;
+
+                File myFile = new File(curEzsPath);
+                byte [] mybytearray  = new byte [(int)myFile.length()];
+
+                printWriter.println((int)myFile.length());
+
+                fileInputStream = new FileInputStream(myFile);
+                bufferedInputStream = new BufferedInputStream(fileInputStream);
+                bufferedInputStream.read(mybytearray,0,mybytearray.length);
+                outputStream = socket.getOutputStream();
+                System.out.println("Sending " + curEzsPath + "(" + mybytearray.length + " bytes)");
+//                outputStream.write(mybytearray,0,mybytearray.length);
+//                outputStream.write(mybytearray);
+//                outputStream.flush();
+//                printWriter.println(mybytearray);
+
+                if (bufferedInputStream != null)
+                    bufferedInputStream.close();
+
+                // if outputStream closed here, not all bytes sended
+                outputStream.close();
+
+
+
+//                printWriter.println("FILE FILE FILE FILE FILE FILE FILE FILE FILE FILE");
             }
 
             inputStreamBytes = inputStream.available();

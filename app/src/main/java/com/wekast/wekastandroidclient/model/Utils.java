@@ -274,6 +274,22 @@ public class Utils {
         return jsonObject;
     }
 
+    public static JSONObject createJsonTaskShow(int nSlide) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonTask = new JSONArray();
+        JSONObject jsonCommand = new JSONObject();
+        try {
+            jsonCommand.put("command", "show");
+            jsonCommand.put("slide", nSlide);
+            jsonTask.put(jsonCommand);
+            jsonObject.put("device", "android");
+            jsonObject.put("task", jsonTask);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public static String getTaskCommand(JSONObject curJsonObject) {
         JSONObject jsonRootObject = curJsonObject;
         JSONArray jsonTask = jsonRootObject.optJSONArray("task");;
