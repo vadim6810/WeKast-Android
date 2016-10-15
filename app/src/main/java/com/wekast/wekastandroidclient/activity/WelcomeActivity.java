@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
-import com.wekast.wekastandroidclient.activity.list.SettingsActivity;
 import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
@@ -83,8 +82,8 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 //                networkManipulations();
 //            }
 //        });
-
-        Sender sender = new Sender(context);
+//
+//        Sender sender = new Sender(context);
     }
 
     @Override
@@ -102,18 +101,22 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     @Override
     public void someEvent(String presPath) {
-        processCall = new ProccesCall();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.intent.action.PHONE_STATE");
-        intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
-        registerReceiver(processCall, intentFilter);
-
+        initProccesCall();
         fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;
         fragmentTransaction.commit();
         uploadPresentationToDongle(presPath);
+    }
+
+    private void initProccesCall() {
+        Log.d(TAG, getClass().getSimpleName() + ":initProccesCall()");
+        processCall = new ProccesCall();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.intent.action.PHONE_STATE");
+        intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
+        registerReceiver(processCall, intentFilter);
     }
 
     private void uploadPresentationToDongle(String presPath) {
@@ -131,12 +134,29 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(activityState == SLIDER) {
+            Log.d(TAG, getClass().getSimpleName() + ":onStart:processCall");
+            initProccesCall();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(activityState == SLIDER) {
+            Log.d(TAG, getClass().getSimpleName() + ":onStop:processCall");
+            CustomPhoneStateListener.blockingCall = false;
+            unregisterReceiver(processCall);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(processCall);
-
-        // TODO: think if needed
-        accessPoint.destroyAccessPoint();
+//        // TODO: think if needed
+//        accessPoint.destroyAccessPoint();
         restoreWifiAdapterState();
     }
 

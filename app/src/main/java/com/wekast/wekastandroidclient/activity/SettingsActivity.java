@@ -1,4 +1,4 @@
-package com.wekast.wekastandroidclient.activity.list;
+package com.wekast.wekastandroidclient.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.LoginActivity;
 import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
                 Intent i = new Intent(SettingsActivity.this, LoginActivity.class);
                 startActivity(i);
                 break;
-            case 8:
+            case 7:
                 Utils.clearSP(this);
                 Utils.toastShow(this, "All settings cleared.");
                 break;

@@ -22,6 +22,7 @@ public class CustomPhoneStateListener extends PhoneStateListener  {
     PendingIntent sentPI;
 
     PendingIntent deliveredPI;
+
     public CustomPhoneStateListener(Context context) {
         super();
         this.context = context;

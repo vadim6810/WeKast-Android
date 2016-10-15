@@ -104,8 +104,8 @@ public class Utils {
     }
     public static String getFieldSP(Context context, String field) {
         SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
-        String login = settingsActivity.getString(field, "");
-        return  login;
+        String result = settingsActivity.getString(field, "");
+        return  result;
     }
 
     public static void clearSP(Context context) {
