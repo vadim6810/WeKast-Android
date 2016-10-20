@@ -39,5 +39,6 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.SettingsActivity"
             android:screenOrientation="portrait"/>
+        <service android:name=".services.serviceDongle"/>
     </application>
 </manifest>

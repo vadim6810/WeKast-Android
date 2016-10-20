@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,12 +23,12 @@ import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
-import com.wekast.wekastandroidclient.model.Sender;
 import com.wekast.wekastandroidclient.model.SenderTasksToDongle;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.models.DongleReconfig;
 import com.wekast.wekastandroidclient.models.Wifi;
+import com.wekast.wekastandroidclient.services.serviceDongle;
 
 import org.json.JSONObject;
 
@@ -40,6 +39,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  */
 public class WelcomeActivity extends Activity implements FragmentListPresentations.onSomeEventListener {
     private static final String TAG = "wekastlog";
+
     private TextView tvWelcome;
     Context context = this;
     private int activityState;
@@ -107,7 +107,15 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;
         fragmentTransaction.commit();
-        uploadPresentationToDongle(presPath);
+        // uploadPresentationToDongle(presPath);
+        startServiceDongle(presPath);
+   }
+
+    private void startServiceDongle(String presPath) {
+        Intent i = new Intent(this, serviceDongle.class);
+        i.putExtra("command", UPLOAD);
+        i.putExtra("UPLOAD", presPath);
+        startService(i);
     }
 
     private void initProccesCall() {

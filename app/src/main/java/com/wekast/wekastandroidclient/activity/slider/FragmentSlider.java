@@ -2,6 +2,7 @@ package com.wekast.wekastandroidclient.activity.slider;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Sender;
+import com.wekast.wekastandroidclient.services.serviceDongle;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -74,6 +76,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         inputImage.setImagePath(slidesList.get(currentSlide+1));
         mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
         commentsFragment.setComments(slidesList.get(currentSlide));
+        startServiceDongle(currentSlide + 1);
 
         tr = getFragmentManager().beginTransaction();
         if(currentSlide > 0)
@@ -113,7 +116,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       sender = new Sender(getActivity());
     }
 
     public void createWorkArray(){
@@ -182,7 +184,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     public void prevSlide() {
         if(currentSlide > 0){
             currentSlide  = currentSlide - 1;
-            sender.showOnDongle(currentSlide + 1);
+            startServiceDongle(currentSlide + 1);
             if(currentSlide == 0){
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
                 mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
@@ -226,10 +228,17 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     }
 
+    private void startServiceDongle(int currentSlide) {
+           Intent i = new Intent(getActivity(), serviceDongle.class);
+           i.putExtra("command", SLIDE);
+           i.putExtra("SLIDE", Integer.toString(currentSlide));
+           getActivity().startService(i);
+    }
+
     public void nextSlide() {
         if(currentSlide < slidesList.size() - 1){
             currentSlide = currentSlide + 1;
-            sender.showOnDongle(currentSlide + 1);
+            startServiceDongle(currentSlide + 1);
             if(currentSlide == slidesList.size() - 1){
                 outputImage.setImagePath(slidesList.get(currentSlide - 1));
                 mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());

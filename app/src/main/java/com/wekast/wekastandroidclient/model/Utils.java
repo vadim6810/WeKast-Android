@@ -51,6 +51,10 @@ public class Utils {
     public static final int PRESENTATION_LIST = 0x00000100;
     public static final int SLIDER = 0x00000200;
 
+    /** Command Dongle **/
+    public static final int UPLOAD = 1;
+    public static final int SLIDE = 2;
+
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
     // DONGLE_PORT      // set when connecting to dongle access point for sending new ssid and pass
