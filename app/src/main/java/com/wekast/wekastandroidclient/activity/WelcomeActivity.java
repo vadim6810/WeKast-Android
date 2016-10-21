@@ -28,7 +28,7 @@ import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.models.DongleReconfig;
 import com.wekast.wekastandroidclient.models.Wifi;
-import com.wekast.wekastandroidclient.services.serviceDongle;
+import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.json.JSONObject;
 
@@ -112,7 +112,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
    }
 
     private void startServiceDongle(String presPath) {
-        Intent i = new Intent(this, serviceDongle.class);
+        Intent i = new Intent(this, DongleService.class);
         i.putExtra("command", UPLOAD);
         i.putExtra("UPLOAD", presPath);
         startService(i);

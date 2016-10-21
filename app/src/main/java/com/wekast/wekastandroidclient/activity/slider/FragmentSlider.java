@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.Sender;
-import com.wekast.wekastandroidclient.services.serviceDongle;
+import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -229,7 +229,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     }
 
     private void startServiceDongle(int currentSlide) {
-           Intent i = new Intent(getActivity(), serviceDongle.class);
+           Intent i = new Intent(getActivity(), DongleService.class);
            i.putExtra("command", SLIDE);
            i.putExtra("SLIDE", Integer.toString(currentSlide));
            getActivity().startService(i);

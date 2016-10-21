@@ -12,8 +12,8 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  * Created by RDL on 20.10.2016.
  */
 
-public class serviceDongle extends Service {
-    final String TAG = "serviceDongle";
+public class DongleService extends Service {
+    final String TAG = "DongleService";
 
     @Override
     public void onCreate() {
