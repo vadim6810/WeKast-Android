@@ -25,7 +25,7 @@ public class AccessPointController {
 
     public WifiManager wifiManager;
     public WifiConfiguration wifiConfig;
-//    public WifiController wifiController;
+//    public WifiControllerOld wifiController;
 
     static {
         // lookup methods and fields not defined publicly in the SDK.

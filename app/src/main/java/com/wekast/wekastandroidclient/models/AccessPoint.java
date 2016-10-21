@@ -9,7 +9,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.wekast.wekastandroidclient.controllers.AccessPointController;
-import com.wekast.wekastandroidclient.controllers.WifiController;
+import com.wekast.wekastandroidclient.controllers.WifiControllerOld;
 import com.wekast.wekastandroidclient.model.Utils;
 
 /**
@@ -21,14 +21,14 @@ public class AccessPoint {
     private Context mainActivityContext = null;
     private Activity mainActivity = null;
     private WifiManager wifiManager = null;
-    private WifiController wifiController = null;
+    private WifiControllerOld wifiControllerOld = null;
     private AccessPointController accessPointController = null;
 
     public AccessPoint(Activity activity){
         this.mainActivity = activity;
         this.mainActivityContext = mainActivity.getApplicationContext();
         this.wifiManager = (WifiManager) mainActivityContext.getSystemService(mainActivityContext.WIFI_SERVICE);
-        this.wifiController = new WifiController(wifiManager);
+        this.wifiControllerOld = new WifiControllerOld(wifiManager);
         this.accessPointController = new AccessPointController(wifiManager);
     }
 
@@ -56,8 +56,8 @@ public class AccessPoint {
         }
 
         // Turn off wifi before enabling Access Point
-        if (wifiController.isWifiOn(mainActivity)) {
-            wifiController.turnOnOffWifi(mainActivity, false);
+        if (wifiControllerOld.isWifiOn(mainActivity)) {
+            wifiControllerOld.turnOnOffWifi(mainActivity, false);
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {

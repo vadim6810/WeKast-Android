@@ -1,172 +1,215 @@
 package com.wekast.wekastandroidclient.controllers;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.util.Log;
+
+
+import com.wekast.wekastandroidclient.model.Utils;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
- * Created by YEHUDA on 8/1/2016.
+ * Created by ELAD on 10/14/2016.
  */
+
 public class WifiController {
 
-    private static final String TAG = "wekastlog";
-    public WifiManager wifiManager;
-    public WifiConfiguration wifiConfig;
 
-    public WifiController(WifiManager wifiManager) {
-        this.wifiManager = wifiManager;
-    }
+    private static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
+    private static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
+    private static final String TAG = "dongle.wekast";
 
-    /**
-     * Function check whether wifi is enabled
-     *
-     * @param context
-     * @return whether wifi is enabled
-     */
-    public boolean isWifiOn(Context context) {
-        boolean isWifiOn = wifiManager.isWifiEnabled();
-        Log.d(TAG, "WifiController.isWifiOn(): " + isWifiOn);
-        return isWifiOn;
-    }
+    private static Method setWifiApEnabled;
+    private static Method isWifiApEnabled;
+    private static Method getWifiApConfiguration;
+    private static Method setWifiApConfiguration;
 
-    /**
-     * Function turns on or turns off wifi
-     *
-     * @param context
-     * @param b
-     */
-    public void turnOnOffWifi(Context context, boolean b) {
-        wifiManager.setWifiEnabled(b);
-        Log.d(TAG, "WifiController.turnOnOffWifi(): " + b);
-    }
+    private WifiState curWifiState = WifiState.WIFI_STATE_OFF;
 
-    /**
-     * Function that configures WifiConfiguration for access point
-     */
-    public void configureWifiConfig(String ssid, String pass) {
-        wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = "\"".concat(ssid).concat("\"");
-        wifiConfig.preSharedKey = "\"".concat(pass).concat("\"");
-        wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-//        Log.d(TAG, "WifiController.configureWifiConfig():\n" + wifiConfig);
-    }
-
-//    /**
-//     * Function that returns current configured configuration
-//     *
-//     * @return current configured wificonfiguration
-//     */
-//    public WifiConfiguration getWifiConfig() {
-//        return wifiConfig;
-//    }
-
-
-    /* Function to disconnect from the currently connected WiFi AP.
-    * @return true  if disconnection succeeded
-    * 				 false if disconnection failed
-    */
-    public void disconnectFromWifi() {
-        if (!wifiManager.disconnect()) {
-            Log.d("TAG", "Failed to disconnect from network!");
+    private static boolean setWifiApEnabled(WifiManager wifiManager, WifiConfiguration wifiConfiguration, boolean enabled) {
+        try {
+            return (boolean) setWifiApEnabled.invoke(wifiManager, wifiConfiguration, enabled);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    /**
-     * Add WiFi configuration to list of recognizable networks
-     *
-     * @return networkId
-     */
-    public int addWifiConfiguration() {
-        int networkId = wifiManager.addNetwork(wifiConfig);
-        if (networkId == -1) {
-            Log.d("TAG", "Failed to add network configuration!");
-            return -1;
+    private static boolean isWifiApEnabled(WifiManager wifiManager) {
+        try {
+            return (boolean) isWifiApEnabled.invoke(wifiManager);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
-        return networkId;
+        return false;
     }
 
-    /**
-     * Enable network to be connected
-     */
-    public void enableDisableWifiNetwork(int networkId, boolean b) {
-        if (!wifiManager.enableNetwork(networkId, b)) {
-            Log.d("TAG", "Failed to enable network!");
+    private static WifiConfiguration getWifiApConfiguration(WifiManager wifiManager) {
+        try {
+            return (WifiConfiguration) getWifiApConfiguration.invoke(wifiManager);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    /**
-     * Connect to network
-     */
-    public void reconnectToWifi() {
-        if (!wifiManager.reconnect()) {
-            Log.d("TAG", "Failed to connect!");
+    private static boolean setWifiApConfiguration(WifiManager wifiManager, WifiConfiguration wifiConfiguration) {
+        try {
+            return (boolean) setWifiApConfiguration.invoke(wifiManager, wifiConfiguration);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    private void isWifiEnabled(Context context) {
-        if(!isWifiOn(context)) {
-            turnOnOffWifi(context, true);
-            //job completed. Rest for 5 second before doing another one
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+    static {
+        // lookup methods and fields not defined publicly in the SDK.
+        Class<?> cls = WifiManager.class;
+        for (Method method : cls.getDeclaredMethods()) {
+            String methodName = method.getName();
+            if (methodName.equals("setWifiApEnabled")) {
+                setWifiApEnabled = method;
+                setWifiApEnabled.setAccessible(true);
             }
-            //do job again
-            isWifiEnabled(context);
+            if (methodName.equals("isWifiApEnabled")) {
+                isWifiApEnabled = method;
+                isWifiApEnabled.setAccessible(true);
+            }
+            if (methodName.equals("getWifiApConfiguration")) {
+                getWifiApConfiguration = method;
+                getWifiApConfiguration.setAccessible(true);
+            }
+            if (methodName.equals("setWifiApConfiguration")) {
+                setWifiApConfiguration = method;
+                setWifiApConfiguration.setAccessible(true);
+            }
         }
+    }
+
+    private final boolean wifiEnabled;
+    private final WifiManager wifiManager;
+    private Context context;
+    private WifiConfiguration oldConfig;
+
+    public WifiController(Context context) {
+        this.context = context;
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        // Сохраняем старые настройки точки доступа
+        oldConfig = getWifiApConfiguration(wifiManager);
+        // Сохраняем состояние Wifi
+        wifiEnabled = wifiManager.isWifiEnabled();
+    }
+
+    private WifiConfiguration configureWifi() {
+        WifiConfiguration wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = "wekast";
+        wifiConfig.preSharedKey = "12345678";
+        wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        return wifiConfig;
+    }
+
+    private WifiConfiguration configureWifi(String ssid, String pass) {
+        WifiConfiguration wifiConfig = new WifiConfiguration();
+        wifiConfig.SSID = "\"" + ssid + "\"";
+        wifiConfig.preSharedKey = "\"" + pass + "\"";
+        wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        return wifiConfig;
     }
 
     /**
-     * Converts int ip address to readable string
+     * Start Access Point on Dongle with default settings
      *
-     * @param ipAddr
-     * @return readable ip address string
+     * @return
      */
-    public String getIpAddr(int ipAddr) {
-        String ipString = String.format(
-                "%d.%d.%d.%d",
-                (ipAddr & 0xff),
-                (ipAddr >> 8 & 0xff),
-                (ipAddr >> 16 & 0xff),
-                (ipAddr >> 24 & 0xff));
-        return ipString;
+    private boolean startAP() {
+        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureWifi(), true);
     }
 
-    public void waitWhileWifiLoading() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Log.d(TAG, "AccessPointController.waitWifi():  " + e);
-        }
+    private boolean stopAP() {
+        return setWifiApEnabled(wifiManager, oldConfig, false);
     }
 
-    public void waitWhileWifiLoading(int time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Log.d(TAG, "AccessPointController.waitWifi():  " + e);
-        }
-    }
+    /**
+     * Connect to Access Point on Client (Android or iOs)
+     *
+     * @return
+     */
+    public boolean startConnection() {
+        wifiManager.setWifiEnabled(true);
+        String curSsid = Utils.getFieldSP(context,AP_SSID_KEY);
+        String curPass = Utils.getFieldSP(context,AP_PASS_KEY);
+        WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
 
-    public boolean isWifiConnected(Context context) {
-        boolean isWifiConnected = true;
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getActiveNetworkInfo();
-        if (mWifi == null) {
+        int networkId = wifiManager.addNetwork(wifiConfig);
+        if (networkId < 0) {
             return false;
-        } else {
-            if (mWifi.isConnected())
-                return isWifiConnected;
         }
-        // TODO: check when application came here. Or refactor
-        return isWifiConnected;
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(networkId, true);
+        wifiManager.reconnect();
+
+        return true;
     }
 
+    public WifiState getSavedWifiState() {
+        return curWifiState;
+    }
+
+    public void saveWifiConfig(String ssid, String pass) {
+        Utils.setFieldSP(context, AP_SSID_KEY, ssid);
+        Utils.setFieldSP(context, AP_PASS_KEY, pass);
+    }
+
+    public void restore() {
+        // TODO restore wifi settings back
+        if (isWifiApEnabled(wifiManager)) {
+            stopAP();
+        }
+        wifiManager.setWifiEnabled(wifiEnabled);
+        setWifiApConfiguration(wifiManager, oldConfig);
+    }
+
+    public void changeState(WifiState wifiState) {
+        //todo in progress
+        if (wifiState == WifiState.WIFI_STATE_CONNECT) {
+            stopAP();
+            startConnection();
+            curWifiState = WifiState.WIFI_STATE_CONNECT;
+        } else if (wifiState == WifiState.WIFI_STATE_AP) {
+            startAP();
+            curWifiState = WifiState.WIFI_STATE_AP;
+        }
+//        else if (wifiState == WifiState.WIFI_STATE_OFF) {
+//            stopAP();
+//            curWifiState = WifiState.WIFI_STATE_AP;
+//        }
+    }
+
+    public void connectToDefault() {
+        int networkId = wifiManager.addNetwork(configureWifi());
+        if (networkId < 0) {
+            throw new RuntimeException("coudn't add network wekast");
+        }
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(networkId, true);
+        wifiManager.reconnect();
+    }
+
+    public enum WifiState {
+        WIFI_STATE_OFF,
+        WIFI_STATE_AP,
+        WIFI_STATE_CONNECT
+    }
 }
