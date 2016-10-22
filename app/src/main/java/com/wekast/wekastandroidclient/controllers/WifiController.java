@@ -14,7 +14,9 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
 
+import com.wekast.wekastandroidclient.model.ClientScanResult;
 import com.wekast.wekastandroidclient.model.Utils;
+import com.wekast.wekastandroidclient.model.WifiApManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -112,6 +114,7 @@ public class WifiController {
     private final WifiManager wifiManager;
     private Context context;
     private WifiConfiguration oldConfig;
+    private WifiApManager wifiApManager;
 
     public WifiController(Context context) {
         this.context = context;
@@ -120,6 +123,7 @@ public class WifiController {
         oldConfig = getWifiApConfiguration(wifiManager);
         // Сохраняем состояние Wifi
         wifiEnabled = wifiManager.isWifiEnabled();
+//        wifiApManager = new WifiApManager(context);
     }
 
     private WifiConfiguration configureAP(String ssid, String pass) {
@@ -313,4 +317,30 @@ public class WifiController {
 //            }
         }
     };
+
+//    private void scan() {
+//        ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
+//        Log.i(TAG, "Clients: \n");
+//        for (ClientScanResult clientScanResult : clients) {
+//            Log.i(TAG, "####################\n");
+//            Log.i(TAG, "IpAddr: " + clientScanResult.getIpAddr() + "\n");
+//            Log.i(TAG, "Device: " + clientScanResult.getDevice() + "\n");
+//            Log.i(TAG, "HWAddr: " + clientScanResult.getHWAddr() + "\n");
+//            Log.i(TAG, "isReachable: " + clientScanResult.isReachable() + "\n");
+//        }
+//    }
+
+    public void saveConnectedDeviceIp() {
+        // TODO: wait more time while dongle connect to client Accees Point
+        wifiApManager = new WifiApManager(context);
+        String ip = "";
+        ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
+        if (clients.size() == 1) {
+            ClientScanResult clientScanResult = clients.get(0);
+            ip = clientScanResult.getIpAddr();
+            Utils.setFieldSP(context, "DONGLE_IP", ip);
+        }
+        Log.i("------------------- IP", ip);
+    }
+
 }

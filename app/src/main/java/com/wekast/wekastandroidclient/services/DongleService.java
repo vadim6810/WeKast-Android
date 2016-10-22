@@ -10,11 +10,17 @@ import android.util.Log;
 import com.wekast.wekastandroidclient.controllers.CommandController;
 import com.wekast.wekastandroidclient.controllers.SocketController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
+import com.wekast.wekastandroidclient.model.ClientScanResult;
 import com.wekast.wekastandroidclient.model.Utils;
+import com.wekast.wekastandroidclient.model.WifiApManager;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_PASS_DEFAULT;
@@ -60,6 +66,15 @@ public class DongleService extends Service {
             wifiController.switchFromWifiToAP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
 
+
+            //wait while AP is loading
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            wifiController.saveConnectedDeviceIp();
+
 //            wifiController.getDongleIp();
         }
     }
@@ -68,6 +83,7 @@ public class DongleService extends Service {
     private WifiController wifiController;
     private SocketController socketController;
     private CommandController commandController;
+
 
     public WifiController getWifiController() {
         return wifiController;
@@ -127,7 +143,7 @@ public class DongleService extends Service {
                 // Connecting to Dongle default Access Point
                 wifiController.connectToAccessPoint();
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -355,5 +371,7 @@ public class DongleService extends Service {
 //        dongleSenderTasks.start();
 //        int i = 0;
 //    }
+
+
 
 }
