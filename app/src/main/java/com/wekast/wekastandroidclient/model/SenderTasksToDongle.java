@@ -54,6 +54,7 @@ public class SenderTasksToDongle extends Thread {
 //            OutputStream outputStream = socket.getOutputStream();
 //            InputStream inputStream = socket.getInputStream();) {
         try {
+            // TODO: first connection to some another host
             socket = new Socket(dstAddress, Integer.valueOf(dstPort));
             outputStream = socket.getOutputStream();
 
@@ -70,100 +71,20 @@ public class SenderTasksToDongle extends Thread {
             // if ok and task uploadFile -> uploadFile
 
 //            String curResponseStatus = Utils.getResponseStatus(Utils.createJsonTask(curMessage));
-            String curCommand = Utils.getTaskCommand(jsonObject);
+//            String curCommand = Utils.getTaskCommand(jsonObject);
 
-            if (curCommand.equals("accessPointConfig")) {
-                Utils.setFieldSP(context, "IS_CONFIG_SENDED", "1");
-            }
-
-            // that means that dongle received request for receiving EZS file
-//            if (curCommand.equals("uploadFile") && curResponseStatus.equals("ok")) {
-//                // sending EZS file
-//                printWriter.println(jsonObject.toString());
-//            }
-            if (curCommand.equals("uploadFile")) {
-                // sending EZS file
-
-                String curEzsPath = Utils.getFieldSP(context, "EZS_TO_DONGLE_PATH");
-                // send file
-
-
-                FileInputStream fileInputStream = null;
-                BufferedInputStream bufferedInputStream = null;
-
-                File myFile = new File(curEzsPath);
-                byte [] mybytearray  = new byte [(int)myFile.length()];
-
-                printWriter.println((int)myFile.length());
-
-                fileInputStream = new FileInputStream(myFile);
-                bufferedInputStream = new BufferedInputStream(fileInputStream);
-                bufferedInputStream.read(mybytearray,0,mybytearray.length);
-                outputStream = socket.getOutputStream();
-                System.out.println("Sending " + curEzsPath + "(" + mybytearray.length + " bytes)");
-//                outputStream.write(mybytearray,0,mybytearray.length);
-//                outputStream.write(mybytearray);
-//                outputStream.flush();
-//                printWriter.println(mybytearray);
-
-                if (bufferedInputStream != null)
-                    bufferedInputStream.close();
-
-                // if outputStream closed here, not all bytes sended
-                outputStream.close();
-
-
-
-//                printWriter.println("FILE FILE FILE FILE FILE FILE FILE FILE FILE FILE");
-            }
-
-            inputStreamBytes = inputStream.available();
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            String curMessage = br.readLine();
-
-
-
-
-//
-
-//            outputStream.write(jsonObject.toString().getBytes());
-//            outputStream.flush();
-//            outputStream.close();
-
-//            inputStreamBytes = inputStream.available();
-//            inputStreamReader = new InputStreamReader(inputStream);
-//            BufferedReader r = new BufferedReader(inputStreamReader);
-//            String str = null;
-//            StringBuilder sb = new StringBuilder(8192);
-//            while ((str = r.readLine()) != null) {
-//                sb.append(str);
+//            if (curCommand.equals("accessPointConfig")) {
+//                Utils.setFieldSP(context, "IS_CONFIG_SENDED", "1");
 //            }
 
 
 
-
-
-
-//            inputStream = socket.getInputStream();
-//            inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-//            BufferedReader r = new BufferedReader(inputStreamReader);
-//            String str = null;
-//            StringBuilder sb = new StringBuilder(8192);
-//            while ((str = r.readLine()) != null) {
-//                sb.append(str);
-//            }
-//              inputStreamBytes = inputStream.available();
 
             Log.d(TAG, "SenderTasksToDongle.send() JSON: " + jsonObject.toString());
-            response = jsonObject.toString();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
             Log.d(TAG, "SenderTasksToDongle.send() UnknownHostException: " + e.getMessage());
-            response = "UnknownHostException: " + e.toString();
         } catch (IOException e) {
-            e.printStackTrace();
             Log.d(TAG, "SenderTasksToDongle.send() IOException: " + e.getMessage());
-            response = "IOException: " + e.toString();
         } finally {
             try {
                 if (inputStream != null) inputStream.close();
@@ -173,33 +94,5 @@ public class SenderTasksToDongle extends Thread {
                 e.printStackTrace();
             }
         }
-
-        Log.d(TAG, "SenderTasksToDongle.send(): Finished");
-//        Utils.toastShow(context, "TASK sended, inputStreamBytes: " + inputStreamBytes);
     }
-
-//    private class ReceiveTaskFromDongleThread extends Thread {
-//        private Socket hostThreadSocket;
-//
-//        ReceiveTaskFromDongleThread(Socket socket) {
-//            hostThreadSocket = socket;
-//        }
-//
-//        @Override
-//        public void run() {
-//            OutputStream outputStream;
-//            try {
-//                outputStream = hostThreadSocket.getOutputStream();
-//                PrintStream printStream = new PrintStream(outputStream);
-//                printStream.print(response);
-//                printStream.close();
-//                outputStream.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                Log.d(TAG, "DongleService.SocketDongleServerReplyThread.run() IOException " + e.getMessage());
-////                log.createLogger("DongleService.SocketDongleServerReplyThread.run() IOException " + e.getMessage());
-//            }
-//        }
-//    }
-
 }

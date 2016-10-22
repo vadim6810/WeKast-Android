@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,20 +13,12 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
 import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
-import com.wekast.wekastandroidclient.controllers.AccessPointController;
-import com.wekast.wekastandroidclient.controllers.WifiControllerOld;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
-import com.wekast.wekastandroidclient.model.SenderTasksToDongle;
-import com.wekast.wekastandroidclient.model.Utils;
-import com.wekast.wekastandroidclient.models.AccessPoint;
 import com.wekast.wekastandroidclient.services.DongleService;
-
-import org.json.JSONObject;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -44,13 +35,6 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     FragmentListPresentations fragmentListPresentations;
     FragmentTransaction fragmentTransaction;
     private static long back_pressed;
-
-//    WifiManager wifiManager = null;
-//    WifiControllerOld wifiControllerOld = null;
-//    AccessPointController accessPointController = null;
-//    AccessPoint accessPoint = null;
-
-//    String curPresPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,20 +95,6 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         registerReceiver(processCall, intentFilter);
     }
 
-//    private void uploadPresentationToDongle(String presPath) {
-//        String curPresPath = presPath;
-//        JSONObject task = Utils.createJsonTask("uploadFile");
-//        // TODO: why ip 192.168.1.1? must be 192.168.43.48
-////        String curDongleIp = Utils.getFieldSP(context, "DONGLE_IP");
-//        String curDongleIp = "192.168.43.48";
-////        String curDongleIp = "192.168.43.248";
-//        String curDonglePort = Utils.getFieldSP(context, "DONGLE_PORT");
-//        Utils.setFieldSP(context, "EZS_TO_DONGLE_PATH", presPath);
-//        SenderTasksToDongle dongleSenderTasks = new SenderTasksToDongle(curDongleIp, curDonglePort, task , context);
-//        dongleSenderTasks.start();
-//        int i = 0;
-//    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -147,9 +117,6 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        // TODO: think if needed
-//        accessPoint.destroyAccessPoint();
-//        restoreWifiAdapterState();
     }
 
     @Override
@@ -173,22 +140,5 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
                 break;
         }
     }
-
-
-
-
-
-
-
-//    private void restoreWifiAdapterState() {
-//        // TODO: finish this method
-//        String isWifiEnabled = getFieldSP(this, "WIFI_STATE_BEFORE_LAUNCH_APP");
-////        if (isWifiEnabled.equals("true")) {
-//        wifiControllerOld.turnOnOffWifi(context, true);
-////        }
-//
-////        String isAccessPointEnabled = Utils.getFieldSP(this, "ACCESS_POINT_STATE_BEFORE_LAUNCH_APP");
-////        accessPointController.setAccessPointEnabled(context, isAccessPointEnabled);
-//    }
 
 }

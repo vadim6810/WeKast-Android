@@ -55,6 +55,11 @@ public class Utils {
     public static final int UPLOAD = 1;
     public static final int SLIDE = 2;
 
+    /** Default Dongle Access Point **/
+    public static final String DONGLE_AP_SSID_DEFAULT = "wekast";
+    public static final String DONGLE_AP_PASS_DEFAULT = "12345678";
+    public static final String DONGLE_SOCKET_PORT = "8888";
+
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
     // DONGLE_PORT      // set when connecting to dongle access point for sending new ssid and pass
@@ -248,20 +253,35 @@ public class Utils {
     public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {
         // TODO: create rundom ssid and pass
         JSONObject jsonObject = new JSONObject();
-        JSONArray jsonTask = new JSONArray();
-        JSONObject jsonCommand = new JSONObject();
+        JSONObject args = new JSONObject();
         try {
-            jsonCommand.put("command", task);
-            jsonCommand.put("ssid", ssid);
-            jsonCommand.put("pass", pass);
-            jsonTask.put(jsonCommand);
-            jsonObject.put("device", "android");
-            jsonObject.put("task", jsonTask);
+            args.put("password", pass);
+            args.put("ssid", ssid);
+            jsonObject.put("command", task);
+            jsonObject.put("args", args);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonObject;
     }
+
+//    public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {
+//        // TODO: create rundom ssid and pass
+//        JSONObject jsonObject = new JSONObject();
+//        JSONArray jsonTask = new JSONArray();
+//        JSONObject jsonCommand = new JSONObject();
+//        try {
+//            jsonCommand.put("command", task);
+//            jsonCommand.put("ssid", ssid);
+//            jsonCommand.put("pass", pass);
+//            jsonTask.put(jsonCommand);
+//            jsonObject.put("device", "android");
+//            jsonObject.put("task", jsonTask);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return jsonObject;
+//    }
 
     public static JSONObject createJsonTask(String task) {
         JSONObject jsonObject = new JSONObject();

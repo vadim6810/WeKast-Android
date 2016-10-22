@@ -2,14 +2,24 @@ package com.wekast.wekastandroidclient.controllers;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
+import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pManager;
+import android.util.Log;
 
 
 import com.wekast.wekastandroidclient.model.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ELAD on 10/14/2016.
@@ -112,10 +122,12 @@ public class WifiController {
         wifiEnabled = wifiManager.isWifiEnabled();
     }
 
-    private WifiConfiguration configureWifi() {
+    private WifiConfiguration configureAP(String ssid, String pass) {
         WifiConfiguration wifiConfig = new WifiConfiguration();
-        wifiConfig.SSID = "wekast";
-        wifiConfig.preSharedKey = "12345678";
+//        wifiConfig.SSID = "wekast";
+//        wifiConfig.preSharedKey = "12345678";
+        wifiConfig.SSID = ssid;
+        wifiConfig.preSharedKey = pass;
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
         return wifiConfig;
     }
@@ -134,11 +146,20 @@ public class WifiController {
      * @return
      */
     private boolean startAP() {
-        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureWifi(), true);
+        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
+        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
+        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
+//        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureWifi(), true);
     }
 
     private boolean stopAP() {
         return setWifiApEnabled(wifiManager, oldConfig, false);
+    }
+
+    public boolean switchFromWifiToAP() {
+        wifiManager.setWifiEnabled(false);
+        startAP();
+        return true;
     }
 
     /**
@@ -147,14 +168,43 @@ public class WifiController {
      * @return
      */
     public boolean startConnection() {
+        stopAP();
         wifiManager.setWifiEnabled(true);
-        String curSsid = Utils.getFieldSP(context,AP_SSID_KEY);
-        String curPass = Utils.getFieldSP(context,AP_PASS_KEY);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
+        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
         WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
 
         int networkId = wifiManager.addNetwork(wifiConfig);
         if (networkId < 0) {
-            return false;
+            throw new RuntimeException("coudn't add network " + curSsid);
+        }
+        wifiManager.disconnect();
+        wifiManager.enableNetwork(networkId, true);
+        wifiManager.reconnect();
+
+        return true;
+    }
+
+    public boolean connectToAccessPoint() {
+        stopAP();
+        wifiManager.setWifiEnabled(true);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
+        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
+        WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
+
+        int networkId = wifiManager.addNetwork(wifiConfig);
+        if (networkId < 0) {
+            throw new RuntimeException("coudn't add network " + curSsid);
         }
         wifiManager.disconnect();
         wifiManager.enableNetwork(networkId, true);
@@ -184,11 +234,11 @@ public class WifiController {
     public void changeState(WifiState wifiState) {
         //todo in progress
         if (wifiState == WifiState.WIFI_STATE_CONNECT) {
-            stopAP();
-            startConnection();
+//            stopAP();
+//            startConnection();
             curWifiState = WifiState.WIFI_STATE_CONNECT;
         } else if (wifiState == WifiState.WIFI_STATE_AP) {
-            startAP();
+//            startAP();
             curWifiState = WifiState.WIFI_STATE_AP;
         }
 //        else if (wifiState == WifiState.WIFI_STATE_OFF) {
@@ -197,19 +247,70 @@ public class WifiController {
 //        }
     }
 
-    public void connectToDefault() {
-        int networkId = wifiManager.addNetwork(configureWifi());
-        if (networkId < 0) {
-            throw new RuntimeException("coudn't add network wekast");
-        }
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(networkId, true);
-        wifiManager.reconnect();
-    }
-
     public enum WifiState {
         WIFI_STATE_OFF,
         WIFI_STATE_AP,
         WIFI_STATE_CONNECT
     }
+
+//    public int getWifiModuleState() {
+//        return wifiManager.getWifiState();
+//    }
+
+    public boolean isWifiEnabled() {
+        // TODO: refactor to less rows
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        WifiInfo info = wifiManager.getConnectionInfo();
+        String curSsid  = info.getSSID();
+        boolean isConnected = networkInfo.isConnected();
+        String curSsidFromSP = Utils.getFieldSP(context, AP_SSID_KEY);
+        int i = 0;
+        if (curSsid.equals("\"" + curSsidFromSP + "\"") && isConnected)
+            return true;
+        return false;
+    }
+
+    public void saveGatewayIP() {
+        DhcpInfo info = wifiManager.getDhcpInfo();
+        String strIp = getIpAddr(info.serverAddress);
+        Utils.setFieldSP(context, "DONGLE_IP", strIp);
+    }
+
+    public String getIpAddr(int ipAddr) {
+        String ipString = String.format(
+                "%d.%d.%d.%d",
+                (ipAddr & 0xff),
+                (ipAddr >> 8 & 0xff),
+                (ipAddr >> 16 & 0xff),
+                (ipAddr >> 24 & 0xff));
+        return ipString;
+    }
+
+//    public String getDongleIp() {
+//        WifiP2pManager wifiP2pManager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
+//        List list = peers;
+//
+//        return "";
+//    }
+
+    private List peers = new ArrayList();
+    private WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
+        @Override
+        public void onPeersAvailable(WifiP2pDeviceList peerList) {
+
+            // Out with the old, in with the new.
+            peers.clear();
+            peers.addAll(peerList.getDeviceList());
+
+            // If an AdapterView is backed by this data, notify it
+            // of the change.  For instance, if you have a ListView of available
+            // peers, trigger an update.
+//            ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+//            if (peers.size() == 0) {
+//                Log.d(WiFiDirectActivity.TAG, "No devices found");
+//                return;
+//            }
+        }
+    };
 }
