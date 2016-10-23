@@ -49,9 +49,17 @@ public class Utils {
     public static final int PRESENTATION_LIST = 0x00000100;
     public static final int SLIDER = 0x00000200;
 
-    /** Command Dongle **/
+    /** Command DongleService **/
     public static final int UPLOAD = 1;
     public static final int SLIDE = 2;
+
+    /** Command DownloadService **/
+    public static final int STATUS_START = 100;
+    public static final int STATUS_FINISH_ONE = 150;
+    public static final int STATUS_FINISH_ALL = 200;
+    public static final int DOWNLOAD = 10;
+    public static final int DELETE = 20;
+
 
     /** Default Dongle Access Point **/
     public static final String DONGLE_AP_SSID_DEFAULT = "wekast";

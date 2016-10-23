@@ -3,7 +3,10 @@ package com.wekast.wekastandroidclient.activity.list;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,16 +22,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 import com.wekast.wekastandroidclient.model.EquationsBitmap;
 import com.wekast.wekastandroidclient.model.Utils;
-
-import org.json.JSONObject;
+import com.wekast.wekastandroidclient.services.DownloadService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -36,19 +36,17 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  * Created by RDL on 03.09.2016.
  */
 public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
+    private static final String LOG = "FragListPres";
     private SwipeRefreshLayout swipeRefreshLayout;
-    private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
-    private HashMap<String, String> hashMap = new HashMap<>();
-    private String login;
-    private String password;
     private onSomeEventListener someEventListener;
     private ArrayList<String[]> localEzs;
     private ArrayList<String> serverEzsDel;
     private ArrayList<RowItem> rowItems;
     private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
-    private DownloadAsyncTask downloadAsyncTask;
-    private DeleteAsyncTask deleteAsyncTask;
+    public final static String BROADCAST_ACTION = "com.wekast.wekastandroidclient.activity.list";
+    BroadcastReceiver broadcastReceiver;
+
 
     @Override
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
@@ -59,9 +57,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             Utils.deleteEzsLocal(localEzs.get(id)[1]);
         }
         updateListPresentations();
-
-        deleteAsyncTask = new DeleteAsyncTask(serverEzsDel);
-        deleteAsyncTask.execute(login, password);
+        Intent i = new Intent(getActivity(), DownloadService.class);
+        i.putExtra("command", DELETE);
+        i.putStringArrayListExtra("serverEzsDel", serverEzsDel);
+        getActivity().startService(i);
     }
 
     public interface onSomeEventListener {
@@ -108,14 +107,48 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         View view = inflater.inflate(R.layout.fragment_listpresentations, null);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(this);
+        startDownloadService();
+        startBroadcastReceiver();
         return view;
+    }
+
+    private void startDownloadService() {
+        Intent i = new Intent(getActivity(), DownloadService.class);
+        i.putExtra("command", DOWNLOAD);
+//        i.putExtra("UPLOAD", presPath);
+        getActivity().startService(i);
+    }
+
+    private void startBroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            // действия при получении сообщений
+            public void onReceive(Context context, Intent intent) {
+                if (DOWNLOAD == intent.getIntExtra("command", 0)){
+                    int status = intent.getIntExtra("status", 0);
+                    if (status  == STATUS_START) {
+                        Log.d(LOG, "onReceive: STATUS_START");
+                    }
+                    if (status == STATUS_FINISH_ONE) {
+                        Log.d(LOG, "onReceive: STATUS_FINISH_ONE");
+                        updateListPresentations();
+                    }
+                    if (status == STATUS_FINISH_ALL) {
+                        Log.d(LOG, "onReceive: STATUS_FINISH_ALL");
+                        swipeRefreshLayout.setRefreshing(false);
+                        updateListPresentations();
+                    }
+                }
+            }
+        };
+        // создаем фильтр для BroadcastReceiver
+        IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+        // регистрируем BroadcastReceiver
+        getActivity().registerReceiver(broadcastReceiver, intFilt);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        login = getFieldSP(getActivity(), LOGIN);
-        password = getFieldSP(getActivity(), PASSWORD);
         rowItems = new ArrayList<>();
         createListPresentations();
 
@@ -128,8 +161,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         MultiChoice multiChoice = new MultiChoice(listView);
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
-//        downloadAsyncTask = new DownloadAsyncTask();
-//        downloadAsyncTask.execute(login, password);
+
     }
     private void createListPresentations() {
         localEzs = getAllFilesList();
@@ -164,73 +196,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         updateListPresentations();
-        if (downloadAsyncTask != null) {
-            downloadAsyncTask.cancel(true);
-            Log.d(getClass().getSimpleName(), "onRefresh: downloadAsyncTask.cancel(true)");
-        }
-        downloadAsyncTask = new DownloadAsyncTask();
-        downloadAsyncTask.execute(login, password);
+        startDownloadService();
     }
 
-    private class DownloadAsyncTask extends AsyncTask<String, Void, Integer> {
-        String LOG_TAG = getClass().getSimpleName();
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HashMap<String, String> param = new HashMap<>();
-            param.put(LOGIN, params[0]);
-            param.put(PASSWORD, params[1]);
-            //getListOnServer
-            try {
-                String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
-                JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
-                if (jsonObject.getInt("status") == 0) {
-                    response = jsonObject.getString("answer");
-                    hashMap = mapEzsForDownload(parseJSONArrayMap(response), localEzs);
-                } else {
-                    return RESULT_ERROR;
-                }
-            } catch (Exception e) {
-                return RESULT_ERROR;
-            }
-
-            //download from server
-            for (Map.Entry<String, String> item : hashMap.entrySet()) {
-                try {
-                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                    writeFile(content, item.getValue(), LOG_TAG);
-                    publishProgress();
-                } catch (Exception e) {
-                    return RESULT_ERROR;
-                }
-            }
-            return RESULT_SUCCESS;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-            updateListPresentations();
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            if (result == RESULT_SUCCESS) {
-                toastShow(getActivity(), "Download completed.");
-                Log.d(LOG_TAG, "Download completed.");
-            } else {
-                toastShow(getActivity(), "Download fail!!!");
-                Log.d(LOG_TAG, "Download fail");
-            }
-            updateListPresentations();
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    }
 
     public class RowItem {
 
@@ -361,61 +329,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         }
     }
 
-    private class DeleteAsyncTask extends AsyncTask<String, Void, Integer> {
-        private final ArrayList<String> serverEzsDel;
-        String LOG_TAG = getClass().getSimpleName();
-
-        public DeleteAsyncTask(ArrayList<String> serverEzsDel) {
-            this.serverEzsDel = serverEzsDel;
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HashMap<String, String> param = new HashMap<>();
-            param.put(LOGIN, params[0]);
-            param.put(PASSWORD, params[1]);
-            //getEZSOnServer
-            try {
-                String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
-                JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
-                if (jsonObject.getInt("status") == 0) {
-                    response = jsonObject.getString("answer");
-                    hashMap = mapEzsForDeleted(parseJSONArrayMap(response), serverEzsDel);
-                    if(hashMap.isEmpty())
-                        return RESULT_SUCCESS;
-                } else {
-                    return RESULT_ERROR;
-                }
-            } catch (Exception e) {
-                return RESULT_ERROR;
-            }
-
-            //delete EZS on server
-            for (Map.Entry<String, String> item : hashMap.entrySet()) {
-                try {
-                    String response2 = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
-                    JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response2);
-                    if (jsonObject.getInt("status") != 0){
-                        Log.d(LOG_TAG, jsonObject.toString());
-                        return RESULT_ERROR;
-                    }
-                } catch (Exception e) {
-                    return RESULT_ERROR;
-                }
-            }
-            return RESULT_SUCCESS;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            if (result == RESULT_SUCCESS) {
-                Log.d(LOG_TAG, "Deleted on server." );
-                toastShow(getActivity(), "Deleted on server.");
-            } else {
-                Log.d(LOG_TAG, "Deleted on server fail!!!" );
-                toastShow(getActivity(), "Deleted on server fail!!!");
-            }
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 }
