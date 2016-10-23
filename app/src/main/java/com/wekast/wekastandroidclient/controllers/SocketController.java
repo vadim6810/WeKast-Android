@@ -2,6 +2,7 @@ package com.wekast.wekastandroidclient.controllers;
 
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -31,8 +32,8 @@ public class SocketController {
     }
 
     public void sendTask(JSONObject jsonObject) throws IOException {
-        if (socket != null)
-            socket.close();
+//        if (socket != null)
+//            socket.close();
 
         socket = new Socket(this.dstAddr, this.dstPort);
         try {
@@ -48,17 +49,30 @@ public class SocketController {
                 printWriter.println(jsonObject.toString());
 //                WelcomeAnswer answer = new WelcomeAnswer();
 //                printWriter.println(answer);
-//                while (true) {
+                while (true) {
                     String task = br.readLine();
                     if (task == null || task.equals("")) {
                         socket.close();
-//                        break;
+                        break;
                     }
+                    // parse response and get message (if "ok")
+                    try {
+                        JSONObject jsonObject1 = new JSONObject(task);
+                        String message = jsonObject1.getString("message");
+                        if (message.equals("ok")) {
+                            Log.i("SocketController", "Request received OK");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    socket.close();
+
 //                    printWriter.println(commandController.processTask(task));
 //                    if (Thread.interrupted()) {
 //                        return;
 //                    }
-//                }
+                }
 //            }
         } catch (SocketException e) {
             Log.i(TAG, "Socket closed: interrupting");

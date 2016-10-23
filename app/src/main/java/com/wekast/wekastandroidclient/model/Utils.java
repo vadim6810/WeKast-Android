@@ -248,6 +248,19 @@ public class Utils {
         return result;
     }
 
+    public static JSONObject createJsonTaskSlide(String slide) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject args = new JSONObject();
+        try {
+            args.put("slide", slide);
+            jsonObject.put("command", "slide");
+            jsonObject.put("args", args);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public static JSONObject createJsonTaskFile() {
         JSONObject jsonObject = new JSONObject();
         try {
