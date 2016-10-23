@@ -19,6 +19,7 @@ import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
 import com.wekast.wekastandroidclient.services.DongleService;
+import com.wekast.wekastandroidclient.services.DownloadService;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -43,6 +44,8 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
         tvWelcome.setText("Welcome: " + getFieldSP(context, "login"));
+
+        startService(new Intent(this, DownloadService.class));
 
         fragmentListPresentations = new FragmentListPresentations();
         fragmentTransaction = getFragmentManager().beginTransaction();

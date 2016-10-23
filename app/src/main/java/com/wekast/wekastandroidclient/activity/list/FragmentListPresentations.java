@@ -128,8 +128,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         MultiChoice multiChoice = new MultiChoice(listView);
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
-        downloadAsyncTask = new DownloadAsyncTask();
-        downloadAsyncTask.execute(login, password);
+//        downloadAsyncTask = new DownloadAsyncTask();
+//        downloadAsyncTask.execute(login, password);
     }
     private void createListPresentations() {
         localEzs = getAllFilesList();
