@@ -2,25 +2,17 @@ package com.wekast.wekastandroidclient.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.wekast.wekastandroidclient.controllers.CommandController;
 import com.wekast.wekastandroidclient.controllers.SocketController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
-import com.wekast.wekastandroidclient.model.ClientScanResult;
 import com.wekast.wekastandroidclient.model.Utils;
-import com.wekast.wekastandroidclient.model.WifiApManager;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Random;
 
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_PASS_DEFAULT;
@@ -66,16 +58,22 @@ public class DongleService extends Service {
             wifiController.switchFromWifiToAP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
 
-
-            //wait while AP is loading
+            //wait while AP is loading and Client connecting
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             wifiController.saveConnectedDeviceIp();
+            dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
+            socketController.initDstAddrPort(dstAddress, dstPort);
 
-//            wifiController.getDongleIp();
+            jsonObject = Utils.createJsonTaskFile();
+            try {
+                socketController.sendTask(jsonObject);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -83,7 +81,6 @@ public class DongleService extends Service {
     private WifiController wifiController;
     private SocketController socketController;
     private CommandController commandController;
-
 
     public WifiController getWifiController() {
         return wifiController;
@@ -308,7 +305,6 @@ public class DongleService extends Service {
 //        SenderTasksToDongle senderTasksToDongle = new SenderTasksToDongle(dstAddress, dstPort, jsonObject, getApplicationContext());
 //        senderTasksToDongle.start();
 
-
 //        try {
 //            socketController.initDstAddrPort(dstAddress, dstPort);
 //        } catch (IOException e) {
@@ -371,7 +367,5 @@ public class DongleService extends Service {
 //        dongleSenderTasks.start();
 //        int i = 0;
 //    }
-
-
 
 }

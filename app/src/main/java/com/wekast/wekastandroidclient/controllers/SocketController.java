@@ -2,8 +2,6 @@ package com.wekast.wekastandroidclient.controllers;
 
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.commands.WelcomeAnswer;
-
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,8 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -25,7 +21,6 @@ public class SocketController {
     private String dstAddr;
     private int dstPort;
 
-
     public SocketController(CommandController commandController) {
         this.commandController = commandController;
     }
@@ -36,6 +31,9 @@ public class SocketController {
     }
 
     public void sendTask(JSONObject jsonObject) throws IOException {
+        if (socket != null)
+            socket.close();
+
         socket = new Socket(this.dstAddr, this.dstPort);
         try {
 //            while (true) {

@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 
 /**
  * Created by Meztiros on 01.08.2016.
@@ -250,6 +248,16 @@ public class Utils {
         return result;
     }
 
+    public static JSONObject createJsonTaskFile() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("command", "file");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public static JSONObject createJsonTaskSendSsidPass(String task, String ssid, String pass) {
         // TODO: create rundom ssid and pass
         JSONObject jsonObject = new JSONObject();
@@ -387,4 +395,5 @@ public class Utils {
             file.delete();
         }
     }
+
 }
