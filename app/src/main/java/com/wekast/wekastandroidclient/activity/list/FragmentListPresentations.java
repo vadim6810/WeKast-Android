@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
@@ -179,7 +180,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         }
 
         for (int i = 0; i < localPrev.size(); i++) {
-            RowItem items = new RowItem("download..." + localPrev.get(i)[0], localPrev.get(i)[1], true);
+            RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
             rowItems.add(items);
         }
     }
@@ -314,12 +315,18 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
             ImageView imgIcon = (ImageView) convertView.findViewById(R.id.preview);
             TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
+            ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
 
             RowItem row_pos = rowItem.get(position);
             // setting the image resource and title
             imgIcon.setImageBitmap(row_pos.getLogo());
             imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
             txtTitle.setText(row_pos.getTitle());
+            if(row_pos.isPreview()){
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
