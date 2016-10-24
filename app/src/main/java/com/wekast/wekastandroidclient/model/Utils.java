@@ -30,6 +30,7 @@ public class Utils {
     public static final String SERVICE_API_URL_LIST = SERVICE_API_URL + "/list";
     public static final String SERVICE_API_URL_REGISTER = SERVICE_API_URL + "/register";
     public static final String SERVICE_API_URL_DOWNLOAD = SERVICE_API_URL + "/download/";
+    public static final String SERVICE_API_URL_PREVIEW = SERVICE_API_URL + "/preview/";
     public static final String SERVICE_API_URL_DELETE = SERVICE_API_URL + "/delete/";
     public static final String LOGIN = "login";
     public static final String EMAIL = "email";
@@ -40,10 +41,13 @@ public class Utils {
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
     public static final String WORK_DIRECTORY = "WeKast/";
     public static final String CASH_DIRECTORY = "Cash/";
+    public static final String PREVIEW_DIRECTORY = "Preview/";
     public static final String CASH_ABSOLUTE_PATH = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY;
+    public static final String PREVIEW_ABSOLUTE_PATH = DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + PREVIEW_DIRECTORY;
     public static final String FORMAT = ".ezs";
     public static final String infoXML = CASH_ABSOLUTE_PATH + "/info.xml";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
+    public static File DIRECTORY_PREVIEW = new File(PREVIEW_ABSOLUTE_PATH);
 
     /** StateMachine **/
     public static final int PRESENTATION_LIST = 0x00000100;
@@ -55,6 +59,7 @@ public class Utils {
 
     /** Command DownloadService **/
     public static final int STATUS_START = 100;
+    public static final int STATUS_FINISH_PREVIEW = 125;
     public static final int STATUS_FINISH_ONE = 150;
     public static final int STATUS_FINISH_ALL = 200;
     public static final int DOWNLOAD = 10;
@@ -78,6 +83,7 @@ public class Utils {
         ArrayList<String> workFolder = new ArrayList<>();
         workFolder.add(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
         workFolder.add(CASH_ABSOLUTE_PATH);
+        workFolder.add(PREVIEW_ABSOLUTE_PATH);
         workFolder.add(CASH_ABSOLUTE_PATH + "animations");
         workFolder.add(CASH_ABSOLUTE_PATH + "audio");
         workFolder.add(CASH_ABSOLUTE_PATH + "slides");
@@ -143,7 +149,7 @@ public class Utils {
         toast.show();
     }
 
-    public static void writeFile(byte[] content, String FILENAME, String LOG_TAG) {
+    public static void writeFile(byte[] content, String FILENAME, String LOG_TAG, File pathSave) {
         Log.d(LOG_TAG, "writeToFile");
         try (FileOutputStream fos = new FileOutputStream(new File(DIRECTORY, FILENAME))){
             fos.write(content);
