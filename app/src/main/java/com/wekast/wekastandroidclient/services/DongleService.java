@@ -28,7 +28,6 @@ import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
 public class DongleService extends Service {
 
     private ServiceThread thread;
-//    private ServiceThread2 thread2;
 
     class ServiceThread extends Thread {
 
@@ -48,43 +47,23 @@ public class DongleService extends Service {
 
         @Override
         public void run() {
-
             switch (curServiceTask) {
                 case UPLOAD:
                     connectToDefaultAP();
-
-                    // check if need this
-                   // waitWifiConnection();
-
                     sendConfigToDongle();
-                    reconfigDevece();
+                    reconfigDevice();
                     sendTaskToDongle(Utils.createJsonTaskFile());
-
-                    // ???????????????????????
-                    // TODO need another method
-//                    Utils.setFieldSP(getApplicationContext(), "FILE_UPLOAD", "UPLOADED");
+                    // Send file
+                    // pending intent to activity when upload ready
                     socketController.FILE_UPLOADED = true;
                     break;
                 case SLIDE:
-                    // TODO: wait while file finish download
-
                     checkIfFileUploaded();
-
-                    JSONObject jsonObject = Utils.createJsonTaskSlide(curSlide);
-                    String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
-                    String dstPort = DONGLE_SOCKET_PORT;
-                    socketController.initDstAddrPort(dstAddress, dstPort);
-                    try {
-                        socketController.sendTask(jsonObject);
-//                      socketController.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
                     break;
                 default:
                     Log.d(TAG, "COMMAND NOT FOUND");
             }
-
         }
 
         private void sendConfigToDongle() {
@@ -103,34 +82,20 @@ public class DongleService extends Service {
         }
 
         private void setDstAddrAndPort() {
-            String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
+            String dstAddress = Utils.getFieldSP(wifiController.getContext(), "DONGLE_IP");
             String dstPort = DONGLE_SOCKET_PORT;
             socketController.initDstAddrPort(dstAddress, dstPort);
         }
 
-        private void reconfigDevece() {
+        private void reconfigDevice() {
             wifiController.switchFromWifiToAP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
-
-//           TODO: something ??????????????????????
-//            waitWifiConnection();
-            //wait while AP is loading and Client connecting
-//            try {
-//                Thread.sleep(15000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             wifiController.saveConnectedDeviceIp();
         }
 
         private void connectToDefaultAP() {
             // Connecting to Dongle default Access Point
             wifiController.connectToAccessPoint();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             wifiController.saveGatewayIP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
         }
@@ -150,6 +115,8 @@ public class DongleService extends Service {
         }
 
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private final String TAG = "DongleService";
     private WifiController wifiController;
@@ -197,34 +164,15 @@ public class DongleService extends Service {
         switch (intent.getIntExtra("command", 0)){
             case UPLOAD:
                 Log.d(TAG, "readIntent: UPLOAD " +intent.getStringExtra("UPLOAD"));
-
-
                 thread = new ServiceThread(UPLOAD);
                 thread.start();
-
-                // send config
-//                sendConfigToDongle();
-
-//                wifiController.switchFromWifiToAP();
-//                wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
-
-//                wifiController.getDongleIp();
-
-                // determine IP address dongle (list wifi clients OR socket)
-                // Send file command (receive port number)
-                // Send file
-                // pending intent to activity when upload ready
                 break;
             case SLIDE:
                 Log.d(TAG, "readIntent: SLIDE " + intent.getStringExtra("SLIDE"));
                 String curSlide = intent.getStringExtra("SLIDE");
-
-//                thread2 = new ServiceThread2(jsonObject);
-//                thread2.start();
                 thread = new ServiceThread(SLIDE);
                 thread.setCurSlide(curSlide);
                 thread.start();
-
                 break;
             default:
                 Log.d(TAG, "readIntent:  NO COMMAND" );
