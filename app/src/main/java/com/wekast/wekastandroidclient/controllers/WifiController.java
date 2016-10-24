@@ -109,6 +109,10 @@ public class WifiController {
     private WifiConfiguration oldConfig;
     private WifiApManager wifiApManager;
 
+    public Context getContext() {
+        return context;
+    }
+
     public WifiController(Context context) {
         this.context = context;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -257,9 +261,21 @@ public class WifiController {
     }
 
     public void saveGatewayIP() {
-        DhcpInfo info = wifiManager.getDhcpInfo();
-        String strIp = getIpAddr(info.serverAddress);
-        Utils.setFieldSP(context, "DONGLE_IP", strIp);
+        DhcpInfo info = null;
+        boolean isIpReceived = false;
+        while (!isIpReceived) {
+            info = wifiManager.getDhcpInfo();
+            String receivedIp = getIpAddr(info.ipAddress);
+            if (!receivedIp.equals("0.0.0.0"))
+                isIpReceived = true;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        String dongleIp = getIpAddr(info.serverAddress);
+        Utils.setFieldSP(context, "DONGLE_IP", dongleIp);
     }
 
     public String getIpAddr(int ipAddr) {
