@@ -103,17 +103,19 @@ public class DownloadService extends IntentService {
         }
 
         //download from server
-        for (Map.Entry<String, String> item : hashMap.entrySet()) {
-            try {
-                byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                writeFile(content, item.getValue(), TAG);
-            } catch (Exception e) {
-                Log.d(TAG, "download: ERROR download from server");
+        if(!hashMap.isEmpty()) {
+            for (Map.Entry<String, String> item : hashMap.entrySet()) {
+                try {
+                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
+                    writeFile(content, item.getValue(), TAG);
+                } catch (Exception e) {
+                    Log.d(TAG, "download: ERROR download from server");
+                }
+                intent.putExtra("status", STATUS_FINISH_ONE);
+                sendBroadcast(intent);
             }
-            intent.putExtra("status", STATUS_FINISH_ONE);
-            sendBroadcast(intent);
+            Log.d(TAG, "download: OK");
         }
-        Log.d(TAG, "download: OK");
         // сообщаем об окончании задачи
         intent.putExtra("status", STATUS_FINISH_ALL);
         sendBroadcast(intent);

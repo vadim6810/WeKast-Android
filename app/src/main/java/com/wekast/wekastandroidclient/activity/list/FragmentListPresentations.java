@@ -36,7 +36,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  * Created by RDL on 03.09.2016.
  */
 public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
-    private static final String LOG = "FragListPres";
+    private static final String TAG = "FragListPres";
     private SwipeRefreshLayout swipeRefreshLayout;
     private onSomeEventListener someEventListener;
     private ArrayList<String[]> localEzs;
@@ -126,14 +126,14 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                 if (DOWNLOAD == intent.getIntExtra("command", 0)){
                     int status = intent.getIntExtra("status", 0);
                     if (status  == STATUS_START) {
-                        Log.d(LOG, "onReceive: STATUS_START");
+                        Log.d(TAG, "onReceive: STATUS_START");
                     }
                     if (status == STATUS_FINISH_ONE) {
-                        Log.d(LOG, "onReceive: STATUS_FINISH_ONE");
+                        Log.d(TAG, "onReceive: STATUS_FINISH_ONE");
                         updateListPresentations();
                     }
                     if (status == STATUS_FINISH_ALL) {
-                        Log.d(LOG, "onReceive: STATUS_FINISH_ALL");
+                        Log.d(TAG, "onReceive: STATUS_FINISH_ALL");
                         swipeRefreshLayout.setRefreshing(false);
                         updateListPresentations();
                     }
@@ -332,6 +332,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy: broadcastReceiver");
         getActivity().unregisterReceiver(broadcastReceiver);
     }
 }

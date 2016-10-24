@@ -27,7 +27,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  * Created by RDL on 15.07.2016.
  */
 public class WelcomeActivity extends Activity implements FragmentListPresentations.onSomeEventListener {
-    private static final String TAG = "wekastlog";
+    private static final String TAG = "WelcomeActivity";
 
     private TextView tvWelcome;
     Context context = this;
@@ -89,7 +89,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     }
 
     private void initProccesCall() {
-        Log.d(TAG, getClass().getSimpleName() + ":initProccesCall()");
+        Log.d(TAG, "initProccesCall()");
         processCall = new ProccesCall();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.intent.action.PHONE_STATE");
@@ -101,7 +101,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     protected void onStart() {
         super.onStart();
         if(activityState == SLIDER) {
-            Log.d(TAG, getClass().getSimpleName() + ":onStart:processCall");
+            Log.d(TAG, "onStart:processCall()");
             initProccesCall();
         }
     }
@@ -110,7 +110,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     protected void onStop() {
         super.onStop();
         if(activityState == SLIDER) {
-            Log.d(TAG, getClass().getSimpleName() + ":onStop:processCall");
+            Log.d(TAG, "onStop:processCall()");
             CustomPhoneStateListener.blockingCall = false;
             unregisterReceiver(processCall);
         }
