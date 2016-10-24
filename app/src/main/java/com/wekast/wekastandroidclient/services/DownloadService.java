@@ -8,8 +8,10 @@ import android.util.Log;
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
 import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,46 +91,42 @@ public class DownloadService extends IntentService {
         param.put(LOGIN, getFieldSP(this, LOGIN));
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         //getListOnServer
-        try {
             String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
             JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
-            if (jsonObject.getInt("status") == 0) {
-                response = jsonObject.getString("answer");
-                hashMap = mapEzsForDownload(parseJSONArrayMap(response), getAllFilesList());
-            } else {
-                Log.d(TAG, "download: ERROR status");
+            try {
+                if (jsonObject.getInt("status") == 0) {
+                    response = jsonObject.getString("answer");
+                    hashMap = mapEzsForDownload(parseJSONArrayMap(response), getAllFilesList());
+                } else {
+                    Log.d(TAG, "download: ERROR status");
+                }
+            } catch (JSONException e) {
+                Log.d(TAG, "download: " +e.getMessage());
             }
-        } catch (Exception e) {
-            Log.d(TAG, "download: ERROR getListOnServer");
-        }
 
         //download from server
         if(!hashMap.isEmpty()) {
             for (Map.Entry<String, String> item : hashMap.entrySet()) {
                 //download preview
-                try {
-                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_PREVIEW + item.getKey(), param);
-                    writeFile(content, item.getValue(), TAG , DIRECTORY_PREVIEW);
-                } catch (Exception e) {
-                    Log.d(TAG, "download PREVIEW: ERROR download from server");
-                }
+                actionDownload(SERVICE_API_URL_PREVIEW + item.getKey(), param, item.getValue(), DIRECTORY_PREVIEW);
                 intent.putExtra("status", STATUS_FINISH_PREVIEW);
                 sendBroadcast(intent);
 
                 //download EZS
-                try {
-                    byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(SERVICE_API_URL_DOWNLOAD + item.getKey(), param);
-                    writeFile(content, item.getValue(), TAG , DIRECTORY);
-                } catch (Exception e) {
-                    Log.d(TAG, "download EZS: ERROR download from server");
-                }
+                actionDownload(SERVICE_API_URL_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
                 intent.putExtra("status", STATUS_FINISH_ONE);
                 sendBroadcast(intent);
             }
-            Log.d(TAG, "download: OK");
+            Log.d(TAG, "download: ALL OK");
         }
         // сообщаем об окончании задачи
         intent.putExtra("status", STATUS_FINISH_ALL);
         sendBroadcast(intent);
+    }
+
+    private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave) {
+            byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(URL, param);
+            writeFile(content, fileName, TAG , pathSave);
+            Log.d(TAG, "actionDownload:" + fileName);
     }
 }

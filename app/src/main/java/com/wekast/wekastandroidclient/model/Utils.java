@@ -151,11 +151,11 @@ public class Utils {
 
     public static void writeFile(byte[] content, String FILENAME, String LOG_TAG, File pathSave) {
         Log.d(LOG_TAG, "writeToFile");
-        try (FileOutputStream fos = new FileOutputStream(new File(DIRECTORY, FILENAME))){
+        try (FileOutputStream fos = new FileOutputStream(new File(pathSave, FILENAME))){
             fos.write(content);
-            Log.d(LOG_TAG, "finish write!!!");
+            Log.d(LOG_TAG, "finish write File!!!");
         } catch (IOException e) {
-            Log.d(LOG_TAG, "error write!!!");
+            Log.d(LOG_TAG, "ERROR write File!!!");
         }
     }
 

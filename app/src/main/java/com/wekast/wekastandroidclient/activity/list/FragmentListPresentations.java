@@ -128,6 +128,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                     if (status  == STATUS_START) {
                         Log.d(TAG, "onReceive: STATUS_START");
                     }
+                    if (status == STATUS_FINISH_PREVIEW) {
+                        Log.d(TAG, "onReceive: STATUS_FINISH_PREVIEW");
+                        updateListPresentations();
+                    }
                     if (status == STATUS_FINISH_ONE) {
                         Log.d(TAG, "onReceive: STATUS_FINISH_ONE");
                         updateListPresentations();

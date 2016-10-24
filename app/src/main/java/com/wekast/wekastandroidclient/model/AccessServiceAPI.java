@@ -30,6 +30,8 @@ import java.util.Map;
  * Created by RDL on 15.07.2016.
  */
 public class AccessServiceAPI {
+    private static final String TAG = "AccessServiceAPI";
+
     /**
      * Convert json string to json object
      *
@@ -54,11 +56,16 @@ public class AccessServiceAPI {
      * @param params     post data
      * @return json string
      */
-    public static String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
+    public static String getJSONStringWithParam_POST(String serviceUrl, Map<String, String> params) {
         String jsonString = null;
         HttpURLConnection conn = null;
         String line;
-        URL url = new URL(serviceUrl);
+        URL url = null;
+        try {
+            url = new URL(serviceUrl);
+        } catch (MalformedURLException e) {
+            Log.d(TAG, "getJSONStringWithParam_POST: " +e.getMessage());
+        }
         StringBuilder bodyBuilder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
         // constructs the POST body using the parameters
@@ -123,10 +130,15 @@ public class AccessServiceAPI {
      * @return byte[]
      * @throws IOException
      */
-    public byte[] getDownloadWithParam_POST(String serviceUrl, Map<String, String> params) throws IOException {
+    public byte[] getDownloadWithParam_POST(String serviceUrl, Map<String, String> params) {
         HttpURLConnection conn;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        URL url = new URL(serviceUrl);
+        URL url = null;
+        try {
+            url = new URL(serviceUrl);
+        } catch (MalformedURLException e) {
+            Log.d(TAG, "getDownloadWithParam_POST: " +e.getMessage());
+        }
         StringBuilder bodyBuilder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
         // constructs the POST body using the parameters
@@ -156,7 +168,7 @@ public class AccessServiceAPI {
 
             // handle the response
             int status = conn.getResponseCode();
-            Log.w("getJSONStringWithParam", "Response = " + status);
+            Log.d(TAG, "Response = " + status);
             if (status != 200) {
                 throw new IOException("Post failed with error code " + status);
             }
@@ -170,7 +182,7 @@ public class AccessServiceAPI {
             stream.close();
             conn.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
         }
         return byteArrayOutputStream.toByteArray();
     }
