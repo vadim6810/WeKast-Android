@@ -21,6 +21,7 @@ public class SocketController {
     private Socket socket;
     private String dstAddr;
     private int dstPort;
+    public boolean FILE_UPLOADED = false;
 
     public SocketController(CommandController commandController) {
         this.commandController = commandController;

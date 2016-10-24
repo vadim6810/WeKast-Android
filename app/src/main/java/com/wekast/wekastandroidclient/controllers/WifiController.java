@@ -1,18 +1,13 @@
 package com.wekast.wekastandroidclient.controllers;
 
-import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
-import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
-
 
 import com.wekast.wekastandroidclient.model.ClientScanResult;
 import com.wekast.wekastandroidclient.model.Utils;
@@ -21,7 +16,6 @@ import com.wekast.wekastandroidclient.model.WifiApManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ELAD on 10/14/2016.
@@ -29,10 +23,8 @@ import java.util.List;
 
 public class WifiController {
 
-
     private static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
     private static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
-    private static final String TAG = "dongle.wekast";
 
     private static Method setWifiApEnabled;
     private static Method isWifiApEnabled;
@@ -85,7 +77,6 @@ public class WifiController {
         return false;
     }
 
-
     static {
         // lookup methods and fields not defined publicly in the SDK.
         Class<?> cls = WifiManager.class;
@@ -110,6 +101,8 @@ public class WifiController {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     private final boolean wifiEnabled;
     private final WifiManager wifiManager;
     private Context context;
@@ -123,13 +116,11 @@ public class WifiController {
         oldConfig = getWifiApConfiguration(wifiManager);
         // Сохраняем состояние Wifi
         wifiEnabled = wifiManager.isWifiEnabled();
-//        wifiApManager = new WifiApManager(context);
+        wifiApManager = new WifiApManager(context);
     }
 
     private WifiConfiguration configureAP(String ssid, String pass) {
         WifiConfiguration wifiConfig = new WifiConfiguration();
-//        wifiConfig.SSID = "wekast";
-//        wifiConfig.preSharedKey = "12345678";
         wifiConfig.SSID = ssid;
         wifiConfig.preSharedKey = pass;
         wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
@@ -145,15 +136,14 @@ public class WifiController {
     }
 
     /**
-     * Start Access Point on Dongle with default settings
+     * Start Access Point
      *
-     * @return
+     * @return true if Access Point started
      */
     private boolean startAP() {
         String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
         String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
         return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
-//        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureWifi(), true);
     }
 
     private boolean stopAP() {
@@ -236,19 +226,14 @@ public class WifiController {
     }
 
     public void changeState(WifiState wifiState) {
-        //todo in progress
+        // TODO: maybe pass here functions
         if (wifiState == WifiState.WIFI_STATE_CONNECT) {
-//            stopAP();
-//            startConnection();
             curWifiState = WifiState.WIFI_STATE_CONNECT;
         } else if (wifiState == WifiState.WIFI_STATE_AP) {
-//            startAP();
             curWifiState = WifiState.WIFI_STATE_AP;
+        } else if (wifiState == WifiState.WIFI_STATE_OFF) {
+            curWifiState = WifiState.WIFI_STATE_OFF;
         }
-//        else if (wifiState == WifiState.WIFI_STATE_OFF) {
-//            stopAP();
-//            curWifiState = WifiState.WIFI_STATE_AP;
-//        }
     }
 
     public enum WifiState {
@@ -256,10 +241,6 @@ public class WifiController {
         WIFI_STATE_AP,
         WIFI_STATE_CONNECT
     }
-
-//    public int getWifiModuleState() {
-//        return wifiManager.getWifiState();
-//    }
 
     public boolean isWifiEnabled() {
         // TODO: refactor to less rows
@@ -291,56 +272,21 @@ public class WifiController {
         return ipString;
     }
 
-//    public String getDongleIp() {
-//        WifiP2pManager wifiP2pManager = (WifiP2pManager) context.getSystemService(Context.WIFI_P2P_SERVICE);
-//        List list = peers;
-//
-//        return "";
-//    }
-
-    private List peers = new ArrayList();
-    private WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
-        @Override
-        public void onPeersAvailable(WifiP2pDeviceList peerList) {
-
-            // Out with the old, in with the new.
-            peers.clear();
-            peers.addAll(peerList.getDeviceList());
-
-            // If an AdapterView is backed by this data, notify it
-            // of the change.  For instance, if you have a ListView of available
-            // peers, trigger an update.
-//            ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
-//            if (peers.size() == 0) {
-//                Log.d(WiFiDirectActivity.TAG, "No devices found");
-//                return;
-//            }
-        }
-    };
-
-//    private void scan() {
-//        ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
-//        Log.i(TAG, "Clients: \n");
-//        for (ClientScanResult clientScanResult : clients) {
-//            Log.i(TAG, "####################\n");
-//            Log.i(TAG, "IpAddr: " + clientScanResult.getIpAddr() + "\n");
-//            Log.i(TAG, "Device: " + clientScanResult.getDevice() + "\n");
-//            Log.i(TAG, "HWAddr: " + clientScanResult.getHWAddr() + "\n");
-//            Log.i(TAG, "isReachable: " + clientScanResult.isReachable() + "\n");
-//        }
-//    }
-
+    // TODO: if clients more than one think about new solution
     public void saveConnectedDeviceIp() {
-        // TODO: wait more time while dongle connect to client Accees Point
-        wifiApManager = new WifiApManager(context);
-        String ip = "";
-        ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
-        if (clients.size() == 1) {
-            ClientScanResult clientScanResult = clients.get(0);
-            ip = clientScanResult.getIpAddr();
-            Utils.setFieldSP(context, "DONGLE_IP", ip);
+        boolean isSavedDeviceIp = false;
+        while (!isSavedDeviceIp) {
+            ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
+            if (clients.size() > 0) {
+                ClientScanResult clientScanResult = clients.get(0);
+                if (clientScanResult.getDevice().equals("ap0")) {
+                    String ip = clientScanResult.getIpAddr();
+                    Log.i("------------------- IP", ip);
+                    Utils.setFieldSP(context, "DONGLE_IP", ip);
+                    isSavedDeviceIp = true;
+                }
+            }
         }
-        Log.i("------------------- IP", ip);
     }
 
 }

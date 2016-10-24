@@ -18,6 +18,7 @@ import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
 import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
+import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.services.DongleService;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
@@ -51,6 +52,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         activityState = PRESENTATION_LIST;
         fragmentTransaction.commit();
 
+        clearSharedPreferencesValues();
         startService(new Intent(this, DongleService.class));
     }
 
@@ -139,6 +141,10 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
                 fragmentTransaction.commit();
                 break;
         }
+    }
+
+    private void clearSharedPreferencesValues() {
+        Utils.setFieldSP(context, "DONGLE_IP", "");
     }
 
 }

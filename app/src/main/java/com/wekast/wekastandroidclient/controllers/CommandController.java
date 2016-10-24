@@ -51,9 +51,6 @@ public class CommandController {
         }
     }
 
-    // JSON commands:
-    // {"command":"config","args":{"ssid":"wekast","password":"87654321"}}
-
     Answer processTask(String task) {
         try {
             ICommand command = parseCommand(task);

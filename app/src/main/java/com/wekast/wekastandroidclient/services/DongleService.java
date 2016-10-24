@@ -28,78 +28,127 @@ import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
 public class DongleService extends Service {
 
     private ServiceThread thread;
-    private ServiceThread2 thread2;
+//    private ServiceThread2 thread2;
 
     class ServiceThread extends Thread {
 
-        ServiceThread() {
+        private int curServiceTask;
+        private String curSlide;
+
+        ServiceThread(int task) {
             setDaemon(true);
             setName("DongleServiceThread");
+            this.curServiceTask = task;
+            this.curSlide = "";
+        }
+
+        public void setCurSlide(String slide) {
+            this.curSlide = slide;
         }
 
         @Override
         public void run() {
-            String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
-            String dstPort = DONGLE_SOCKET_PORT;
 
+            switch (curServiceTask) {
+                case UPLOAD:
+                    connectToDefaultAP();
+
+                    // check if need this
+                   // waitWifiConnection();
+
+                    sendConfigToDongle();
+                    reconfigDevece();
+                    sendTaskToDongle(Utils.createJsonTaskFile());
+
+                    // ???????????????????????
+                    // TODO need another method
+//                    Utils.setFieldSP(getApplicationContext(), "FILE_UPLOAD", "UPLOADED");
+                    socketController.FILE_UPLOADED = true;
+                    break;
+                case SLIDE:
+                    // TODO: wait while file finish download
+
+                    checkIfFileUploaded();
+
+                    JSONObject jsonObject = Utils.createJsonTaskSlide(curSlide);
+                    String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
+                    String dstPort = DONGLE_SOCKET_PORT;
+                    socketController.initDstAddrPort(dstAddress, dstPort);
+                    try {
+                        socketController.sendTask(jsonObject);
+//                      socketController.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "COMMAND NOT FOUND");
+            }
+
+        }
+
+        private void sendConfigToDongle() {
+            setDstAddrAndPort();
             String[] ssidPass = generateRandomSsidPass();
+            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
+        }
 
-            JSONObject jsonObject = Utils.createJsonTaskSendSsidPass("config", "wekastrandom", "87654321");
-            socketController.initDstAddrPort(dstAddress, dstPort);
-
-            waitWifiConnection();
-
+        private void sendTaskToDongle(JSONObject jsonObject) {
+            setDstAddrAndPort();
             try {
                 socketController.sendTask(jsonObject);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
 
-            wifiController.saveWifiConfig(ssidPass[0], ssidPass[1]);
+        private void setDstAddrAndPort() {
+            String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
+            String dstPort = DONGLE_SOCKET_PORT;
+            socketController.initDstAddrPort(dstAddress, dstPort);
+        }
+
+        private void reconfigDevece() {
             wifiController.switchFromWifiToAP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
 
+//           TODO: something ??????????????????????
+//            waitWifiConnection();
             //wait while AP is loading and Client connecting
+//            try {
+//                Thread.sleep(15000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            wifiController.saveConnectedDeviceIp();
+        }
+
+        private void connectToDefaultAP() {
+            // Connecting to Dongle default Access Point
+            wifiController.connectToAccessPoint();
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            wifiController.saveConnectedDeviceIp();
-            dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
-            socketController.initDstAddrPort(dstAddress, dstPort);
+            wifiController.saveGatewayIP();
+            wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
+        }
 
-            jsonObject = Utils.createJsonTaskFile();
-            try {
-                socketController.sendTask(jsonObject);
-            } catch (IOException e) {
-                e.printStackTrace();
+        private void checkIfFileUploaded() {
+//            String fileUploadStatus = Utils.getFieldSP(getApplicationContext(), "FILE_UPLOAD");
+            boolean isFileUploaded = socketController.FILE_UPLOADED;
+//            if (!fileUploadStatus.equals("UPLOADED")) {
+            if (!isFileUploaded) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                checkIfFileUploaded();
             }
         }
-    }
 
-    class ServiceThread2 extends Thread {
-
-        private JSONObject jsonObject;
-
-        ServiceThread2(JSONObject jsonObject) {
-            setDaemon(true);
-            setName("DongleServiceThread2");
-            this.jsonObject = jsonObject;
-        }
-
-        @Override
-        public void run() {
-            String dstAddress = Utils.getFieldSP(getApplicationContext(), "DONGLE_IP");
-            String dstPort = DONGLE_SOCKET_PORT;
-            socketController.initDstAddrPort(dstAddress, dstPort);
-            try {
-                socketController.sendTask(jsonObject);
-//                socketController.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private final String TAG = "DongleService";
@@ -143,20 +192,14 @@ public class DongleService extends Service {
     }
 
     private void readIntent(Intent intent) {
+        cleanSharedPreferences();
+
         switch (intent.getIntExtra("command", 0)){
             case UPLOAD:
                 Log.d(TAG, "readIntent: UPLOAD " +intent.getStringExtra("UPLOAD"));
-                // Connecting to Dongle default Access Point
-                wifiController.connectToAccessPoint();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                wifiController.saveGatewayIP();
-                wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
 
-                thread = new ServiceThread();
+
+                thread = new ServiceThread(UPLOAD);
                 thread.start();
 
                 // send config
@@ -175,13 +218,21 @@ public class DongleService extends Service {
             case SLIDE:
                 Log.d(TAG, "readIntent: SLIDE " + intent.getStringExtra("SLIDE"));
                 String curSlide = intent.getStringExtra("SLIDE");
-                JSONObject jsonObject = Utils.createJsonTaskSlide(curSlide);
-                thread2 = new ServiceThread2(jsonObject);
-                thread2.start();
+
+//                thread2 = new ServiceThread2(jsonObject);
+//                thread2.start();
+                thread = new ServiceThread(SLIDE);
+                thread.setCurSlide(curSlide);
+                thread.start();
+
                 break;
             default:
                 Log.d(TAG, "readIntent:  NO COMMAND" );
         }
+    }
+
+    private void cleanSharedPreferences() {
+        Utils.setFieldSP(getApplicationContext(), "FILE_UPLOAD", "");
     }
 
     @Override
@@ -203,10 +254,12 @@ public class DongleService extends Service {
     private String[] generateRandomSsidPass() {
         Random random = new Random();
         String[] ssidPass = new String[2];
-        ssidPass[0] = randomSsid(random);
-        ssidPass[1] = String.valueOf(random.nextInt(99999999 - 10000000) + 10000000);
+//        ssidPass[0] = randomSsid(random);
+//        ssidPass[1] = String.valueOf(random.nextInt(99999999 - 10000000) + 10000000);
         ssidPass[0] = "wekastrandom";
         ssidPass[1] = "87654321";
+        // TODO: check if it need
+        wifiController.saveWifiConfig(ssidPass[0], ssidPass[1]);
         return ssidPass;
     }
 
