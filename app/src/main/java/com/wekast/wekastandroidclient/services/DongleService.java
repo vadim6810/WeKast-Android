@@ -12,6 +12,7 @@ import com.wekast.wekastandroidclient.model.Utils;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -33,6 +34,7 @@ public class DongleService extends Service {
 
         private int curServiceTask;
         private String curSlide;
+        private String presentationPath;
 
         ServiceThread(int task) {
             setDaemon(true);
@@ -45,6 +47,10 @@ public class DongleService extends Service {
             this.curSlide = slide;
         }
 
+        public void setPresentationPath(String presentationPath) {
+            this.presentationPath = presentationPath;
+        }
+
         @Override
         public void run() {
             switch (curServiceTask) {
@@ -52,7 +58,12 @@ public class DongleService extends Service {
                     connectToDefaultAP();
                     sendConfigToDongle();
                     reconfigDevice();
-                    sendTaskToDongle(Utils.createJsonTaskFile());
+
+                    File presentationFile = new File(presentationPath);
+                    int fileSize = (int) presentationFile.length();
+
+                    sendTaskToDongle(Utils.createJsonTaskFile(String.valueOf(fileSize)));
+                    sendFileToDongle();
                     // Send file
                     // pending intent to activity when upload ready
                     socketController.FILE_UPLOADED = true;
@@ -76,6 +87,14 @@ public class DongleService extends Service {
             setDstAddrAndPort();
             try {
                 socketController.sendTask(jsonObject);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void sendFileToDongle() {
+            try {
+                socketController.sendFile("/storage/sdcard0/WeKast/flip_split3.ezs");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,6 +184,7 @@ public class DongleService extends Service {
             case UPLOAD:
                 Log.d(TAG, "readIntent: UPLOAD " +intent.getStringExtra("UPLOAD"));
                 thread = new ServiceThread(UPLOAD);
+                thread.setPresentationPath(intent.getStringExtra("UPLOAD"));
                 thread.start();
                 break;
             case SLIDE:
@@ -221,19 +241,5 @@ public class DongleService extends Service {
         }
         return randomStringBuilder.toString();
     }
-
-//        private void uploadPresentationToDongle(String presPath) {
-//        String curPresPath = presPath;
-//        JSONObject task = Utils.createJsonTask("uploadFile");
-//        // TODO: why ip 192.168.1.1? must be 192.168.43.48
-////        String curDongleIp = Utils.getFieldSP(context, "DONGLE_IP");
-//        String curDongleIp = "192.168.43.48";
-////        String curDongleIp = "192.168.43.248";
-//        String curDonglePort = Utils.getFieldSP(context, "DONGLE_PORT");
-//        Utils.setFieldSP(context, "EZS_TO_DONGLE_PATH", presPath);
-//        SenderTasksToDongle dongleSenderTasks = new SenderTasksToDongle(curDongleIp, curDonglePort, task , context);
-//        dongleSenderTasks.start();
-//        int i = 0;
-//    }
 
 }

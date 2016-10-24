@@ -117,6 +117,7 @@ public class Utils {
         SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
         return  settingsActivity.contains(field);
     }
+
     public static String getFieldSP(Context context, String field) {
         SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
         String result = settingsActivity.getString(field, "");
@@ -269,10 +270,13 @@ public class Utils {
         return jsonObject;
     }
 
-    public static JSONObject createJsonTaskFile() {
+    public static JSONObject createJsonTaskFile(String fileSize) {
         JSONObject jsonObject = new JSONObject();
+        JSONObject args = new JSONObject();
         try {
+            args.put("fileSize", fileSize);
             jsonObject.put("command", "file");
+            jsonObject.put("args", args);
         } catch (JSONException e) {
             e.printStackTrace();
         }
