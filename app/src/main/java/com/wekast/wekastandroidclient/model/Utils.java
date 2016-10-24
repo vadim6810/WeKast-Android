@@ -102,8 +102,8 @@ public class Utils {
         }
     }
 
-    public static void clearWorkDirectory(){
-        File[] clearWorkDirectory = (new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY + CASH_DIRECTORY)).listFiles();
+    public static void clearWorkDirectory(String absolutePath){
+        File[] clearWorkDirectory = (new File(absolutePath)).listFiles();
         for (File tmp : clearWorkDirectory) {
             clearDirectory(tmp);
         }
@@ -199,13 +199,14 @@ public class Utils {
         return fileList;
     }
 
-    public static ArrayList<String> getAllFilesLocal() {
-        ArrayList<String> fileList = new ArrayList<>();
-        File[] filesList = DIRECTORY.listFiles();
+    public static ArrayList<String[]> getAllPreviewList() {
+        ArrayList<String[]> fileList = new ArrayList<>();
+        File[] filesList = DIRECTORY_PREVIEW.listFiles();
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
-                if(filesList[i].getName().endsWith(FORMAT))
-                    fileList.add(filesList[i].getName());
+//                if(filesList[i].getName().endsWith(FORMAT))
+                    fileList.add(new String[]{filesList[i].getName(),
+                            String.valueOf(filesList[i].getAbsoluteFile())});
             }
         }
         return fileList;

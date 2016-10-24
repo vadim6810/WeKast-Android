@@ -42,7 +42,7 @@ public class EquationsBitmap {
         return bmp;
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(byte[] image, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromByte(byte[] image, int reqWidth, int reqHeight) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

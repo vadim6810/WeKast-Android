@@ -40,13 +40,13 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private SwipeRefreshLayout swipeRefreshLayout;
     private onSomeEventListener someEventListener;
     private ArrayList<String[]> localEzs;
+    private ArrayList<String[]> localPrev;
     private ArrayList<String> serverEzsDel;
     private ArrayList<RowItem> rowItems;
     private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
     public final static String BROADCAST_ACTION = "com.wekast.wekastandroidclient.activity.list";
     BroadcastReceiver broadcastReceiver;
-
 
     @Override
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
@@ -134,11 +134,13 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                     }
                     if (status == STATUS_FINISH_ONE) {
                         Log.d(TAG, "onReceive: STATUS_FINISH_ONE");
+                        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
                         updateListPresentations();
                     }
                     if (status == STATUS_FINISH_ALL) {
                         Log.d(TAG, "onReceive: STATUS_FINISH_ALL");
                         swipeRefreshLayout.setRefreshing(false);
+                        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
                         updateListPresentations();
                     }
                 }
@@ -167,10 +169,17 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         listView.setMultiChoiceModeListener(multiChoice);
 
     }
+
     private void createListPresentations() {
         localEzs = getAllFilesList();
+        localPrev = getAllPreviewList();
         for (int i = 0; i < localEzs.size(); i++) {
-            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1]);
+            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
+            rowItems.add(items);
+        }
+
+        for (int i = 0; i < localPrev.size(); i++) {
+            RowItem items = new RowItem("download..." + localPrev.get(i)[0], localPrev.get(i)[1], true);
             rowItems.add(items);
         }
     }
@@ -190,7 +199,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             if(unzipAsyncTask != null){
                 unzipAsyncTask.cancel(true);
             }
-            clearWorkDirectory();
+            clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
             unzipAsyncTask = new UnzipAsyncTask(position);
             unzipAsyncTask.execute();
         } else someEventListener.someEvent(rowItems.get(position).getPath());
@@ -209,15 +218,30 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         private String title;
         private String path;
         private boolean isSelected;
+        private boolean isPreview;
         private Bitmap logo;
 
 
-        public RowItem(String title, String path) {
+        public RowItem(String title, String path, boolean isPreview) {
             this.title = title;
             this.path = path;
+            this.isPreview = isPreview;
             this.isSelected = false;
-            byte[] image = unZipPreview(path);
-            this.logo = EquationsBitmap.decodeSampledBitmapFromFile(image, 80, 60);
+            if (!isPreview){
+                byte[] image = unZipPreview(path);
+                this.logo = EquationsBitmap.decodeSampledBitmapFromByte(image, 100, 80);
+            } else {
+                this.logo = EquationsBitmap.decodeSampledBitmapFromFile(path, 100, 80);
+            }
+
+        }
+
+        public boolean isPreview() {
+            return isPreview;
+        }
+
+        public void setPreview(boolean preview) {
+            isPreview = preview;
         }
 
         public Bitmap getLogo() {

@@ -15,7 +15,7 @@ import com.wekast.wekastandroidclient.model.Utils;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+import static com.wekast.wekastandroidclient.model.Utils.*;
 
 
 /**
@@ -38,7 +38,8 @@ public class InitActivity extends Activity {
         startVideo.setVideoURI(videoUri);
         startVideo.start();
 
-        Utils.initWorkFolder();
+        initWorkFolder();
+        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
 
         new Timer().schedule(new InitActivityTimer(), 3500);
     }
