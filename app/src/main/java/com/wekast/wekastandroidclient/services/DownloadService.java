@@ -12,6 +12,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,9 +132,15 @@ public class DownloadService extends IntentService {
         sendBroadcast(intent);
     }
 
-    private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave) {
-            byte[] content = m_AccessServiceAPI.getDownloadWithParam_POST(URL, param);
-            writeFile(content, fileName, TAG , pathSave);
+    private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave)  {
+        try (FileOutputStream fos = new FileOutputStream(new File(pathSave, fileName))){
             Log.d(TAG, "actionDownload:" + fileName);
+            m_AccessServiceAPI.getDownloadWithParam_POST(URL, param, fos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//            writeFile(content, fileName, TAG , pathSave);
     }
 }

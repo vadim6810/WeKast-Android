@@ -13,6 +13,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -130,9 +133,9 @@ public class AccessServiceAPI {
      * @return byte[]
      * @throws IOException
      */
-    public byte[] getDownloadWithParam_POST(String serviceUrl, Map<String, String> params) {
+    public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params, FileOutputStream file) throws FileNotFoundException {
         HttpURLConnection conn;
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         URL url = null;
         try {
             url = new URL(serviceUrl);
@@ -168,23 +171,26 @@ public class AccessServiceAPI {
 
             // handle the response
             int status = conn.getResponseCode();
+
             Log.d(TAG, "Response = " + status);
             if (status != 200) {
                 throw new IOException("Post failed with error code " + status);
             }
+            int len = Integer.valueOf(conn.getHeaderField("Content-Length"));
 
             InputStream stream = conn.getInputStream();
             int bufferLength ;
-            byte[] buffer = new byte[100*1024];
+            byte[] buffer = new byte[1024 * 1024];
             while ((bufferLength = stream.read(buffer)) > 0) {
-                byteArrayOutputStream.write(buffer, 0, bufferLength );
+                //byteArrayOutputStream.write(buffer, 0, bufferLength );
+                file.write(buffer);
             }
             stream.close();
             conn.disconnect();
         } catch (Exception e) {
             Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
         }
-        return byteArrayOutputStream.toByteArray();
+        return true;//byteArrayOutputStream.toByteArray();
     }
 
     public void taskLogin(String login, String password, Context context, int whoCalled) {
