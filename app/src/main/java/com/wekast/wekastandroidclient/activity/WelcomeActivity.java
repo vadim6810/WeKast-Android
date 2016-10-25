@@ -118,6 +118,8 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
 
     @Override
     protected void onDestroy() {
+        // TODO: stopService DongleService
+        stopService(new Intent(this, DongleService.class));
         super.onDestroy();
     }
 

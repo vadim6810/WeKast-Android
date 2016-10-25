@@ -63,7 +63,7 @@ public class DongleService extends Service {
                     int fileSize = (int) presentationFile.length();
 
                     sendTaskToDongle(Utils.createJsonTaskFile(String.valueOf(fileSize)));
-                    sendFileToDongle();
+                    sendFileToDongle(presentationPath);
                     // Send file
                     // pending intent to activity when upload ready
                     socketController.FILE_UPLOADED = true;
@@ -92,9 +92,9 @@ public class DongleService extends Service {
             }
         }
 
-        private void sendFileToDongle() {
+        private void sendFileToDongle(String filePath) {
             try {
-                socketController.sendFile("/storage/sdcard0/WeKast/flip_split3.ezs");
+                socketController.sendFile(filePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
