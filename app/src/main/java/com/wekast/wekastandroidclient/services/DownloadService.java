@@ -91,31 +91,36 @@ public class DownloadService extends IntentService {
         param.put(LOGIN, getFieldSP(this, LOGIN));
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         //getListOnServer
+        try {
             String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
             JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
-            try {
+
                 if (jsonObject.getInt("status") == 0) {
                     response = jsonObject.getString("answer");
                     hashMap = mapEzsForDownload(parseJSONArrayMap(response), getAllFilesList());
                 } else {
                     Log.d(TAG, "download: ERROR status");
                 }
-            } catch (JSONException e) {
-                Log.d(TAG, "download: " +e.getMessage());
+            } catch (Exception e) {
+                Log.d(TAG, "download: ERROR " +e.getMessage());
             }
 
         //download from server
         if(!hashMap.isEmpty()) {
-            for (Map.Entry<String, String> item : hashMap.entrySet()) {
-                //download preview
-                actionDownload(SERVICE_API_URL_PREVIEW + item.getKey(), param, item.getValue(), DIRECTORY_PREVIEW);
-                intent.putExtra("status", STATUS_FINISH_PREVIEW);
-                sendBroadcast(intent);
+            try {
+                for (Map.Entry<String, String> item : hashMap.entrySet()) {
+                    //download preview
+                    actionDownload(SERVICE_API_URL_PREVIEW + item.getKey(), param, item.getValue(), DIRECTORY_PREVIEW);
+                    intent.putExtra("status", STATUS_FINISH_PREVIEW);
+                    sendBroadcast(intent);
 
-                //download EZS
-                actionDownload(SERVICE_API_URL_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
-                intent.putExtra("status", STATUS_FINISH_ONE);
-                sendBroadcast(intent);
+                    //download EZS
+                    actionDownload(SERVICE_API_URL_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
+                    intent.putExtra("status", STATUS_FINISH_ONE);
+                    sendBroadcast(intent);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "download: ERROR " +e.getMessage());
             }
             Log.d(TAG, "download: ALL OK");
         }
