@@ -323,8 +323,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
             txtTitle.setText(row_pos.getTitle());
             if(row_pos.isPreview()){
+                imgIcon.setImageAlpha(100);
                 progressBar.setVisibility(View.VISIBLE);
             } else {
+                imgIcon.setImageAlpha(255);
                 progressBar.setVisibility(View.GONE);
             }
 
