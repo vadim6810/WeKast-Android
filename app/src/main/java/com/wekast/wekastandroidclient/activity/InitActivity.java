@@ -33,13 +33,12 @@ public class InitActivity extends Activity {
 
         setContentView(R.layout.activity_init);
 
+        initWorkFolder();
+        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
         startVideo = (VideoView) findViewById(R.id.videoView);
         Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.splash);
         startVideo.setVideoURI(videoUri);
         startVideo.start();
-
-        initWorkFolder();
-        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
 
         new Timer().schedule(new InitActivityTimer(), 3500);
     }

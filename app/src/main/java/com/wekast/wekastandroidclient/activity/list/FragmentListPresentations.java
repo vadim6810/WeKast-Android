@@ -108,8 +108,6 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         View view = inflater.inflate(R.layout.fragment_listpresentations, null);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(this);
-        startDownloadService();
-        startBroadcastReceiver();
         return view;
     }
 
@@ -169,20 +167,22 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
 
+        startDownloadService();
+        startBroadcastReceiver();
     }
 
     private void createListPresentations() {
         localEzs = getAllFilesList();
         localPrev = getAllPreviewList();
-        for (int i = 0; i < localEzs.size(); i++) {
-            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
-            rowItems.add(items);
-        }
+            for (int i = 0; i < localEzs.size(); i++) {
+                RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
+                rowItems.add(items);
+            }
 
-        for (int i = 0; i < localPrev.size(); i++) {
-            RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
-            rowItems.add(items);
-        }
+            for (int i = 0; i < localPrev.size(); i++) {
+                RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
+                rowItems.add(items);
+            }
     }
 
     private void updateListPresentations() {

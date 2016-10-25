@@ -133,9 +133,9 @@ public class AccessServiceAPI {
      * @return byte[]
      * @throws IOException
      */
-    public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params, FileOutputStream file) throws FileNotFoundException {
+    public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
+                                             FileOutputStream file) {
         HttpURLConnection conn;
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         URL url = null;
         try {
             url = new URL(serviceUrl);
@@ -176,21 +176,21 @@ public class AccessServiceAPI {
             if (status != 200) {
                 throw new IOException("Post failed with error code " + status);
             }
-            int len = Integer.valueOf(conn.getHeaderField("Content-Length"));
+//            int len = Integer.valueOf(conn.getHeaderField("Content-Length"));
 
             InputStream stream = conn.getInputStream();
             int bufferLength ;
-            byte[] buffer = new byte[1024 * 1024];
+            byte[] buffer = new byte[1024 * 10];
             while ((bufferLength = stream.read(buffer)) > 0) {
                 //byteArrayOutputStream.write(buffer, 0, bufferLength );
-                file.write(buffer);
+                file.write(buffer, 0, bufferLength);
             }
             stream.close();
             conn.disconnect();
         } catch (Exception e) {
             Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
         }
-        return true;//byteArrayOutputStream.toByteArray();
+        return true;
     }
 
     public void taskLogin(String login, String password, Context context, int whoCalled) {

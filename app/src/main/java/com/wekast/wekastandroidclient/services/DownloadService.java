@@ -133,14 +133,15 @@ public class DownloadService extends IntentService {
     }
 
     private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave)  {
-        try (FileOutputStream fos = new FileOutputStream(new File(pathSave, fileName))){
-            Log.d(TAG, "actionDownload:" + fileName);
+        File tmpFile = new File(pathSave, fileName + ".tmp");
+        Log.d(TAG, "actionDownload: " + tmpFile);
+        try (FileOutputStream fos = new FileOutputStream(tmpFile)){
             m_AccessServiceAPI.getDownloadWithParam_POST(URL, param, fos);
-        } catch (FileNotFoundException e) {
+            tmpFile.renameTo(new File(pathSave, fileName));
+         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-//            writeFile(content, fileName, TAG , pathSave);
     }
 }

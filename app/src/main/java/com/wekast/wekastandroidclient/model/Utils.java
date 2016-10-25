@@ -104,10 +104,12 @@ public class Utils {
 
     public static void clearWorkDirectory(String absolutePath){
         File[] clearWorkDirectory = (new File(absolutePath)).listFiles();
-        for (File tmp : clearWorkDirectory) {
-            clearDirectory(tmp);
+        if(clearWorkDirectory != null){
+            for (File tmp : clearWorkDirectory) {
+                clearDirectory(tmp);
+            }
         }
-    }
+     }
 
     private static void clearDirectory(File file) {
         if (!file.exists())
