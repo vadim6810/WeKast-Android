@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.wekast.wekastandroidclient.controllers.CommandController;
+import com.wekast.wekastandroidclient.commands.ConfigCommand;
+import com.wekast.wekastandroidclient.commands.FileCommand;
+import com.wekast.wekastandroidclient.commands.SlideCommand;
 import com.wekast.wekastandroidclient.controllers.SocketController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.model.Utils;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,23 +28,38 @@ import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
 
 public class DongleService extends Service {
 
-    private ServiceThread thread;
+    private ServiceThread serviceThread;
 
     class ServiceThread extends Thread {
 
         private int curServiceTask;
         private String curSlide;
+        private String curAnimation;
+        private String curVideo;
+        private String curAudio;
         private String presentationPath;
 
         ServiceThread(int task) {
             setDaemon(true);
-            setName("DongleServiceThread");
+            setName("DonServThread");
             this.curServiceTask = task;
             this.curSlide = "";
         }
 
         public void setCurSlide(String slide) {
             this.curSlide = slide;
+        }
+
+        public void setCurAnimation(String animation) {
+            this.curAnimation = animation;
+        }
+
+        public void setCurVideo(String video) {
+            this.curVideo = video;
+        }
+
+        public void setCurAudio(String audio) {
+            this.curAudio = audio;
         }
 
         public void setPresentationPath(String presentationPath) {
@@ -62,7 +77,8 @@ public class DongleService extends Service {
                     File presentationFile = new File(presentationPath);
                     int fileSize = (int) presentationFile.length();
 
-                    sendTaskToDongle(Utils.createJsonTaskFile(String.valueOf(fileSize)));
+//                    sendTaskToDongle(Utils.createJsonTaskFile(String.valueOf(fileSize)));
+                    sendTaskToDongle(new FileCommand(String.valueOf(fileSize)).getJsonString());
                     sendFileToDongle(presentationPath);
                     // Send file
                     // pending intent to activity when upload ready
@@ -70,23 +86,29 @@ public class DongleService extends Service {
                     break;
                 case SLIDE:
                     checkIfFileUploaded();
-                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
+//                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
+                    sendTaskToDongle(new SlideCommand(curSlide, curAnimation, curVideo, curAudio).getJsonString());
                     break;
                 default:
                     Log.d(TAG, "COMMAND NOT FOUND");
             }
+            this.interrupt();
         }
 
         private void sendConfigToDongle() {
             setDstAddrAndPort();
             String[] ssidPass = generateRandomSsidPass();
-            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
+//            ConfigCommand configCommand = new ConfigCommand(ssidPass[0], ssidPass[1]);
+//            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
+            sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
         }
 
-        private void sendTaskToDongle(JSONObject jsonObject) {
+//        private void sendTaskToDongle(JSONObject jsonObject) {
+        private void sendTaskToDongle(String command) {
             setDstAddrAndPort();
             try {
-                socketController.sendTask(jsonObject);
+                socketController.sendTask(command);
+//                socketController.sendTask(jsonObject);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -140,7 +162,7 @@ public class DongleService extends Service {
     private final String TAG = "DongleService";
     private WifiController wifiController;
     private SocketController socketController;
-    private CommandController commandController;
+//    private CommandController commandController;
 
     public WifiController getWifiController() {
         return wifiController;
@@ -150,24 +172,28 @@ public class DongleService extends Service {
         return socketController;
     }
 
-    public CommandController getCommandController() {
-        return commandController;
-    }
+//    public CommandController getCommandController() {
+//        return commandController;
+//    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Thread.currentThread().setName("DongleService");
         wifiController = new WifiController(getApplicationContext());
         wifiController.saveWifiConfig(DONGLE_AP_SSID_DEFAULT, DONGLE_AP_PASS_DEFAULT);
-        commandController = new CommandController(this);
-        socketController = new SocketController(commandController);
+//        commandController = new CommandController(this);
+//        socketController = new SocketController(commandController);
+        socketController = new SocketController();
         Log.d(TAG, "onCreate: ");
     }
 
     @Override
     public void onDestroy() {
+        if (serviceThread != null) {
+            serviceThread.interrupt();
+        }
         super.onDestroy();
-        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
@@ -180,22 +206,28 @@ public class DongleService extends Service {
     private void readIntent(Intent intent) {
         cleanSharedPreferences();
 
-        switch (intent.getIntExtra("command", 0)){
+        switch (intent.getIntExtra("command", 0)) {
             case UPLOAD:
-                Log.d(TAG, "readIntent: UPLOAD " +intent.getStringExtra("UPLOAD"));
-                thread = new ServiceThread(UPLOAD);
-                thread.setPresentationPath(intent.getStringExtra("UPLOAD"));
-                thread.start();
+                Log.d(TAG, "readIntent: UPLOAD " + intent.getStringExtra("UPLOAD"));
+                serviceThread = new ServiceThread(UPLOAD);
+                serviceThread.setPresentationPath(intent.getStringExtra("UPLOAD"));
+                serviceThread.start();
                 break;
             case SLIDE:
                 Log.d(TAG, "readIntent: SLIDE " + intent.getStringExtra("SLIDE"));
                 String curSlide = intent.getStringExtra("SLIDE");
-                thread = new ServiceThread(SLIDE);
-                thread.setCurSlide(curSlide);
-                thread.start();
+                String curAnimation = intent.getStringExtra("ANIMATION");
+                String curVideo = intent.getStringExtra("VIDEO");
+                String curAudio = intent.getStringExtra("AUDIO");
+                serviceThread = new ServiceThread(SLIDE);
+                serviceThread.setCurSlide(curSlide);
+                serviceThread.setCurAnimation(curAnimation);
+                serviceThread.setCurVideo(curVideo);
+                serviceThread.setCurAudio(curAudio);
+                serviceThread.start();
                 break;
             default:
-                Log.d(TAG, "readIntent:  NO COMMAND" );
+                Log.d(TAG, "readIntent:  NO COMMAND");
         }
     }
 
@@ -235,7 +267,7 @@ public class DongleService extends Service {
         int MAX_LENGTH = 8;
         StringBuilder randomStringBuilder = new StringBuilder();
         char tempChar;
-        for (int i = 0; i < MAX_LENGTH; i++){
+        for (int i = 0; i < MAX_LENGTH; i++) {
             tempChar = (char) (random.nextInt(96) + 32);
             randomStringBuilder.append(tempChar);
         }

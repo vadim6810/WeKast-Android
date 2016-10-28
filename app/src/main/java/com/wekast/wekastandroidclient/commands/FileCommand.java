@@ -4,17 +4,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by ELAD on 10/15/2016.
+ * Created by ELAD on 10/28/2016.
  */
 
-public class ConfigCommand implements ICommand {
+public class FileCommand implements ICommand  {
 
-    private String ssid;
-    private String password;
+    private String fileSize;
 
-    public ConfigCommand(String ssid, String password) {
-        this.ssid = ssid;
-        this.password = password;
+    public FileCommand(String fileSize) {
+        this.fileSize = fileSize;
     }
 
     @Override
@@ -22,14 +20,12 @@ public class ConfigCommand implements ICommand {
         JSONObject jsonObject = new JSONObject();
         JSONObject args = new JSONObject();
         try {
-            args.put("password", password);
-            args.put("ssid", ssid);
-            jsonObject.put("command", "config");
+            args.put("fileSize", fileSize);
+            jsonObject.put("command", "file");
             jsonObject.put("args", args);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonObject.toString();
     }
-
 }

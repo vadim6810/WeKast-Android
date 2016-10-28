@@ -26,8 +26,6 @@ import java.util.ArrayList;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
-
-
 /**
  * Created by RDL on 03.09.2016.
  */
@@ -51,11 +49,9 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     TextView commentsFullSizeText;
     Sender sender;
 
-
     public FragmentSlider() {
         slidesList = new ArrayList<>();
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -162,7 +158,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 y = motionEvent.getY();
                 break;
             case MotionEvent.ACTION_MOVE: // движение
-
                 break;
             case MotionEvent.ACTION_UP: // отпускание
 
@@ -175,7 +170,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-
                 break;
         }
         return true;
@@ -202,7 +196,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 tr.add(R.id.comments_container,commentsFragment);
                 tr.addToBackStack(null);
                 tr.commit();
-
             }else{
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
                 mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
@@ -223,16 +216,21 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 tr.addToBackStack(null);
                 tr.commit();
             }
-
         }
-
     }
 
     private void changeSlideToDongle(int currentSlide) {
-           Intent i = new Intent(getActivity(), DongleService.class);
-           i.putExtra("command", SLIDE);
-           i.putExtra("SLIDE", Integer.toString(currentSlide));
-           getActivity().startService(i);
+        Intent i = new Intent(getActivity(), DongleService.class);
+        i.putExtra("command", SLIDE);
+        i.putExtra("SLIDE", Integer.toString(currentSlide));
+        // TODO: pass here strings animation, video and audio
+        // test just slide
+//        i.putExtra("ANIMATION", "");
+        // test animations
+        i.putExtra("ANIMATION", "1");
+        i.putExtra("VIDEO", "");
+        i.putExtra("AUDIO", "");
+        getActivity().startService(i);
     }
 
     public void nextSlide() {
@@ -256,8 +254,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 tr.add(R.id.comments_container, commentsFragment);
                 tr.addToBackStack(null);
                 tr.commit();
-
-
             }else{
                 inputImage.setImagePath(slidesList.get(currentSlide + 1));
                 mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
