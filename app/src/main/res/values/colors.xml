@@ -23,4 +23,9 @@
     <color name="purple">#800080</color>
     <color name="baby_pink">#F4C2C2</color>
     <color name="alice_blue">#F0F8FF</color>
+
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#ffbb33</color>
+
 </resources>

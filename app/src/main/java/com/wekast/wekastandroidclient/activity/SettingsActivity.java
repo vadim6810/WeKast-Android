@@ -1,8 +1,8 @@
 package com.wekast.wekastandroidclient.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +20,7 @@ import java.util.HashMap;
  * Created by RDL on 03.10.2016.
  */
 
-public class SettingsActivity extends Activity  implements AdapterView.OnItemClickListener{
+public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private ArrayList<HashMap<String, Object>> mSettingsList;
     private String[] sTitle;
@@ -34,11 +34,12 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
         ListView listView = (ListView) findViewById(R.id.listSettings);
 
         sTitle = getResources().getStringArray(R.array.settings_title);
         sSubtitle = getResources().getStringArray(R.array.settings_subtitle);
-        sIcon = new Object[] {
+        sIcon = new Object[]{
                 R.drawable.ic_phone,
                 R.drawable.ic_curt,
                 R.drawable.ic_share,
@@ -51,7 +52,7 @@ public class SettingsActivity extends Activity  implements AdapterView.OnItemCli
 
         mSettingsList = new ArrayList<>();
         HashMap<String, Object> hm;
-        for(int i = 0; i < sTitle.length; i++){
+        for (int i = 0; i < sTitle.length; i++) {
             hm = new HashMap<>();
             hm.put(TITLE, sTitle[i]); // Название
             hm.put(SUBTITLE, sSubtitle[i]); // Описание

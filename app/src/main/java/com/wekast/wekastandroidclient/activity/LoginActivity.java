@@ -1,8 +1,8 @@
 package com.wekast.wekastandroidclient.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 
@@ -16,7 +16,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 /**
  * Created by RDL on 15.07.2016.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtPassword;
     private AccessServiceAPI m_AccessServiceAPI;
@@ -26,12 +26,13 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
         m_AccessServiceAPI = new AccessServiceAPI();
 
         txtLogin.setText(Utils.getFieldSP(context, LOGIN));
-        txtPassword.setText(Utils.getFieldSP(context,PASSWORD));
+        txtPassword.setText(Utils.getFieldSP(context, PASSWORD));
 
     }
 

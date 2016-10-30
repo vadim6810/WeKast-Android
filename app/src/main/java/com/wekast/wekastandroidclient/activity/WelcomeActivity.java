@@ -1,12 +1,13 @@
 package com.wekast.wekastandroidclient.activity;
 
-import android.app.Activity;
+
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +27,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 /**
  * Created by RDL on 15.07.2016.
  */
-public class WelcomeActivity extends Activity implements FragmentListPresentations.onSomeEventListener {
+public class WelcomeActivity extends AppCompatActivity implements FragmentListPresentations.onSomeEventListener {
     private static final String TAG = "WelcomeActivity";
 
     private TextView tvWelcome;
@@ -41,6 +42,12 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.logo);
+//        getSupportActionBar().setLogo(R.drawable.logo);
+//        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         tvWelcome = (TextView) findViewById(R.id.tv_welcome);
         tvWelcome.setText("Welcome: " + getFieldSP(context, "login"));
@@ -79,7 +86,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
         fragmentTransaction.commit();
         // uploadPresentationToDongle(presPath);
         uploadToDongle(presPath);
-   }
+    }
 
     private void uploadToDongle(String presPath) {
         Intent i = new Intent(this, DongleService.class);
@@ -100,7 +107,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     @Override
     protected void onStart() {
         super.onStart();
-        if(activityState == SLIDER) {
+        if (activityState == SLIDER) {
             Log.d(TAG, "onStart:processCall()");
             initProccesCall();
         }
@@ -109,7 +116,7 @@ public class WelcomeActivity extends Activity implements FragmentListPresentatio
     @Override
     protected void onStop() {
         super.onStop();
-        if(activityState == SLIDER) {
+        if (activityState == SLIDER) {
             Log.d(TAG, "onStop:processCall()");
             CustomPhoneStateListener.blockingCall = false;
             unregisterReceiver(processCall);

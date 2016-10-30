@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
+<menu   xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_setting"
         android:icon="@drawable/ic_close"
-        android:showAsAction="always"
         android:title=""
-        tools:ignore="AppCompatResource"
+        app:showAsAction="always"
         android:onClick="onClickClose">
     </item>
 

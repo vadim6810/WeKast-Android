@@ -1,9 +1,9 @@
 package com.wekast.wekastandroidclient.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,7 +15,7 @@ import com.wekast.wekastandroidclient.model.Utils;
 /**
  * Created by RDL on 15.07.2016.
  */
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtEmail;
     private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
@@ -27,12 +27,13 @@ public class RegisterActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
         txtLogin = (EditText) findViewById(R.id.txt_login);
         txtEmail = (EditText) findViewById(R.id.txt_email);
         m_AccessServiceAPI = new AccessServiceAPI();
 
         txtLogin.setText(Utils.getFieldSP(context, "login"));
-        txtEmail.setText(Utils.getFieldSP(context,"email"));
+        txtEmail.setText(Utils.getFieldSP(context, "email"));
 
     }
 

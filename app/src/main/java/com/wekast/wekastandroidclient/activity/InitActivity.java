@@ -1,12 +1,10 @@
 package com.wekast.wekastandroidclient.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.VideoView;
 
 import com.wekast.wekastandroidclient.R;
@@ -21,16 +19,13 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 /**
  * Created by RDL on 23.07.2016.
  */
-public class InitActivity extends Activity {
+public class InitActivity extends AppCompatActivity {
     private VideoView startVideo;
     public Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_init);
 
         initWorkFolder();
@@ -47,7 +42,7 @@ public class InitActivity extends Activity {
         @Override
         public void run() {
             Intent intent;
-            if (Utils.getContainsSP(context, LOGIN)){
+            if (Utils.getContainsSP(context, LOGIN)) {
                 intent = new Intent(getApplicationContext(), WelcomeActivity.class);
             } else {
                 intent = new Intent(getApplicationContext(), RegisterActivity.class);
