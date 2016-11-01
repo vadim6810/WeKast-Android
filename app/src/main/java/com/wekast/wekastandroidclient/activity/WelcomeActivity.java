@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
 import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
@@ -30,7 +29,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 public class WelcomeActivity extends AppCompatActivity implements FragmentListPresentations.onSomeEventListener {
     private static final String TAG = "WelcomeActivity";
 
-    private TextView tvWelcome;
+
     Context context = this;
     private int activityState;
     private BroadcastReceiver processCall;
@@ -49,8 +48,6 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 //        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        tvWelcome = (TextView) findViewById(R.id.tv_welcome);
-        tvWelcome.setText("Welcome: " + getFieldSP(context, "login"));
 
         fragmentListPresentations = new FragmentListPresentations();
         fragmentTransaction = getFragmentManager().beginTransaction();
