@@ -47,7 +47,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     ArrayList<Slide> slidesList;
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
-    Sender sender;
 
     public FragmentSlider() {
         slidesList = new ArrayList<>();
@@ -55,13 +54,13 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.fragment_slider, null);
-        inputSlideContainer = (FrameLayout)view.findViewById(R.id.input_slide_container);
-        currentSlideContainer = (FrameLayout)view.findViewById(R.id.current_slide_container);
-        outputSlideContainer = (FrameLayout)view.findViewById(R.id.output_slide_container);
-        commentsContainer = (FrameLayout)view.findViewById(R.id.comments_container);
-        commentsFullSize = (FrameLayout)view.findViewById(R.id.comments_full_size);
-        commentsFullSizeText = (TextView)view.findViewById(R.id.comments_full_size_text);
+        view = inflater.inflate(R.layout.fragment_slider, null);
+        inputSlideContainer = (FrameLayout) view.findViewById(R.id.input_slide_container);
+        currentSlideContainer = (FrameLayout) view.findViewById(R.id.current_slide_container);
+        outputSlideContainer = (FrameLayout) view.findViewById(R.id.output_slide_container);
+        commentsContainer = (FrameLayout) view.findViewById(R.id.comments_container);
+        commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
+        commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         createWorkArray();
 
         inputImage = new InputImage();
@@ -69,19 +68,20 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         outputImage = new OutputImage();
         commentsFragment = new CommentsFragment();
 
-        inputImage.setImagePath(slidesList.get(currentSlide+1));
-        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
-        commentsFragment.setComments(slidesList.get(currentSlide));
-        changeSlideToDongle(currentSlide + 1);
+        inputImage.setImagePath(slidesList.get(currentSlide + 1), false);
+        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), false);
+        commentsFragment.setComments(slidesList.get(currentSlide), false);
+        changeSlideToDongle(currentSlide + 1, false);
 
         tr = getFragmentManager().beginTransaction();
-        if(currentSlide > 0)
-            tr.add(R.id.output_slide_container, outputImage);
         tr.add(R.id.input_slide_container, inputImage);
         tr.add(R.id.current_slide_container, mainImage);
-        tr.add(R.id.comments_container,commentsFragment);
-        tr.addToBackStack(null);
+        tr.add(R.id.output_slide_container, outputImage);
+        tr.add(R.id.comments_container, commentsFragment);
         tr.commit();
+
+        outputSlideContainer.setVisibility(View.INVISIBLE);
+
 
         view.setOnTouchListener(this);
         commentsContainer.setOnLongClickListener(new View.OnLongClickListener() {
@@ -98,7 +98,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    if(fullCommentVisible){
+                    if (fullCommentVisible) {
                         commentsFullSize.setVisibility(View.GONE);
                         fullCommentVisible = false;
                     }
@@ -109,12 +109,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    public void createWorkArray(){
+    public void createWorkArray() {
         try {
             XmlPullParser parser = prepareXpp();
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
@@ -130,7 +125,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 parser.next();
             }
         } catch (Throwable t) {
-            Log.d( "Error XML parser: ", t.toString());
+            Log.d("Error XML parser: ", t.toString());
         }
     }
 
@@ -162,10 +157,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             case MotionEvent.ACTION_UP: // отпускание
 
                 y1 = motionEvent.getY();
-                if((y-y1) > 0 && (y-y1)>100){
+                if ((y - y1) > 0 && (y - y1) > 100) {
                     nextSlide();
-                }else{
-                    if(((y-y1)*-1)>100)
+                } else {
+                    if (((y - y1) * -1) > 100)
                         prevSlide();
                 }
                 break;
@@ -175,51 +170,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         return true;
     }
 
-    public void prevSlide() {
-        if(currentSlide > 0){
-            currentSlide  = currentSlide - 1;
-            changeSlideToDongle(currentSlide + 1);
-            if(currentSlide == 0){
-                inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
-                commentsFragment.setComments(slidesList.get(currentSlide));
-                FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(outputImage);
-                tr.remove(commentsFragment);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.input_slide_container, inputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container,commentsFragment);
-                tr.addToBackStack(null);
-                tr.commit();
-            }else{
-                inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
-                outputImage.setImagePath(slidesList.get(currentSlide - 1));
-                commentsFragment.setComments(slidesList.get(currentSlide));
-                FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.input_slide_container, inputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container,commentsFragment);
-                tr.add(R.id.output_slide_container,outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-            }
-        }
-    }
-
-    private void changeSlideToDongle(int currentSlide) {
+    private void changeSlideToDongle(int currentSlide, boolean isshow) {
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
@@ -233,46 +184,43 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         getActivity().startService(i);
     }
 
+    public void prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide = currentSlide - 1;
+            changeSlideToDongle(currentSlide + 1, false);
+            if (currentSlide == 0) {
+                outputSlideContainer.setVisibility(View.INVISIBLE);
+                inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                commentsFragment.setComments(slidesList.get(currentSlide), true);
+            } else {
+                if (inputSlideContainer.getVisibility() == View.INVISIBLE)
+                    inputSlideContainer.setVisibility(View.VISIBLE);
+                inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
+                commentsFragment.setComments(slidesList.get(currentSlide), true);
+            }
+        }
+    }
+
     public void nextSlide() {
-        if(currentSlide < slidesList.size() - 1){
+        if (currentSlide < slidesList.size() - 1) {
             currentSlide = currentSlide + 1;
-            changeSlideToDongle(currentSlide + 1);
-            if(currentSlide == slidesList.size() - 1){
-                outputImage.setImagePath(slidesList.get(currentSlide - 1));
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
-                commentsFragment.setComments(slidesList.get(currentSlide));
-                FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(outputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(inputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.output_slide_container, outputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container, commentsFragment);
-                tr.addToBackStack(null);
-                tr.commit();
-            }else{
-                inputImage.setImagePath(slidesList.get(currentSlide + 1));
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size());
-                outputImage.setImagePath(slidesList.get(currentSlide - 1));
-                commentsFragment.setComments(slidesList.get(currentSlide));
-                FragmentTransaction tr = getFragmentManager().beginTransaction();
-                tr.remove(inputImage);
-                tr.remove(mainImage);
-                tr.remove(commentsFragment);
-                tr.remove(outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
-                tr = getFragmentManager().beginTransaction();
-                tr.add(R.id.input_slide_container, inputImage);
-                tr.add(R.id.current_slide_container, mainImage);
-                tr.add(R.id.comments_container, commentsFragment);
-                tr.add(R.id.output_slide_container, outputImage);
-                tr.addToBackStack(null);
-                tr.commit();
+            changeSlideToDongle(currentSlide + 1, false);
+            if (currentSlide == slidesList.size() - 1) {
+                inputSlideContainer.setVisibility(View.INVISIBLE);
+                outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                commentsFragment.setComments(slidesList.get(currentSlide), true);
+
+            } else {
+                if (outputSlideContainer.getVisibility() == View.INVISIBLE)
+                    outputSlideContainer.setVisibility(View.VISIBLE);
+                inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
+                commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
         }
     }

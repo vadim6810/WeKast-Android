@@ -25,23 +25,31 @@ public class MainImage extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.fragment_main_image, null);
-        title = (TextView)view.findViewById(R.id.current_slide_title);
-        image = (ImageView)view.findViewById(R.id.current_slide_picture);
-        if(imagePath != null){
+        view = inflater.inflate(R.layout.fragment_main_image, null);
+        title = (TextView) view.findViewById(R.id.current_slide_title);
+        image = (ImageView) view.findViewById(R.id.current_slide_picture);
+
+        viewSlide();
+
+        return view;
+    }
+
+    private void viewSlide() {
+        if (imagePath != null) {
             Bitmap btm = EquationsBitmap.decodeSampledBitmapFromFile(imagePath, 400, 224);
             Log.d("MainImage = ", String.valueOf(btm.getWidth()) + ":" + btm.getHeight());
             image.setImageBitmap(btm);
             image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             title.setText(mTitle);
         }
-        return view;
     }
 
-    public void setImagePath(FragmentSlider.Slide slide, int size){
-        if(slide != null){
+    public void setImagePath(FragmentSlider.Slide slide, int size, boolean isshow) {
+        if (slide != null) {
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber() + "/" + size;
+            if (isshow)
+                viewSlide();
         }
     }
 

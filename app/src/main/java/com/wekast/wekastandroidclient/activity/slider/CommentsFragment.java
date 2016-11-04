@@ -22,20 +22,29 @@ public class CommentsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.fragment_comments, null);
-        commentsTitle = (TextView)view.findViewById(R.id.comments_title);
-        commentsBody = (TextView)view.findViewById(R.id.comments_body);
-        commentsTitle.setText(title);
-        commentsBody.setText(comments);
+        view = inflater.inflate(R.layout.fragment_comments, null);
+        commentsTitle = (TextView) view.findViewById(R.id.comments_title);
+        commentsBody = (TextView) view.findViewById(R.id.comments_body);
+        viewSlide();
+
         return view;
     }
-    public void setComments(FragmentSlider.Slide slide){
-        if(slide != null){
+
+    private void viewSlide() {
+        commentsTitle.setText(title);
+        commentsBody.setText(comments);
+    }
+
+    public void setComments(FragmentSlider.Slide slide, boolean isshow) {
+        if (slide != null) {
             comments = slide.getComments();
-            title = "Slide "+slide.getSlideNumber()+" comments";
+            title = "Slide " + slide.getSlideNumber() + " comments";
+            if (isshow)
+                viewSlide();
         }
     }
-    public String getCurrentComments(){
+
+    public String getCurrentComments() {
         return comments;
     }
 }

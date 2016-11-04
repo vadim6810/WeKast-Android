@@ -27,19 +27,27 @@ public class InputImage extends Fragment {
         view =  inflater.inflate(R.layout.fragment_input_image, null);
         title = (TextView)view.findViewById(R.id.input_slide_title);
         image = (ImageView)view.findViewById(R.id.input_slide_picture);
+
+        viewSlide();
+
+        return view;
+    }
+
+    private void viewSlide() {
         if(imagePath != null){
             Bitmap btm = EquationsBitmap.decodeSampledBitmapFromFile(imagePath, 400, 224);
             image.setImageBitmap(btm);
             image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             title.setText(mTitle);
         }
-        return view;
     }
 
-    public void setImagePath(FragmentSlider.Slide slide){
+    public void setImagePath(FragmentSlider.Slide slide, boolean isshow){
         if(slide != null){
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber();
+            if (isshow)
+                viewSlide();
         }
     }
 
