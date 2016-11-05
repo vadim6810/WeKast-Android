@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.model.Sender;
 import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -25,13 +24,18 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
+import static java.lang.Math.abs;
 
 /**
  * Created by RDL on 03.09.2016.
  */
 public class FragmentSlider extends Fragment implements View.OnTouchListener {
-    float y;
-    float y1;
+    float startY;
+    float stopY;
+    float startX;
+    float stopX;
+    float resY;
+    float resX;
     View view;
     InputImage inputImage;
     MainImage mainImage;
@@ -150,24 +154,43 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: // нажатие
-                y = motionEvent.getY();
+                startY = motionEvent.getY();
+                startX = motionEvent.getX();
                 break;
             case MotionEvent.ACTION_MOVE: // движение
                 break;
             case MotionEvent.ACTION_UP: // отпускание
-
-                y1 = motionEvent.getY();
-                if ((y - y1) > 0 && (y - y1) > 100) {
-                    nextSlide();
-                } else {
-                    if (((y - y1) * -1) > 100)
-                        prevSlide();
-                }
+                stopY = motionEvent.getY();
+                stopX = motionEvent.getX();
+                resY = (startY - stopY);
+                resX = (startX - stopX);
+//                Log.d("-=LOG=-", "onTouch: " + resY + ":" + resX);
+                if (abs(resY) > abs(resX))
+                    actionY(resY);
+                else actionX(resX);
                 break;
             case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return true;
+    }
+
+    private void actionX(float resX) {
+        if (resX > 100) {
+            Log.d("-=LOG=-", "actionX: rightSlide();");
+        } else {
+            if (resX < -100)
+                Log.d("-=LOG=-", "actionX: leftSlide();;");
+        }
+    }
+
+    private void actionY(float resY) {
+        if (resY > 100) {
+            nextSlide();
+        } else {
+            if (resY < -100)
+                prevSlide();
+        }
     }
 
     private void changeSlideToDongle(int currentSlide, boolean isshow) {
