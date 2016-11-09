@@ -49,6 +49,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FragmentTransaction tr;
     int currentSlide = 0;
     ArrayList<Slide> slidesList;
+    ArrayList<Integer> chID = new ArrayList<>();
+    private int slideNumber;
+    private String comments;
+    private String filePath;
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
 
@@ -117,14 +121,25 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         try {
             XmlPullParser parser = prepareXpp();
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
-                if (parser.getEventType() == XmlPullParser.START_TAG
-                        && parser.getName().equals("slide")) {
-                    slidesList.add(new Slide("", Integer.parseInt(parser.getAttributeValue(0)),
-                            parser.getAttributeValue(2),
-                            CASH_ABSOLUTE_PATH + parser.getAttributeValue(1)));
-                    Log.d("XML parser: ", (parser.getAttributeValue(0) + " "
-                            + parser.getAttributeValue(1) + " "
-                            + parser.getAttributeValue(2)));
+                switch (parser.getEventType()) {
+                    case XmlPullParser.START_TAG:
+                        if (parser.getName().equals("slide")) {
+                            slideNumber = Integer.parseInt(parser.getAttributeValue(0));
+                            comments = parser.getAttributeValue(2);
+                            filePath = CASH_ABSOLUTE_PATH + parser.getAttributeValue(1);
+                        }
+                        if (parser.getName().equals("animation")) {
+                            chID.add(Integer.parseInt(parser.getAttributeValue(0)));
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        if (parser.getName().equals("slide")) {
+                            Slide slide = new Slide("", slideNumber, comments, filePath ,chID);
+                            Log.d("XML parser: ", slide.toString());
+                            slidesList.add(slide);
+                            chID.clear();
+                        }
+                        break;
                 }
                 parser.next();
             }
@@ -272,12 +287,18 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         private int slideNumber;
         private String comments;
         private String filePath;
+        ArrayList<Integer> chID;
 
-        public Slide(String title, int slideNumber, String comments, String filePath) {
+        public Slide(String title, int slideNumber, String comments, String filePath, ArrayList<Integer> chID) {
             this.title = title;
             this.slideNumber = slideNumber;
             this.comments = comments;
             this.filePath = filePath;
+            this.chID = chID;
+        }
+
+        public ArrayList<Integer> getChID() {
+            return chID;
         }
 
         public String getFilePath() {
@@ -296,6 +317,16 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             return comments;
         }
 
+        @Override
+        public String toString() {
+            return "Slide{" +
+                    "title='" + title + '\'' +
+                    ", slideNumber=" + slideNumber +
+                    ", comments='" + comments + '\'' +
+                    ", filePath='" + filePath + '\'' +
+                    ", chID=" + chID +
+                    '}';
+        }
     }
 
 }
