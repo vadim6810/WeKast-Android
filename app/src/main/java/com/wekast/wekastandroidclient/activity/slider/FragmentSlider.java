@@ -48,6 +48,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     CommentsFragment commentsFragment;
     FragmentTransaction tr;
     int currentSlide = 0;
+    int currentChID = 1;
     ArrayList<Slide> slidesList;
     ArrayList<Integer> chID = new ArrayList<>();
     private int slideNumber;
@@ -79,7 +80,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         inputImage.setImagePath(slidesList.get(currentSlide + 1), false);
         mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), false);
         commentsFragment.setComments(slidesList.get(currentSlide), false);
-        changeSlideToDongle(currentSlide + 1, false);
+        changeSlideToDongle(currentSlide + 1, currentChID);
 
         tr = getFragmentManager().beginTransaction();
         tr.add(R.id.input_slide_container, inputImage);
@@ -134,10 +135,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                         break;
                     case XmlPullParser.END_TAG:
                         if (parser.getName().equals("slide")) {
-                            Slide slide = new Slide("", slideNumber, comments, filePath ,chID);
+                            Slide slide = new Slide("", slideNumber, comments, filePath, chID);
                             Log.d("XML parser: ", slide.toString());
                             slidesList.add(slide);
-                            chID.clear();
+                            chID = new ArrayList<>();
                         }
                         break;
                 }
@@ -179,7 +180,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 stopX = motionEvent.getX();
                 resY = (startY - stopY);
                 resX = (startX - stopX);
-//                Log.d("-=LOG=-", "onTouch: " + resY + ":" + resX);
                 if (abs(resY) > abs(resX))
                     actionY(resY);
                 else actionX(resX);
@@ -192,11 +192,27 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     private void actionX(float resX) {
         if (resX > 100) {
-            Log.d("-=LOG=-", "actionX: rightSlide();");
+            rightSlide();
         } else {
             if (resX < -100)
-                Log.d("-=LOG=-", "actionX: leftSlide();;");
+                leftSlide();
         }
+    }
+
+    private void leftSlide() {
+        if (currentChID > 1) {
+            currentChID--;
+            changeSlideToDongle(currentSlide + 1, currentChID);
+        }
+//        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+    }
+
+    private void rightSlide() {
+        if (currentChID < slidesList.get(currentSlide).getChID().size()) {
+            currentChID++;
+            changeSlideToDongle(currentSlide + 1, currentChID);
+        }
+//        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
     }
 
     private void actionY(float resY) {
@@ -208,15 +224,13 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }
     }
 
-    private void changeSlideToDongle(int currentSlide, boolean isshow) {
+    private void changeSlideToDongle(int currentSlide, int currentChID) {
+        Log.d("changeSlideToDongle", currentSlide+ "|"+ currentChID);
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
+        i.putExtra("ANIMATION", Integer.toString(currentChID));
         // TODO: pass here strings animation, video and audio
-        // test just slide
-//        i.putExtra("ANIMATION", "");
-        // test animations
-        i.putExtra("ANIMATION", "1");
         i.putExtra("VIDEO", "");
         i.putExtra("AUDIO", "");
         getActivity().startService(i);
@@ -225,7 +239,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     public void prevSlide() {
         if (currentSlide > 0) {
             currentSlide = currentSlide - 1;
-            changeSlideToDongle(currentSlide + 1, false);
+            currentChID = 1;
+            changeSlideToDongle(currentSlide + 1, currentChID);
             if (currentSlide == 0) {
                 outputSlideContainer.setVisibility(View.INVISIBLE);
                 inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
@@ -245,7 +260,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     public void nextSlide() {
         if (currentSlide < slidesList.size() - 1) {
             currentSlide = currentSlide + 1;
-            changeSlideToDongle(currentSlide + 1, false);
+            currentChID = 1;
+            changeSlideToDongle(currentSlide + 1, currentChID);
             if (currentSlide == slidesList.size() - 1) {
                 inputSlideContainer.setVisibility(View.INVISIBLE);
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
@@ -287,7 +303,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         private int slideNumber;
         private String comments;
         private String filePath;
-        ArrayList<Integer> chID;
+        private ArrayList<Integer> chID = new ArrayList<>();
 
         public Slide(String title, int slideNumber, String comments, String filePath, ArrayList<Integer> chID) {
             this.title = title;
