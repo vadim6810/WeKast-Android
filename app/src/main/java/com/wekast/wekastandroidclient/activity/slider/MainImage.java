@@ -20,13 +20,17 @@ public class MainImage extends Fragment {
     View view;
     private String imagePath;
     String mTitle;
+    String mTitleChid;
     TextView title;
+    TextView titleChid;
     ImageView image;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_main_image, null);
         title = (TextView) view.findViewById(R.id.current_slide_title);
+        titleChid = (TextView) view.findViewById(R.id.current_chid_title);
         image = (ImageView) view.findViewById(R.id.current_slide_picture);
 
         viewSlide();
@@ -41,16 +45,23 @@ public class MainImage extends Fragment {
             image.setImageBitmap(btm);
             image.setScaleType(ImageView.ScaleType.CENTER_CROP);
             title.setText(mTitle);
+            titleChid.setText(mTitleChid);
         }
     }
 
-    public void setImagePath(FragmentSlider.Slide slide, int size, boolean isshow) {
+    public void setImagePath(FragmentSlider.Slide slide, int size, int currentChID, boolean isshow) {
         if (slide != null) {
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber() + "/" + size;
+            mTitleChid = "animation " + currentChID + "/" + slide.getChID().size();
             if (isshow)
                 viewSlide();
         }
+    }
+
+    public void setTitleChid(int currentChID, int countChid){
+        mTitleChid = "animation " + currentChID + "/" + countChid;
+        titleChid.setText(mTitleChid);
     }
 
     @Override

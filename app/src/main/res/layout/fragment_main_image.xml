@@ -14,12 +14,29 @@
         android:layout_weight="1"
         android:gravity="center|center_vertical" />
 
-    <TextView
-        android:id="@+id/current_slide_title"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="10"
-        android:gravity="center|center_vertical"
-        android:textColor="@color/black" />
+        android:layout_height="match_parent"
+        android:layout_weight="10">
+
+        <TextView
+            android:id="@+id/current_slide_title"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center"
+            android:textColor="@color/black"
+            android:text="slideID" />
+
+        <TextView
+            android:id="@+id/current_chid_title"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:textColor="@color/black"
+            android:text="chID" />
+    </LinearLayout>
 
 </LinearLayout>

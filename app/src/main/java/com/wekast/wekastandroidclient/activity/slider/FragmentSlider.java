@@ -78,7 +78,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFragment = new CommentsFragment();
 
         inputImage.setImagePath(slidesList.get(currentSlide + 1), false);
-        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), false);
+        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, false);
         commentsFragment.setComments(slidesList.get(currentSlide), false);
         changeSlideToDongle(currentSlide + 1, currentChID);
 
@@ -204,7 +204,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             currentChID--;
             changeSlideToDongle(currentSlide + 1, currentChID);
         }
-//        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+        mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
 
     private void rightSlide() {
@@ -212,7 +212,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             currentChID++;
             changeSlideToDongle(currentSlide + 1, currentChID);
         }
-//        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+        mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
 
     private void actionY(float resY) {
@@ -225,7 +225,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     }
 
     private void changeSlideToDongle(int currentSlide, int currentChID) {
-        Log.d("changeSlideToDongle", currentSlide+ "|"+ currentChID);
+        Log.d("changeSlideToDongle", currentSlide + "|" + currentChID);
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
@@ -244,13 +244,13 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             if (currentSlide == 0) {
                 outputSlideContainer.setVisibility(View.INVISIBLE);
                 inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             } else {
                 if (inputSlideContainer.getVisibility() == View.INVISIBLE)
                     inputSlideContainer.setVisibility(View.VISIBLE);
                 inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, true);
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
@@ -265,14 +265,14 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             if (currentSlide == slidesList.size() - 1) {
                 inputSlideContainer.setVisibility(View.INVISIBLE);
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
 
             } else {
                 if (outputSlideContainer.getVisibility() == View.INVISIBLE)
                     outputSlideContainer.setVisibility(View.VISIBLE);
                 inputImage.setImagePath(slidesList.get(currentSlide + 1), true);
-                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), true);
+                mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, true);
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
