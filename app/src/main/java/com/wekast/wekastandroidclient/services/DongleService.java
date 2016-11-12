@@ -8,6 +8,7 @@ import android.util.Log;
 import com.wekast.wekastandroidclient.commands.ConfigCommand;
 import com.wekast.wekastandroidclient.commands.FileCommand;
 import com.wekast.wekastandroidclient.commands.SlideCommand;
+import com.wekast.wekastandroidclient.commands.StopCommand;
 import com.wekast.wekastandroidclient.controllers.SocketController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.model.Utils;
@@ -21,6 +22,7 @@ import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_SSID_DEFAULT;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_SOCKET_PORT;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
 import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.STOP;
 
 /**
  * Created by RDL on 20.10.2016.
@@ -89,6 +91,8 @@ public class DongleService extends Service {
 //                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
                     sendTaskToDongle(new SlideCommand(curSlide, curAnimation, curVideo, curAudio).getJsonString());
                     break;
+                case STOP:
+                    sendTaskToDongle(new StopCommand().getJsonString());
                 default:
                     Log.d(TAG, "COMMAND NOT FOUND");
             }
@@ -227,6 +231,9 @@ public class DongleService extends Service {
                 serviceThread.setCurAudio(curAudio);
                 serviceThread.start();
                 break;
+            case STOP:
+                serviceThread = new ServiceThread(STOP);
+                serviceThread.start();
             default:
                 Log.d(TAG, "readIntent:  NO COMMAND");
         }

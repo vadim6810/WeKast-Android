@@ -56,6 +56,7 @@ public class Utils {
     /** Command DongleService **/
     public static final int UPLOAD = 1;
     public static final int SLIDE = 2;
+    public static final int STOP = 3;
 
     /** Command DownloadService **/
     public static final int STATUS_START = 100;
