@@ -46,6 +46,7 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 //        getSupportActionBar().setLogo(R.drawable.logo);
 //        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
