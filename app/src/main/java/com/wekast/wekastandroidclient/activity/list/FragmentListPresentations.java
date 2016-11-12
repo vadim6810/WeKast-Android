@@ -105,7 +105,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_listpresentations, null);
+        View view = inflater.inflate(R.layout.fragment_listpresentations, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(this);
         return view;

@@ -63,7 +63,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_slider, null);
+        view = inflater.inflate(R.layout.fragment_slider, container, false);
         inputSlideContainer = (FrameLayout) view.findViewById(R.id.input_slide_container);
         currentSlideContainer = (FrameLayout) view.findViewById(R.id.current_slide_container);
         outputSlideContainer = (FrameLayout) view.findViewById(R.id.output_slide_container);
