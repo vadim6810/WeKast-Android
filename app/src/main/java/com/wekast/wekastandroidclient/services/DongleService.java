@@ -131,6 +131,7 @@ public class DongleService extends Service {
         private void reconfigDevice() {
             wifiController.switchFromWifiToAP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
+            // TODO: broadcast receiver
             wifiController.saveConnectedDeviceIp();
         }
 

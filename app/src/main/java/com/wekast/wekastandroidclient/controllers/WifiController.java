@@ -251,7 +251,7 @@ public class WifiController {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         WifiInfo info = wifiManager.getConnectionInfo();
-        String curSsid  = info.getSSID();
+        String curSsid = info.getSSID();
         boolean isConnected = networkInfo.isConnected();
         String curSsidFromSP = Utils.getFieldSP(context, AP_SSID_KEY);
         int i = 0;
@@ -290,17 +290,28 @@ public class WifiController {
 
     // TODO: if clients more than one think about new solution
     public void saveConnectedDeviceIp() {
-        boolean isSavedDeviceIp = false;
-        while (!isSavedDeviceIp) {
+
+        while (true) {
             ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
             if (clients.size() > 0) {
+//                String ip = clients.get(0).getIpAddr();
+//                // TODO: check is availible 8080 on this ip
+//                Log.i("------------------- IP", ip);
+//                Utils.setFieldSP(context, "DONGLE_IP", ip);
+//                isSavedDeviceIp = true;
                 ClientScanResult clientScanResult = clients.get(0);
-                if (clientScanResult.getDevice().equals("ap0")) {
-                    String ip = clientScanResult.getIpAddr();
-                    Log.i("------------------- IP", ip);
-                    Utils.setFieldSP(context, "DONGLE_IP", ip);
-                    isSavedDeviceIp = true;
+                String ip = clientScanResult.getIpAddr();
+                if (ip.equals("192.168.43.1") || ip.equals("192.168.1.1")) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignore) {
+                    }
+                    Log.w("------------------- IP", "No clients");
+                    continue;
                 }
+                Log.i("------------------- IP", ip);
+                Utils.setFieldSP(context, "DONGLE_IP", ip);
+                break;
             }
         }
     }

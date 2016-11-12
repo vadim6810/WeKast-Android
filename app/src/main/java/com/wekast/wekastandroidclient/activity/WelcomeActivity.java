@@ -6,7 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -57,7 +59,9 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         fragmentTransaction.commit();
 
         clearSharedPreferencesValues();
-        startService(new Intent(this, DongleService.class));
+        if (requestSettingsPermissions()) {
+            startService(new Intent(this, DongleService.class));
+        }
     }
 
     @Override
@@ -151,6 +155,17 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 
     private void clearSharedPreferencesValues() {
         Utils.setFieldSP(context, "DONGLE_IP", "");
+    }
+
+    private boolean requestSettingsPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                startActivity(intent);
+                return false;
+            }
+        }
+        return true;
     }
 
 }
