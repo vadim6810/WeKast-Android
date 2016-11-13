@@ -133,11 +133,6 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(this, DongleService.class);
-        i.putExtra("command", STOP);
-        i.putExtra("stop", "1");
-        startService(i);
-
         switch (activityState) {
             case PRESENTATION_LIST:
                 if (back_pressed + 2000 > System.currentTimeMillis())
@@ -147,6 +142,7 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
                 back_pressed = System.currentTimeMillis();
                 break;
             case SLIDER:
+                stopPresentation();
                 CustomPhoneStateListener.blockingCall = false;
                 unregisterReceiver(processCall);
                 fragmentTransaction = getFragmentManager().beginTransaction();
@@ -156,6 +152,13 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
                 fragmentTransaction.commit();
                 break;
         }
+    }
+
+    private void stopPresentation() {
+        Intent i = new Intent(this, DongleService.class);
+        i.putExtra("command", STOP);
+        i.putExtra("stop", "1");
+        startService(i);
     }
 
     private void clearSharedPreferencesValues() {
