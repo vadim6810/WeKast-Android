@@ -25,9 +25,9 @@ public class OutputImage extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view =  inflater.inflate(R.layout.fragment_output_image, null);
-        title = (TextView)view.findViewById(R.id.output_slide_title);
-        image = (ImageView)view.findViewById(R.id.output_slide_picture);
+        view = inflater.inflate(R.layout.fragment_output_image, container, false);
+        title = (TextView) view.findViewById(R.id.output_slide_title);
+        image = (ImageView) view.findViewById(R.id.output_slide_picture);
 
         viewSlide();
 
@@ -35,7 +35,7 @@ public class OutputImage extends Fragment {
     }
 
     private void viewSlide() {
-        if(imagePath != null){
+        if (imagePath != null) {
             Bitmap btm = EquationsBitmap.decodeSampledBitmapFromFile(imagePath, 400, 224);
             image.setImageBitmap(btm);
             image.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -43,8 +43,8 @@ public class OutputImage extends Fragment {
         }
     }
 
-    public void setImagePath(FragmentSlider.Slide slide,  boolean isshow){
-        if(slide != null){
+    public void setImagePath(FragmentSlider.Slide slide, boolean isshow) {
+        if (slide != null) {
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber();
             if (isshow)

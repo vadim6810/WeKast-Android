@@ -28,7 +28,7 @@ public class MainImage extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_main_image, null);
+        view = inflater.inflate(R.layout.fragment_main_image, container, false);
         title = (TextView) view.findViewById(R.id.current_slide_title);
         titleChid = (TextView) view.findViewById(R.id.current_chid_title);
         image = (ImageView) view.findViewById(R.id.current_slide_picture);
@@ -59,7 +59,7 @@ public class MainImage extends Fragment {
         }
     }
 
-    public void setTitleChid(int currentChID, int countChid){
+    public void setTitleChid(int currentChID, int countChid) {
         mTitleChid = "animation " + currentChID + "/" + countChid;
         titleChid.setText(mTitleChid);
     }

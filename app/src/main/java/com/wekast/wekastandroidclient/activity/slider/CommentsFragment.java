@@ -22,7 +22,7 @@ public class CommentsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_comments, null);
+        view = inflater.inflate(R.layout.fragment_comments, container, false);
         commentsTitle = (TextView) view.findViewById(R.id.comments_title);
         commentsBody = (TextView) view.findViewById(R.id.comments_body);
         viewSlide();
