@@ -2,6 +2,9 @@ package com.wekast.wekastandroidclient.controllers;
 
 import android.util.Log;
 
+import com.wekast.wekastandroidclient.activity.WelcomeActivity;
+import com.wekast.wekastandroidclient.model.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +27,7 @@ public class SocketController {
     private String dstAddr;
     private int dstPort;
     public boolean FILE_UPLOADED = false;
+    private WelcomeActivity activity = WelcomeActivity.welcomeActivity;
 
     public void initDstAddrPort(String dstAddr, String dstPort) {
         this.dstAddr = dstAddr;
@@ -38,6 +42,7 @@ public class SocketController {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter printWriter = new PrintWriter(outputStream, true);
             printWriter.println(command);
+            showMessage("request: " + command);
 
             while (true) {
                 String task = br.readLine();
@@ -45,6 +50,7 @@ public class SocketController {
                     socket.close();
                     break;
                 }
+                showMessage("response: " + task);
 
                 // TODO: think about command response
                 // parse response and get message (if "ok")
@@ -79,12 +85,14 @@ public class SocketController {
         OutputStream os = socket.getOutputStream();
         os.write(mybytearray,0,mybytearray.length);
         os.flush();
+        showMessage("send file: " + filePath);
 
         //RESPONSE FROM THE SERVER
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         in.ready();
-        String userInput = in.readLine();
-        System.out.println("Response from server..." + userInput);
+        String response = in.readLine();
+        showMessage("response: " + response);
+//        System.out.println("Response from server..." + response);
 
         socket.close();
     }
@@ -92,6 +100,14 @@ public class SocketController {
     public void close() throws IOException {
         if (!socket.isClosed())
             socket.close();
+    }
+
+    private void showMessage(final String message) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                Utils.toastShow(activity, message);
+            }
+        });
     }
 
 }

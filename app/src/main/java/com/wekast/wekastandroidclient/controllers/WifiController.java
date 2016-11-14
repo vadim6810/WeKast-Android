@@ -9,6 +9,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 import com.wekast.wekastandroidclient.model.ClientScanResult;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.model.WifiApManager;
@@ -106,6 +107,7 @@ public class WifiController {
     private final boolean wifiEnabled;
     private final WifiManager wifiManager;
     private Context context;
+    private WelcomeActivity activity;
     private WifiConfiguration oldConfig;
     private WifiApManager wifiApManager;
 
@@ -115,6 +117,7 @@ public class WifiController {
 
     public WifiController(Context context) {
         this.context = context;
+        activity = WelcomeActivity.welcomeActivity;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         // Сохраняем старые настройки точки доступа
         oldConfig = getWifiApConfiguration(wifiManager);
@@ -147,7 +150,12 @@ public class WifiController {
     private boolean startAP() {
         String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
         String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
-        return isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
+        boolean result = isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
+        if (result)
+            showMessage("AP started");
+        else
+            showMessage("AP didn't start");
+        return result;
     }
 
     private boolean stopAP() {
@@ -311,9 +319,18 @@ public class WifiController {
                 }
                 Log.i("------------------- IP", ip);
                 Utils.setFieldSP(context, "DONGLE_IP", ip);
+                showMessage("Dongle " + ip + " connected to AP");
                 break;
             }
         }
+    }
+
+    private void showMessage(final String message) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                Utils.toastShow(activity, message);
+            }
+        });
     }
 
 }
