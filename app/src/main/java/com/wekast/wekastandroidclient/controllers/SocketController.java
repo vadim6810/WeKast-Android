@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 import com.wekast.wekastandroidclient.model.Utils;
+import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,11 @@ public class SocketController {
     private int dstPort;
     public boolean FILE_UPLOADED = false;
     private WelcomeActivity activity = WelcomeActivity.welcomeActivity;
+    private DongleService dongleService;
+
+    public SocketController(DongleService dongleService) {
+        this.dongleService = dongleService;
+    }
 
     public void initDstAddrPort(String dstAddr, String dstPort) {
         this.dstAddr = dstAddr;
@@ -35,7 +41,16 @@ public class SocketController {
     }
 
     public void sendTask(String command) throws IOException {
-        socket = new Socket(this.dstAddr, this.dstPort);
+        if (command.equals("{\"command\":\"ping\"}")) {
+            if (this.dstAddr.equals("")) {
+                reconfigDevices();
+                return;
+            }
+            if (socket == null)
+                socket = new Socket(this.dstAddr, this.dstPort);
+        } else
+            socket = new Socket(this.dstAddr, this.dstPort);
+
         try {
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
@@ -56,7 +71,15 @@ public class SocketController {
                 // parse response and get message (if "ok")
                 try {
                     JSONObject jsonObject1 = new JSONObject(task);
+                    String type = jsonObject1.getString("type");
                     String message = jsonObject1.getString("message");
+
+                    if (type.equals("ping")) {
+                        if (!message.equals("ok"))
+                            reconfigDevices();
+                    }
+
+
                     if (message.equals("ok")) {
                         Log.i("SocketController", "Request received OK");
                     }
@@ -65,11 +88,15 @@ public class SocketController {
                 }
 
                 socket.close();
+
             }
         } catch (SocketException e) {
             Log.i(TAG, "Socket closed: interrupting");
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (socket != null)
+                socket.close();
         }
     }
 
@@ -94,6 +121,7 @@ public class SocketController {
         showMessage("response: " + response);
 //        System.out.println("Response from server..." + response);
 
+        dongleService.reconfigDevice();
         socket.close();
     }
 
@@ -108,6 +136,12 @@ public class SocketController {
                 Utils.toastShow(activity, message);
             }
         });
+    }
+
+    private void reconfigDevices() {
+        dongleService.connectToDefaultAP();
+        dongleService.sendConfigToDongle();
+//      dongleService.reconfigDevice();
     }
 
 }

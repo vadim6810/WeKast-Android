@@ -8,6 +8,7 @@ import android.util.Log;
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 import com.wekast.wekastandroidclient.commands.ConfigCommand;
 import com.wekast.wekastandroidclient.commands.FileCommand;
+import com.wekast.wekastandroidclient.commands.PingCommand;
 import com.wekast.wekastandroidclient.commands.SlideCommand;
 import com.wekast.wekastandroidclient.commands.StopCommand;
 import com.wekast.wekastandroidclient.controllers.SocketController;
@@ -75,10 +76,15 @@ public class DongleService extends Service {
         public void run() {
             switch (curServiceTask) {
                 case UPLOAD:
-                    connectToDefaultAP();
-                    sendConfigToDongle();
-                    reconfigDevice();
+                    // TODO: ping if answered then continue else reconfigDevice before
+                    // If connection with dongle not exist -> reconfig devices
+                    setDstAddrAndPort();
+                    sendTaskToDongle(new PingCommand().getJsonString());
+//                    connectToDefaultAP();
+//                    sendConfigToDongle();
+//                    reconfigDevice();
 
+                    socketController.FILE_UPLOADED = false;
                     File presentationFile = new File(presentationPath);
                     int fileSize = (int) presentationFile.length();
 
@@ -92,6 +98,7 @@ public class DongleService extends Service {
                 case SLIDE:
                     checkIfFileUploaded();
 //                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
+//                    setDstAddrAndPort();
                     sendTaskToDongle(new SlideCommand(curSlide, curAnimation, curVideo, curAudio).getJsonString());
                     break;
                 case STOP:
@@ -100,58 +107,6 @@ public class DongleService extends Service {
                     Log.d(TAG, "COMMAND NOT FOUND");
             }
             this.interrupt();
-        }
-
-        private void sendConfigToDongle() {
-            setDstAddrAndPort();
-            String[] ssidPass = generateRandomSsidPass();
-//            ConfigCommand configCommand = new ConfigCommand(ssidPass[0], ssidPass[1]);
-//            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
-            sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
-        }
-
-//        private void sendTaskToDongle(JSONObject jsonObject) {
-        private void sendTaskToDongle(String command) {
-            setDstAddrAndPort();
-            try {
-                socketController.sendTask(command);
-//                socketController.sendTask(jsonObject);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void sendFileToDongle(String filePath) {
-            try {
-                socketController.sendFile(filePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void setDstAddrAndPort() {
-            String dstAddress = Utils.getFieldSP(wifiController.getContext(), "DONGLE_IP");
-            String dstPort = DONGLE_SOCKET_PORT;
-            socketController.initDstAddrPort(dstAddress, dstPort);
-        }
-
-        private void reconfigDevice() {
-            wifiController.switchFromWifiToAP();
-            wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
-            // TODO: broadcast receiver
-            wifiController.saveConnectedDeviceIp();
-        }
-
-        private void connectToDefaultAP() {
-            // Connecting to Dongle default Access Point
-            if (wifiController.connectToAccessPoint())
-//                Utils.showMessageOnMainActivity("Connected to dongle");
-                showMessage("Connected to dongle");
-            else
-//                Utils.showMessageOnMainActivity("Error connecting to dongle");
-                showMessage("Error connecting to dongle");
-            wifiController.saveGatewayIP();
-            wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
         }
 
         private void checkIfFileUploaded() {
@@ -195,7 +150,7 @@ public class DongleService extends Service {
         Thread.currentThread().setName("DongleService");
         wifiController = new WifiController(getApplicationContext());
         wifiController.saveWifiConfig(DONGLE_AP_SSID_DEFAULT, DONGLE_AP_PASS_DEFAULT);
-        socketController = new SocketController();
+        socketController = new SocketController(this);
         Log.d(TAG, "onCreate: ");
     }
 
@@ -294,6 +249,56 @@ public class DongleService extends Service {
                 Utils.toastShow(activity, message);
             }
         });
+    }
+
+    public void connectToDefaultAP() {
+        // Connecting to Dongle default Access Point
+        if (wifiController.connectToAccessPoint())
+//                Utils.showMessageOnMainActivity("Connected to dongle");
+            showMessage("Connected to dongle");
+        else
+//                Utils.showMessageOnMainActivity("Error connecting to dongle");
+            showMessage("Error connecting to dongle");
+        wifiController.saveGatewayIP();
+        wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
+    }
+
+    public void sendConfigToDongle() {
+        setDstAddrAndPort();
+        String[] ssidPass = generateRandomSsidPass();
+//            ConfigCommand configCommand = new ConfigCommand(ssidPass[0], ssidPass[1]);
+//            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
+        sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
+    }
+
+    public void reconfigDevice() {
+        wifiController.switchFromWifiToAP();
+        wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
+        // TODO: broadcast receiver
+        wifiController.saveConnectedDeviceIp();
+    }
+
+    private void setDstAddrAndPort() {
+        String dstAddress = Utils.getFieldSP(wifiController.getContext(), "DONGLE_IP");
+        String dstPort = DONGLE_SOCKET_PORT;
+        socketController.initDstAddrPort(dstAddress, dstPort);
+    }
+
+    private void sendTaskToDongle(String command) {
+        setDstAddrAndPort();
+        try {
+            socketController.sendTask(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendFileToDongle(String filePath) {
+        try {
+            socketController.sendFile(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -168,33 +168,33 @@ public class WifiController {
         return true;
     }
 
-    /**
-     * Connect to Access Point on Client (Android or iOs)
-     *
-     * @return
-     */
-    public boolean startConnection() {
-        stopAP();
-        wifiManager.setWifiEnabled(true);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
-        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
-        WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
-
-        int networkId = wifiManager.addNetwork(wifiConfig);
-        if (networkId < 0) {
-            throw new RuntimeException("coudn't add network " + curSsid);
-        }
-        wifiManager.disconnect();
-        wifiManager.enableNetwork(networkId, true);
-        wifiManager.reconnect();
-
-        return true;
-    }
+//    /**
+//     * Connect to Access Point on Client (Android or iOs)
+//     *
+//     * @return
+//     */
+//    public boolean startConnection() {
+//        stopAP();
+//        wifiManager.setWifiEnabled(true);
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
+//        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
+//        WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
+//
+//        int networkId = wifiManager.addNetwork(wifiConfig);
+//        if (networkId < 0) {
+//            throw new RuntimeException("coudn't add network " + curSsid);
+//        }
+//        wifiManager.disconnect();
+//        wifiManager.enableNetwork(networkId, true);
+//        wifiManager.reconnect();
+//
+//        return true;
+//    }
 
     public boolean connectToAccessPoint() {
         stopAP();
@@ -210,7 +210,7 @@ public class WifiController {
 
         int networkId = wifiManager.addNetwork(wifiConfig);
         if (networkId < 0) {
-            throw new RuntimeException("coudn't add network " + curSsid);
+            throw new RuntimeException("couldn't add network " + curSsid);
         }
         wifiManager.disconnect();
         wifiManager.enableNetwork(networkId, true);
