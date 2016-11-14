@@ -74,7 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
     public class TaskRegister extends AsyncTask<String, Void, Integer> {
         private String JSONresponse;
         private String password;
-        ProgressDialog m_ProgressDialog;
+        ProgressDialog progressDialog;
         String login;
         String email;
 
@@ -86,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            m_ProgressDialog = ProgressDialog.show(context,
+            progressDialog = ProgressDialog.show(context,
                     "Please wait",
                     "Registration processing...",
                     true);
@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
-            m_ProgressDialog.dismiss();
+            progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
                 toastShow(context, "Register success! Password: " + password);
                 setFieldSP(context, LOGIN, login);

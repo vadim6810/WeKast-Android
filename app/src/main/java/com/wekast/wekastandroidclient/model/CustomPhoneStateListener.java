@@ -69,8 +69,13 @@ public class CustomPhoneStateListener extends PhoneStateListener  {
                 m = c.getDeclaredMethod("endCall"); // Get the "endCall()" method
                 m.setAccessible(true); // Make it accessible
                 m.invoke(telephonyService); // invoke endCall()
-                SmsManager sms = SmsManager.getDefault();
-                sms.sendTextMessage(callingNumber, null, "I am presenting a cool presentation using the best presentation tool ever! WeKast RULES!!!! \nSent By WeKast! \nFor More Information: http://wekast.com ", sentPI, deliveredPI);
+               /* SmsManager sms = SmsManager.getDefault();
+                sms.sendTextMessage(callingNumber, null,
+                        "I am presenting a cool presentation " +
+                                "using the best presentation tool ever! WeKast RULES!!!! \n" +
+                                "Sent By WeKast! \n" +
+                                "For More Information: http://wekast.com ",
+                        sentPI, deliveredPI);*/
 
             /*com.android.internal.telephony.ITelephony telephonyService = (ITelephony) m.invoke(tm);
             telephonyService = (ITelephony) m.invoke(tm);

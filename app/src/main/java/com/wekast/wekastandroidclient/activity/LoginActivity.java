@@ -1,5 +1,6 @@
 package com.wekast.wekastandroidclient.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -61,10 +62,20 @@ public class LoginActivity extends AppCompatActivity {
         public String JSONList;
         String login;
         String password;
+        ProgressDialog progressDialog;
 
         public TaskLogin() {
             this.login = txtLogin.getText().toString();
             this.password = txtPassword.getText().toString();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(context,
+                    "Please wait",
+                    "Authentication processing...",
+                    true);
         }
 
         @Override
@@ -95,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
+            progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
                 toastShow(context, "Login success");
                 setFieldSP(context, LOGIN, login);

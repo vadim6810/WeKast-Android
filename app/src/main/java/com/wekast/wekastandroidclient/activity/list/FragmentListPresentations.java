@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.activity.list;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ListFragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -336,6 +337,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
     private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean>{
         private int position;
+        ProgressDialog progressDialog;
 
         private UnzipAsyncTask(int position) {
             this.position = position;
@@ -344,7 +346,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            toastShow(getActivity(), "Cash unzip run!");
+            progressDialog = ProgressDialog.show(getActivity(),
+                    "Please wait",
+                    "Unzipping EZS...",
+                    true);
 //            unzipProgress.setVisibility(View.VISIBLE);
         }
 
@@ -355,6 +360,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
         @Override
         protected void onPostExecute(Boolean unzipResult) {
+            progressDialog.dismiss();
 //            unzipProgress.setVisibility(View.GONE);
             if (unzipResult) {
                 toastShow(getActivity(), "Cash unziped!");
