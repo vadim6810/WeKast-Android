@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 import com.wekast.wekastandroidclient.commands.ConfigCommand;
 import com.wekast.wekastandroidclient.commands.FileCommand;
 import com.wekast.wekastandroidclient.commands.SlideCommand;
@@ -29,6 +30,8 @@ import static com.wekast.wekastandroidclient.model.Utils.STOP;
  */
 
 public class DongleService extends Service {
+
+    private WelcomeActivity activity = WelcomeActivity.welcomeActivity;
 
     private ServiceThread serviceThread;
 
@@ -141,7 +144,12 @@ public class DongleService extends Service {
 
         private void connectToDefaultAP() {
             // Connecting to Dongle default Access Point
-            wifiController.connectToAccessPoint();
+            if (wifiController.connectToAccessPoint())
+//                Utils.showMessageOnMainActivity("Connected to dongle");
+                showMessage("Connected to dongle");
+            else
+//                Utils.showMessageOnMainActivity("Error connecting to dongle");
+                showMessage("Error connecting to dongle");
             wifiController.saveGatewayIP();
             wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
         }
@@ -187,8 +195,6 @@ public class DongleService extends Service {
         Thread.currentThread().setName("DongleService");
         wifiController = new WifiController(getApplicationContext());
         wifiController.saveWifiConfig(DONGLE_AP_SSID_DEFAULT, DONGLE_AP_PASS_DEFAULT);
-//        commandController = new CommandController(this);
-//        socketController = new SocketController(commandController);
         socketController = new SocketController();
         Log.d(TAG, "onCreate: ");
     }
@@ -248,22 +254,22 @@ public class DongleService extends Service {
         return null;
     }
 
-    private void waitWifiConnection() {
-        if (!wifiController.isWifiEnabled()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            waitWifiConnection();
-        }
-    }
+//    private void waitWifiConnection() {
+//        if (!wifiController.isWifiEnabled()) {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            waitWifiConnection();
+//        }
+//    }
 
     private String[] generateRandomSsidPass() {
         Random random = new Random();
         String[] ssidPass = new String[2];
-//        ssidPass[0] = randomSsid(random);
-//        ssidPass[1] = String.valueOf(random.nextInt(99999999 - 10000000) + 10000000);
+        ssidPass[0] = randomSsid(random);
+        ssidPass[1] = String.valueOf(random.nextInt(99999999 - 10000000) + 10000000);
         ssidPass[0] = "wekastrandom";
         ssidPass[1] = "87654321";
         // TODO: check if it need
@@ -280,6 +286,14 @@ public class DongleService extends Service {
             randomStringBuilder.append(tempChar);
         }
         return randomStringBuilder.toString();
+    }
+
+    private void showMessage(final String message) {
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                Utils.toastShow(activity, message);
+            }
+        });
     }
 
 }

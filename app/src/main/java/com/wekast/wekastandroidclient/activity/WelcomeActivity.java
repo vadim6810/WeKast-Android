@@ -31,7 +31,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 public class WelcomeActivity extends AppCompatActivity implements FragmentListPresentations.onSomeEventListener {
     private static final String TAG = "WelcomeActivity";
 
-
+    public static WelcomeActivity welcomeActivity;
     Context context = this;
     private int activityState;
     private BroadcastReceiver processCall;
@@ -43,6 +43,8 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        welcomeActivity = this;
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo);
