@@ -18,7 +18,7 @@
     <permission android:name="android.permission.MODIFY_PHONE_STATE" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
+ <!--   <uses-permission android:name="android.permission.SEND_SMS" />-->
 
     <application
         android:allowBackup="true"

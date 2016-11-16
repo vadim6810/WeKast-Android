@@ -6,12 +6,19 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+
 import com.wekast.wekastandroidclient.R;
+
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -22,6 +29,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
 public class LoginActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtPassword;
+    private CheckBox checkPass;
     Context context;
 
     @Override
@@ -36,7 +44,19 @@ public class LoginActivity extends AppCompatActivity {
         txtLogin.setText(getFieldSP(context, LOGIN));
         txtPassword.setText(getFieldSP(context, PASSWORD));
 
+        checkPass = (CheckBox) findViewById(R.id.checkPass);
+        checkPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    txtPassword.setTransformationMethod(null);
+                else txtPassword.setTransformationMethod(new PasswordTransformationMethod());
+                txtPassword.setSelection(txtPassword.length());
+            }
+        });
+
     }
+
 
     public void btnLogin_Click(View v) {
         //validate input
