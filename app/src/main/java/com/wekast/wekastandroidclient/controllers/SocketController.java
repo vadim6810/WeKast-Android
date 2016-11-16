@@ -40,11 +40,14 @@ public class SocketController {
         this.dstPort = Integer.valueOf(dstPort);
     }
 
-    public void sendTask(String command) throws IOException {
+    public boolean sendTask(String command) throws IOException {
         if (command.equals("{\"command\":\"ping\"}")) {
             if (this.dstAddr.equals("")) {
-                reconfigDevices();
-                return;
+                if (!reconfigDevices()) {
+                    showMessage("Error reconfig Devices");
+                    return false;
+                }
+                return true;
             }
             if (socket == null)
                 socket = new Socket(this.dstAddr, this.dstPort);
@@ -98,6 +101,7 @@ public class SocketController {
             if (socket != null)
                 socket.close();
         }
+        return true;
     }
 
     public void sendFile(String filePath) throws IOException {
@@ -125,12 +129,16 @@ public class SocketController {
         socket.close();
     }
 
-    public void close() throws IOException {
+    public void close() {
         if (!socket.isClosed())
-            socket.close();
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
-    private void showMessage(final String message) {
+    public void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 Utils.toastShow(activity, message);
@@ -138,10 +146,15 @@ public class SocketController {
         });
     }
 
-    private void reconfigDevices() {
-        dongleService.connectToDefaultAP();
+
+    private boolean reconfigDevices() {
+        if (!dongleService.connectToDefaultAP()) {
+            showMessage("Error connect to default AP");
+            return false;
+        }
         dongleService.sendConfigToDongle();
-//      dongleService.reconfigDevice();
+        dongleService.reconfigDevice();
+        return true;
     }
 
 }

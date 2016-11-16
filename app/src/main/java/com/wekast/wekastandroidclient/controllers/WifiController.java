@@ -104,11 +104,11 @@ public class WifiController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private final boolean wifiEnabled;
+    private final boolean wifiEnabledOnBoot;
     private final WifiManager wifiManager;
     private Context context;
     private WelcomeActivity activity;
-    private WifiConfiguration oldConfig;
+    private WifiConfiguration wifiConfigOnBoot;
     private WifiApManager wifiApManager;
 
     public Context getContext() {
@@ -119,10 +119,10 @@ public class WifiController {
         this.context = context;
         activity = WelcomeActivity.welcomeActivity;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        // Сохраняем старые настройки точки доступа
-        oldConfig = getWifiApConfiguration(wifiManager);
-        // Сохраняем состояние Wifi
-        wifiEnabled = wifiManager.isWifiEnabled();
+        // Save old settings of Access Point
+        wifiConfigOnBoot = getWifiApConfiguration(wifiManager);
+        // Save status Wifi
+        wifiEnabledOnBoot = wifiManager.isWifiEnabled();
         wifiApManager = new WifiApManager(context);
     }
 
@@ -159,7 +159,7 @@ public class WifiController {
     }
 
     private boolean stopAP() {
-        return setWifiApEnabled(wifiManager, oldConfig, false);
+        return setWifiApEnabled(wifiManager, wifiConfigOnBoot, false);
     }
 
     public boolean switchFromWifiToAP() {
@@ -199,6 +199,7 @@ public class WifiController {
     public boolean connectToAccessPoint() {
         stopAP();
         wifiManager.setWifiEnabled(true);
+        // TODO: change to something else waiting
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -233,8 +234,8 @@ public class WifiController {
         if (isWifiApEnabled(wifiManager)) {
             stopAP();
         }
-        wifiManager.setWifiEnabled(wifiEnabled);
-        setWifiApConfiguration(wifiManager, oldConfig);
+        wifiManager.setWifiEnabled(wifiEnabledOnBoot);
+        setWifiApConfiguration(wifiManager, wifiConfigOnBoot);
     }
 
     public void changeState(WifiState wifiState) {
@@ -254,36 +255,52 @@ public class WifiController {
         WIFI_STATE_CONNECT
     }
 
-    public boolean isWifiEnabled() {
-        // TODO: refactor to less rows
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        WifiInfo info = wifiManager.getConnectionInfo();
-        String curSsid = info.getSSID();
-        boolean isConnected = networkInfo.isConnected();
-        String curSsidFromSP = Utils.getFieldSP(context, AP_SSID_KEY);
-        int i = 0;
-        if (curSsid.equals("\"" + curSsidFromSP + "\"") && isConnected)
-            return true;
-        return false;
-    }
+//    public boolean isWifiEnabled() {
+//        // TODO: refactor to less rows
+//        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+//        WifiInfo info = wifiManager.getConnectionInfo();
+//        String curSsid = info.getSSID();
+//        boolean isConnected = networkInfo.isConnected();
+//        String curSsidFromSP = Utils.getFieldSP(context, AP_SSID_KEY);
+//        int i = 0;
+//        if (curSsid.equals("\"" + curSsidFromSP + "\"") && isConnected)
+//            return true;
+//        return false;
+//    }
 
-    public void saveGatewayIP() {
+    public boolean saveGatewayIP() {
         DhcpInfo info = null;
         boolean isIpReceived = false;
+//        Long timeStart = System.currentTimeMillis();
         while (!isIpReceived) {
             info = wifiManager.getDhcpInfo();
             String receivedIp = getIpAddr(info.ipAddress);
-            if (!receivedIp.equals("0.0.0.0"))
-                isIpReceived = true;
+            if (!receivedIp.equals("0.0.0.0")) {
+                WifiInfo connectionInfo = wifiManager.getConnectionInfo ();
+                String ssid  = connectionInfo.getSSID();
+                if (ssid.equals("\"wekast\"")) {
+                    showMessage("Connected to AP dongle");
+                    isIpReceived = true;
+                }
+            }
+
+//            Long timeCurrent = System.currentTimeMillis();
+//            Long timeResult = (timeCurrent - timeStart) / 1000;
+
+//            if (timeResult > 60)
+//                return false;
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                return false;
             }
         }
         String dongleIp = getIpAddr(info.serverAddress);
         Utils.setFieldSP(context, "DONGLE_IP", dongleIp);
+        return true;
     }
 
     public String getIpAddr(int ipAddr) {

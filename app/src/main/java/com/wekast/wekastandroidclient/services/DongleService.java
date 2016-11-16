@@ -159,6 +159,8 @@ public class DongleService extends Service {
         if (serviceThread != null) {
             serviceThread.interrupt();
         }
+        wifiController.restore();
+        socketController.close();
         super.onDestroy();
     }
 
@@ -251,16 +253,22 @@ public class DongleService extends Service {
         });
     }
 
-    public void connectToDefaultAP() {
-        // Connecting to Dongle default Access Point
-        if (wifiController.connectToAccessPoint())
-//                Utils.showMessageOnMainActivity("Connected to dongle");
-            showMessage("Connected to dongle");
-        else
-//                Utils.showMessageOnMainActivity("Error connecting to dongle");
+    // Connecting to Dongle default Access Point
+    public boolean connectToDefaultAP() {
+        if (!wifiController.connectToAccessPoint()) {
             showMessage("Error connecting to dongle");
-        wifiController.saveGatewayIP();
+            return false;
+        }
+
+        if (wifiController.saveGatewayIP())
+            showMessage("Dongle IP saved");
+        else {
+            showMessage("Dongle not reached");
+            return false;
+        }
+
         wifiController.changeState(WifiController.WifiState.WIFI_STATE_CONNECT);
+        return true;
     }
 
     public void sendConfigToDongle() {
@@ -284,13 +292,17 @@ public class DongleService extends Service {
         socketController.initDstAddrPort(dstAddress, dstPort);
     }
 
-    private void sendTaskToDongle(String command) {
+    private boolean sendTaskToDongle(String command) {
         setDstAddrAndPort();
         try {
-            socketController.sendTask(command);
+            if (!socketController.sendTask(command)) {
+                showMessage("Error sending task: " + command);
+                return false;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     private void sendFileToDongle(String filePath) {
