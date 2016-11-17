@@ -124,7 +124,7 @@ public class AccessServiceAPI {
      * @throws IOException
      */
     public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
-                                             FileOutputStream file) {
+                                             FileOutputStream file) throws Exception {
         HttpURLConnection conn;
         URL url = null;
         try {
@@ -178,7 +178,7 @@ public class AccessServiceAPI {
             conn.disconnect();
         } catch (Exception e) {
             Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
-        }
+            throw new Exception(e.getMessage());        }
         return true;
     }
 }
