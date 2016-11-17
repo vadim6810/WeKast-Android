@@ -131,10 +131,12 @@ public class SocketController {
 
     public void close() {
         if (socket != null) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                Log.e("SocketController", "Error closing socket");
+            if (!socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    Log.e("SocketController", "Error closing socket");
+                }
             }
         }
     }

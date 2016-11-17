@@ -132,6 +132,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                         if (parser.getName().equals("animation")) {
                             chID.add(Integer.parseInt(parser.getAttributeValue(0)));
                         }
+
+                        if (parser.getName().equals("media")) {
+                            chID.add(Integer.parseInt(parser.getAttributeValue(2)));
+                        }
                         break;
                     case XmlPullParser.END_TAG:
                         if (parser.getName().equals("slide")) {
