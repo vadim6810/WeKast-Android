@@ -119,6 +119,7 @@ public class DownloadService extends IntentService {
 
                     //download EZS
                     actionDownload(SERVICE_API_URL_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
+                    clearDirectory(new File(DIRECTORY_PREVIEW, item.getValue()));
                     intent.putExtra("status", STATUS_FINISH_ONE);
                     sendBroadcast(intent);
                 }

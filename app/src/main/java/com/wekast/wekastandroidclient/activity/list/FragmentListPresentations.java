@@ -134,7 +134,6 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                     }
                     if (status == STATUS_FINISH_ONE) {
                         Log.d(TAG, "onReceive: STATUS_FINISH_ONE");
-                        clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
                         updateListPresentations();
                     }
                     if (status == STATUS_FINISH_ALL) {

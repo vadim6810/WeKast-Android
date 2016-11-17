@@ -112,7 +112,18 @@ public class Utils {
         }
      }
 
-    private static void clearDirectory(File file) {
+    public static void clearWorkDirectory(String absolutePath, String file){
+        File[] clearWorkDirectory = (new File(absolutePath)).listFiles();
+        if(clearWorkDirectory != null){
+            for (File tmp : clearWorkDirectory) {
+                String res = tmp.getName().toString();
+                if(tmp.getName().toString() == file)
+                clearDirectory(tmp);
+            }
+        }
+    }
+
+    public static void clearDirectory(File file) {
         if (!file.exists())
             return;
         if(file.isDirectory()){
