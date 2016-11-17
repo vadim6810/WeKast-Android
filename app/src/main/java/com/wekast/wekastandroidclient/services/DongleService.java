@@ -156,11 +156,11 @@ public class DongleService extends Service {
 
     @Override
     public void onDestroy() {
-        if (serviceThread != null) {
+        if (serviceThread != null)
             serviceThread.interrupt();
-        }
         wifiController.restore();
-        socketController.close();
+        if (socketController != null)
+            socketController.close();
         super.onDestroy();
     }
 
