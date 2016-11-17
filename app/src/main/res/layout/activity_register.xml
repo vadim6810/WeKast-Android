@@ -22,7 +22,7 @@
                 android:text="@string/activityRegisterTextView1"
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:layout_marginBottom="10dp" />
 
             <TextView
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/activityRegisterTextView2"
                 android:gravity="center"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:textColor="@color/white" />
 
             <TextView
@@ -40,7 +40,7 @@
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
                 android:layout_marginTop="15dp"
-                android:textSize="22dp"
+                android:textSize="22sp"
                 android:layout_marginBottom="10dp" />
 
             <TextView
@@ -49,7 +49,7 @@
                 android:text="YOUR COUNTRY CODE &amp; PHONE NUMBER"
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
-                android:textSize="14dp" />
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/txt_login"
@@ -59,7 +59,7 @@
                 android:textColor="@color/white"
                 android:hint="+972 Phone number"
                 android:paddingLeft="10dp"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:inputType="phone"
                 />
 
@@ -69,7 +69,7 @@
                 android:text="YOUR E-MAIL"
                 android:textColor="@color/wekast_title"
                 android:gravity="center"
-                android:textSize="14dp"
+                android:textSize="14sp"
                 android:id="@+id/textView"
                 android:layout_marginTop="10dp" />
 
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/edit_text_bg"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/white"
                 android:paddingLeft="10dp"
                 android:inputType="textEmailAddress"
@@ -100,7 +100,7 @@
                     android:background="@drawable/btn_grey_bg"
                     android:textColor="@color/black"
                     android:textStyle="bold"
-                    android:textSize="25dp"
+                    android:textSize="25sp"
                     android:id="@+id/btn_CANCEL"
                     android:onClick="btnBack_Click"
                     android:layout_marginRight="5dp" />
@@ -112,7 +112,7 @@
                     android:textAllCaps="false"
                     android:background="@drawable/btn_orange_bg"
                     android:textColor="@color/black"
-                    android:textSize="25dp"
+                    android:textSize="25sp"
                     android:textStyle="bold"
                     android:layout_weight="1"
                     android:layout_marginLeft="5dp"
@@ -128,11 +128,11 @@
                 android:textAllCaps="false"
                 android:background="@drawable/btn_orange_bg"
                 android:textColor="@color/black"
-                android:textSize="25dp"
                 android:textStyle="bold"
                 android:layout_weight="1"
                 android:onClick="btnLogin_Click"
-                android:id="@+id/btn_LOGIN" />
+                android:id="@+id/btn_LOGIN"
+                android:textSize="25sp" />
 
         </LinearLayout>
     </ScrollView>

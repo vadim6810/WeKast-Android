@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+
 import com.wekast.wekastandroidclient.R;
+
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -39,14 +43,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        if (back_pressed + 2000 > System.currentTimeMillis())
-            finishAffinity();
-        else
-            toastShow(context, "Press once again to exit!");
-        back_pressed = System.currentTimeMillis();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (back_pressed + 2000 > System.currentTimeMillis())
+//            finishAffinity();
+//        else
+//            toastShow(context, "Press once again to exit!");
+//        back_pressed = System.currentTimeMillis();
+//    }
 
     public void btnRegister_Click(View v) {
         //validate input
@@ -63,12 +67,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void btnLogin_Click(View v) {
-        Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+        Intent i = new Intent(RegisterActivity.this, LoginActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(i);
     }
 
     public void btnBack_Click(View v) {
-        finishAffinity();
+        finish();
     }
 
     public class TaskRegister extends AsyncTask<String, Void, Integer> {
@@ -135,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         private void startWelcome() {
             Intent i = new Intent(context, WelcomeActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);
         }
     }

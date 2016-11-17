@@ -73,6 +73,12 @@ public class LoginActivity extends AppCompatActivity {
         new TaskLogin().execute();
     }
 
+    public void btnReg_Click(View v) {
+        Intent i = new Intent(LoginActivity.this, RegisterActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(i);
+    }
+
     public void btnBack_Click(View v) {
         finish();
     }
@@ -139,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
 
         private void startWelcome() {
             Intent i = new Intent(context, WelcomeActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);
         }
     }
