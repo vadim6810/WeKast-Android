@@ -77,10 +77,12 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         outputImage = new OutputImage();
         commentsFragment = new CommentsFragment();
 
-        inputImage.setImagePath(slidesList.get(currentSlide + 1), false);
-        mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, false);
-        commentsFragment.setComments(slidesList.get(currentSlide), false);
-        changeSlideToDongle(currentSlide + 1, currentChID);
+        if (slidesList.size() > 0) {
+            inputImage.setImagePath(slidesList.get(currentSlide + 1), false);
+            mainImage.setImagePath(slidesList.get(currentSlide), slidesList.size(), currentChID, false);
+            commentsFragment.setComments(slidesList.get(currentSlide), false);
+            changeSlideToDongle(currentSlide + 1, currentChID);
+        }
 
         tr = getFragmentManager().beginTransaction();
         tr.add(R.id.input_slide_container, inputImage);
@@ -90,7 +92,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         tr.commit();
 
         outputSlideContainer.setVisibility(View.INVISIBLE);
-
 
         view.setOnTouchListener(this);
         commentsContainer.setOnLongClickListener(new View.OnLongClickListener() {
@@ -126,8 +127,9 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                     case XmlPullParser.START_TAG:
                         if (parser.getName().equals("slide")) {
                             slideNumber = Integer.parseInt(parser.getAttributeValue(0));
-                            comments = parser.getAttributeValue(2);
                             filePath = CASH_ABSOLUTE_PATH + parser.getAttributeValue(1);
+                            if (parser.getAttributeCount() > 2)
+                                comments = parser.getAttributeValue(2);
                         }
                         if (parser.getName().equals("animation")) {
                             chID.add(Integer.parseInt(parser.getAttributeValue(0)));
@@ -150,6 +152,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             }
         } catch (Throwable t) {
             Log.e("Error XML parser: ", t.toString());
+            toastShow(getActivity(), "Broken XML from EZS.");
         }
     }
 
