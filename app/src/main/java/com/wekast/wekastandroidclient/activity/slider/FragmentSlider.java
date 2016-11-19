@@ -134,7 +134,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                         }
 
                         if (parser.getName().equals("media")) {
-                            chID.add(Integer.parseInt(parser.getAttributeValue(2)));
+                            chID.add(Integer.parseInt(parser.getAttributeValue(0)));
                         }
                         break;
                     case XmlPullParser.END_TAG:
@@ -149,7 +149,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 parser.next();
             }
         } catch (Throwable t) {
-            Log.d("Error XML parser: ", t.toString());
+            Log.e("Error XML parser: ", t.toString());
         }
     }
 
