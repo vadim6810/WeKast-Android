@@ -124,30 +124,27 @@ public class AccessServiceAPI {
      * @throws IOException
      */
     public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
-                                             FileOutputStream file) throws Exception {
-        HttpURLConnection conn;
-        URL url = null;
+                                             FileOutputStream file) throws IOException {
         try {
-            url = new URL(serviceUrl);
-        } catch (MalformedURLException e) {
-            Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
-        }
-        StringBuilder bodyBuilder = new StringBuilder();
-        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
-        // constructs the POST body using the parameters
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> param = iterator.next();
-            bodyBuilder.append(param.getKey()).append('=')
-                    .append(param.getValue());
-            if (iterator.hasNext()) {
-                bodyBuilder.append('&');
+            HttpURLConnection conn;
+            URL url = new URL(serviceUrl);
+            StringBuilder bodyBuilder = new StringBuilder();
+            Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+            // constructs the POST body using the parameters
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> param = iterator.next();
+                bodyBuilder.
+                        append(param.getKey()).
+                        append('=').
+                        append(param.getValue());
+                if (iterator.hasNext()) {
+                    bodyBuilder.append('&');
+                }
             }
-        }
 
-        String body = bodyBuilder.toString();
-        Log.w("getJSONStringWithParam", body);
-        byte[] bytes = body.getBytes();
-        try {
+            String body = bodyBuilder.toString();
+            Log.d("body POST", body);
+            byte[] bytes = body.getBytes();
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setUseCaches(false);
@@ -161,10 +158,10 @@ public class AccessServiceAPI {
 
             // handle the response
             int status = conn.getResponseCode();
-
             Log.d(TAG, "Response = " + status);
             if (status != 200) {
-                throw new IOException("Post failed with error code " + status);
+                Log.e(TAG, "Bad response server: " + status);
+                throw new IOException("Bad response server: " + status);
             }
 //            int len = Integer.valueOf(conn.getHeaderField("Content-Length"));
 
@@ -176,9 +173,11 @@ public class AccessServiceAPI {
             }
             stream.close();
             conn.disconnect();
-        } catch (Exception e) {
-            Log.d(TAG, "getDownloadWithParam_POST: " + e.getMessage());
-            throw new Exception(e.getMessage());        }
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            throw new IOException("Error download EZS");
+        }
+
         return true;
     }
 }

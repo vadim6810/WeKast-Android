@@ -124,7 +124,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
                 if (DOWNLOAD == intent.getIntExtra("command", 0)){
-                    int status = intent.getIntExtra("status", 0);
+                     int status = intent.getIntExtra("status", 0);
                     if (status  == STATUS_START) {
                         Log.d(TAG, "onReceive: STATUS_START");
                     }
@@ -141,6 +141,10 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                         swipeRefreshLayout.setRefreshing(false);
                         clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
                         updateListPresentations();
+                    }
+                    if (status == ERROR_DOWNLOAD) {
+                        Log.d(TAG, "onReceive: ERROR_DOWNLOAD");
+                        toastShow(getActivity(), "Error download EZS!");
                     }
                 }
             }

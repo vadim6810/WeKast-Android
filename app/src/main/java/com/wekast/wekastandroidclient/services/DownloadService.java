@@ -102,10 +102,10 @@ public class DownloadService extends IntentService {
                 response = jsonObject.getString("answer");
                 hashMap = mapEzsForDownload(parseJSONArrayMap(response), getAllFilesList());
             } else {
-                Log.d(TAG, "download: ERROR status");
+                Log.d(TAG, "download: ERROR status" + jsonObject.getInt("status"));
             }
         } catch (Exception e) {
-            Log.d(TAG, "download: ERROR " + e.getMessage());
+            Log.e(TAG, "download: ERROR " + e.getMessage());
         }
 
         //download from server
@@ -125,6 +125,8 @@ public class DownloadService extends IntentService {
                 }
             } catch (Exception e) {
                 Log.d(TAG, "download: ERROR " + e.getMessage());
+                intent.putExtra("status", ERROR_DOWNLOAD);
+                sendBroadcast(intent);
             }
             Log.d(TAG, "download: ALL OK");
         }
@@ -133,19 +135,13 @@ public class DownloadService extends IntentService {
         sendBroadcast(intent);
     }
 
-    private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave) {
+    private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave)
+            throws IOException{
         File tmpFile = new File(pathSave, fileName + ".tmp");
         Log.d(TAG, "actionDownload: " + tmpFile);
         try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
             m_AccessServiceAPI.getDownloadWithParam_POST(URL, param, fos);
             tmpFile.renameTo(new File(pathSave, fileName));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            Log.d(TAG, "actionDownload: " + e.getMessage());
-            toastShow(this,  e.getMessage());
         }
     }
 }

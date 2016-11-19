@@ -65,6 +65,8 @@ public class Utils {
     public static final int STATUS_FINISH_ALL = 200;
     public static final int DOWNLOAD = 10;
     public static final int DELETE = 20;
+    public static final int ERROR_DOWNLOAD = 666;
+
 
 
     /** Default Dongle Access Point **/
