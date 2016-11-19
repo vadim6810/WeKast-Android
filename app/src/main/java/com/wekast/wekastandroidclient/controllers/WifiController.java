@@ -345,7 +345,7 @@ public class WifiController {
     private void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                Utils.toastShow(activity, message);
+//                Utils.toastShow(activity, message);
             }
         });
     }

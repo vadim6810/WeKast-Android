@@ -19,6 +19,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -236,11 +237,21 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
-        i.putExtra("ANIMATION", Integer.toString(currentChID));
-        // TODO: pass here strings animation, video and audio
+        if (isAnimationsExist())
+            i.putExtra("ANIMATION", Integer.toString(currentChID));
+        else
+            i.putExtra("ANIMATION", "");
         i.putExtra("VIDEO", "");
         i.putExtra("AUDIO", "");
         getActivity().startService(i);
+    }
+
+    private boolean isAnimationsExist() {
+        File directory = new File(ANIMATIONS_ABSOLUTE_PATH);
+        File[] contents = directory.listFiles();
+        if (contents.length == 0)
+            return false;
+        return true;
     }
 
     public void prevSlide() {
