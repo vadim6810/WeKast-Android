@@ -68,7 +68,7 @@ public class SocketController {
                     socket.close();
                     break;
                 }
-                showMessage("response: " + task);
+//                showMessage("response: " + task);
 
                 // TODO: think about command response
                 // parse response and get message (if "ok")
@@ -122,7 +122,7 @@ public class SocketController {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         in.ready();
         String response = in.readLine();
-        showMessage("response: " + response);
+//        showMessage("response: " + response);
 //        System.out.println("Response from server..." + response);
 
         dongleService.reconfigDevice();
