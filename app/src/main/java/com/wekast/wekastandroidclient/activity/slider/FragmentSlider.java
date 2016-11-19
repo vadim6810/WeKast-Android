@@ -233,25 +233,24 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     }
 
     private void changeSlideToDongle(int currentSlide, int currentChID) {
-        Log.d("changeSlideToDongle", currentSlide + "|" + currentChID);
+        String chid = getChid(currentSlide, currentChID);
+        Log.d("changeSlideToDongle", currentSlide + "|" + chid);
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
-        if (isAnimationsExist())
-            i.putExtra("ANIMATION", Integer.toString(currentChID));
-        else
-            i.putExtra("ANIMATION", "");
+        i.putExtra("ANIMATION", chid);
         i.putExtra("VIDEO", "");
         i.putExtra("AUDIO", "");
         getActivity().startService(i);
     }
 
-    private boolean isAnimationsExist() {
-        File directory = new File(ANIMATIONS_ABSOLUTE_PATH);
-        File[] contents = directory.listFiles();
-        if (contents.length == 0)
-            return false;
-        return true;
+    private String getChid(int currentSlide, int currentChID) {
+        String res = "";
+        ArrayList<Integer> chidList = slidesList.get(currentSlide - 1).getChID();
+        if (chidList.size() > 0) {
+            res = String.valueOf(chidList.get(currentChID - 1));
+        }
+        return res;
     }
 
     public void prevSlide() {
