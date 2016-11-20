@@ -51,16 +51,22 @@ public class Utils {
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
     public static File DIRECTORY_PREVIEW = new File(PREVIEW_ABSOLUTE_PATH);
 
-    /** StateMachine **/
+    /**
+     * StateMachine
+     **/
     public static final int PRESENTATION_LIST = 0x00000100;
     public static final int SLIDER = 0x00000200;
 
-    /** Command DongleService **/
+    /**
+     * Command DongleService
+     **/
     public static final int UPLOAD = 1;
     public static final int SLIDE = 2;
     public static final int STOP = 3;
 
-    /** Command DownloadService **/
+    /**
+     * Command DownloadService
+     **/
     public static final int STATUS_START = 100;
     public static final int STATUS_FINISH_PREVIEW = 125;
     public static final int STATUS_FINISH_ONE = 150;
@@ -70,8 +76,9 @@ public class Utils {
     public static final int ERROR_DOWNLOAD = 666;
 
 
-
-    /** Default Dongle Access Point **/
+    /**
+     * Default Dongle Access Point
+     **/
     public static final String DONGLE_AP_SSID_DEFAULT = "wekast";
     public static final String DONGLE_AP_PASS_DEFAULT = "12345678";
     public static final String DONGLE_SOCKET_PORT = "8888";
@@ -89,16 +96,16 @@ public class Utils {
         workFolder.add(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
         workFolder.add(CASH_ABSOLUTE_PATH);
         workFolder.add(PREVIEW_ABSOLUTE_PATH);
-        workFolder.add(CASH_ABSOLUTE_PATH + "animations");
-        workFolder.add(CASH_ABSOLUTE_PATH + "audio");
         workFolder.add(CASH_ABSOLUTE_PATH + "slides");
-        workFolder.add(CASH_ABSOLUTE_PATH + "video");
+//        workFolder.add(CASH_ABSOLUTE_PATH + "animations");
+//        workFolder.add(CASH_ABSOLUTE_PATH + "audio");
+//        workFolder.add(CASH_ABSOLUTE_PATH + "video");
 
         createFolder(workFolder);
     }
 
     private static void createFolder(ArrayList<String> workFolder) {
-        for (String str: workFolder) {
+        for (String str : workFolder) {
             File file = new File(str);
             if (!file.isDirectory()) {
                 file.mkdir();
@@ -107,21 +114,10 @@ public class Utils {
         }
     }
 
-    public static void clearWorkDirectory(String absolutePath){
+    public static void clearWorkDirectory(String absolutePath) {
         File[] clearWorkDirectory = (new File(absolutePath)).listFiles();
-        if(clearWorkDirectory != null){
+        if (clearWorkDirectory != null) {
             for (File tmp : clearWorkDirectory) {
-                clearDirectory(tmp);
-            }
-        }
-     }
-
-    public static void clearWorkDirectory(String absolutePath, String file){
-        File[] clearWorkDirectory = (new File(absolutePath)).listFiles();
-        if(clearWorkDirectory != null){
-            for (File tmp : clearWorkDirectory) {
-                String res = tmp.getName().toString();
-                if(tmp.getName().toString() == file)
                 clearDirectory(tmp);
             }
         }
@@ -130,8 +126,8 @@ public class Utils {
     public static void clearDirectory(File file) {
         if (!file.exists())
             return;
-        if(file.isDirectory()){
-            for (File tmp2: file.listFiles()) {
+        if (file.isDirectory()) {
+            for (File tmp2 : file.listFiles()) {
                 clearDirectory(tmp2);
             }
         } else file.delete();
@@ -139,13 +135,13 @@ public class Utils {
 
     public static boolean getContainsSP(Context context, String field) {
         SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
-        return  settingsActivity.contains(field);
+        return settingsActivity.contains(field);
     }
 
     public static String getFieldSP(Context context, String field) {
         SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
         String result = settingsActivity.getString(field, "");
-        return  result;
+        return result;
     }
 
     public static void clearSP(Context context) {
@@ -168,16 +164,6 @@ public class Utils {
         toast.show();
     }
 
-    public static void writeFile(byte[] content, String FILENAME, String LOG_TAG, File pathSave) {
-        Log.d(LOG_TAG, "writeToFile");
-        try (FileOutputStream fos = new FileOutputStream(new File(pathSave, FILENAME))){
-            fos.write(content);
-            Log.d(LOG_TAG, "finish write File!!!");
-        } catch (IOException e) {
-            Log.d(LOG_TAG, "ERROR write File!!!");
-        }
-    }
-
     public static HashMap<String, String> parseJSONArrayMap(String answer) {
         HashMap<String, String> mapList = new HashMap<>();
         try {
@@ -187,23 +173,9 @@ public class Utils {
                 mapList.put(index.getString("id"), index.getString("name"));
             }
         } catch (JSONException e) {
-            Log.d("parseJSONArrayMap ", "error!!!");
+            Log.d("parseJSONArrayMap ", e.toString());
         }
         return mapList;
-    }
-
-    public static ArrayList<String> parseJSONArray(Context context, String answer) {
-        ArrayList<String> arrayList = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(answer);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject index = jsonArray.getJSONObject(i);
-                arrayList.add(index.getString("name"));
-            }
-        } catch (JSONException e) {
-            toastShow(context, e.toString());
-        }
-        return arrayList;
     }
 
     public static ArrayList<String[]> getAllFilesList() {
@@ -211,7 +183,7 @@ public class Utils {
         File[] filesList = DIRECTORY.listFiles();
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
-                if(filesList[i].getName().endsWith(FORMAT))
+                if (filesList[i].getName().endsWith(FORMAT))
                     fileList.add(new String[]{filesList[i].getName(), filesList[i].getAbsolutePath()});
             }
         }
@@ -224,8 +196,8 @@ public class Utils {
         if (filesList != null && filesList.length > 0) {
             for (int i = 0; i < filesList.length; i++) {
 //                if(filesList[i].getName().endsWith(FORMAT))
-                    fileList.add(new String[]{filesList[i].getName(),
-                            String.valueOf(filesList[i].getAbsoluteFile())});
+                fileList.add(new String[]{filesList[i].getName(),
+                        String.valueOf(filesList[i].getAbsoluteFile())});
             }
         }
         return fileList;
@@ -233,22 +205,29 @@ public class Utils {
 
     public static boolean unZipPresentation2(String path) {
         clearWorkDirectory(CASH_ABSOLUTE_PATH);
+        long start = System.currentTimeMillis();
         boolean res = false;
-        try(ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
-        {
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(path))) {
             ZipEntry zipEntry;
-            File targetDirectory = new File(CASH_ABSOLUTE_PATH);
+
             while ((zipEntry = zin.getNextEntry()) != null) {
-                String filePath = targetDirectory + File.separator + zipEntry.getName();
+
                 if (!zipEntry.isDirectory()) {
-                    extractFile(zin, filePath, (int) zipEntry.getSize());
+                    String fileName = zipEntry.getName();
+                    if (zipEntry.getName().endsWith("info.xml") ||
+                            fileName.contains("slides")) {
+                        File targetDirectory = new File(CASH_ABSOLUTE_PATH);
+                        String filePath = targetDirectory + File.separator + fileName;
+                        extractFile(zin, filePath, (int) zipEntry.getSize());
+                    }
                 }
                 zin.closeEntry();
             }
             res = true;
         } catch (Exception e) {
-            Log.d("UnzipError = ", e.toString());
+            Log.d("UnzipError", e.toString());
         }
+        Log.d("Time unzip"," = " + (System.currentTimeMillis() - start));
         return res;
     }
 
@@ -264,13 +243,12 @@ public class Utils {
 
     public static byte[] unZipPreview(String path) {
         byte[] result = null;
-        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(path)))
-        {
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(path))) {
             ZipEntry zipEntry;
             while ((zipEntry = zin.getNextEntry()) != null) {
-                if(zipEntry.getName().endsWith("preview.jpeg")){
+                if (zipEntry.getName().endsWith("preview.jpeg")) {
                     result = new byte[(int) zipEntry.getSize()];
-                    for (int c = zin.read(),j=0; c != -1; c = zin.read(),j++) {
+                    for (int c = zin.read(), j = 0; c != -1; c = zin.read(), j++) {
                         result[j] = (byte) c;
                     }
                     break;
@@ -375,7 +353,8 @@ public class Utils {
 
     public static String getTaskCommand(JSONObject curJsonObject) {
         JSONObject jsonRootObject = curJsonObject;
-        JSONArray jsonTask = jsonRootObject.optJSONArray("task");;
+        JSONArray jsonTask = jsonRootObject.optJSONArray("task");
+        ;
         String curCommand = "";
 //        try {
         for (int i = 0; i < jsonTask.length(); i++) {
@@ -383,7 +362,7 @@ public class Utils {
                 JSONObject jsonObject = jsonTask.getJSONObject(i);
                 curCommand = jsonObject.getString("command").toString();
             } catch (JSONException e) {
-            e.printStackTrace();
+                e.printStackTrace();
 ////            Log.d(TAG, e.printStackTrace());
             }
         }
@@ -393,7 +372,8 @@ public class Utils {
 
     public static String getResponseStatus(JSONObject curJsonObject) {
         JSONObject jsonRootObject = curJsonObject;
-        JSONArray jsonTask = jsonRootObject.optJSONArray("task");;
+        JSONArray jsonTask = jsonRootObject.optJSONArray("task");
+        ;
         String curCommand = "";
 //        try {
         for (int i = 0; i < jsonTask.length(); i++) {
@@ -414,8 +394,8 @@ public class Utils {
 
     public static HashMap<String, String> mapEzsForDownload(HashMap<String, String> mapDownload, ArrayList<String[]> filesLocal) {
         if (mapDownload.size() > 0) {
-            for (String[] s: filesLocal) {
-                for(Iterator<HashMap.Entry<String, String>> it = mapDownload.entrySet().iterator(); it.hasNext(); ) {
+            for (String[] s : filesLocal) {
+                for (Iterator<HashMap.Entry<String, String>> it = mapDownload.entrySet().iterator(); it.hasNext(); ) {
                     HashMap.Entry<String, String> entry = it.next();
                     if (entry.getValue().equals(s[0])) {
                         it.remove();
@@ -428,8 +408,8 @@ public class Utils {
 
     public static HashMap<String, String> mapEzsForDeleted(HashMap<String, String> mapDeleted, ArrayList<String> serverEzsDel) {
         if (mapDeleted.size() > 0) {
-            for (String s: serverEzsDel) {
-                for(Iterator<HashMap.Entry<String, String>> it = mapDeleted.entrySet().iterator(); it.hasNext(); ) {
+            for (String s : serverEzsDel) {
+                for (Iterator<HashMap.Entry<String, String>> it = mapDeleted.entrySet().iterator(); it.hasNext(); ) {
                     HashMap.Entry<String, String> entry = it.next();
                     if (!entry.getValue().equals(s)) {
                         it.remove();
