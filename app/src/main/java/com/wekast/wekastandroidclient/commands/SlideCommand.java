@@ -10,15 +10,11 @@ import org.json.JSONObject;
 public class SlideCommand implements ICommand {
 
     private String slide;
-    private String animation;
-    private String video;
-    private String audio;
+    private String media;
 
-    public SlideCommand(String slide, String animation, String video, String audio) {
+    public SlideCommand(String slide, String media) {
         this.slide = slide;
-        this.animation = animation;
-        this.video = video;
-        this.audio = audio;
+        this.media = media;
     }
 
     @Override
@@ -27,9 +23,7 @@ public class SlideCommand implements ICommand {
         JSONObject args = new JSONObject();
         try {
             args.put("slide", slide);
-            args.put("animation", animation);
-            args.put("video", video);
-            args.put("audio", audio);
+            args.put("media", media);
             jsonObject.put("command", "slide");
             jsonObject.put("args", args);
         } catch (JSONException e) {

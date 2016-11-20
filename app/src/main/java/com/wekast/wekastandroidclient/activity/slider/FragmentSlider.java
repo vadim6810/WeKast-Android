@@ -238,9 +238,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         Intent i = new Intent(getActivity(), DongleService.class);
         i.putExtra("command", SLIDE);
         i.putExtra("SLIDE", Integer.toString(currentSlide));
-        i.putExtra("ANIMATION", chid);
-        i.putExtra("VIDEO", "");
-        i.putExtra("AUDIO", "");
+        i.putExtra("MEDIA", chid);
         getActivity().startService(i);
     }
 

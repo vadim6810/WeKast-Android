@@ -40,9 +40,7 @@ public class DongleService extends Service {
 
         private int curServiceTask;
         private String curSlide;
-        private String curAnimation;
-        private String curVideo;
-        private String curAudio;
+        private String curMedia;
         private String presentationPath;
 
         ServiceThread(int task) {
@@ -52,20 +50,12 @@ public class DongleService extends Service {
             this.curSlide = "";
         }
 
-        public void setCurSlide(String slide) {
+        public void setCurSlide(String slide)        {
             this.curSlide = slide;
         }
 
-        public void setCurAnimation(String animation) {
-            this.curAnimation = animation;
-        }
-
-        public void setCurVideo(String video) {
-            this.curVideo = video;
-        }
-
-        public void setCurAudio(String audio) {
-            this.curAudio = audio;
+        public void setCurMedia(String media) {
+            this.curMedia = media;
         }
 
         public void setPresentationPath(String presentationPath) {
@@ -99,7 +89,7 @@ public class DongleService extends Service {
                     checkIfFileUploaded();
 //                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
 //                    setDstAddrAndPort();
-                    sendTaskToDongle(new SlideCommand(curSlide, curAnimation, curVideo, curAudio).getJsonString());
+                    sendTaskToDongle(new SlideCommand(curSlide, curMedia).getJsonString());
                     break;
                 case STOP:
                     sendTaskToDongle(new StopCommand().getJsonString());
@@ -184,14 +174,10 @@ public class DongleService extends Service {
             case SLIDE:
                 Log.d(TAG, "readIntent: SLIDE " + intent.getStringExtra("SLIDE"));
                 String curSlide = intent.getStringExtra("SLIDE");
-                String curAnimation = intent.getStringExtra("ANIMATION");
-                String curVideo = intent.getStringExtra("VIDEO");
-                String curAudio = intent.getStringExtra("AUDIO");
+                String curMedia = intent.getStringExtra("MEDIA");
                 serviceThread = new ServiceThread(SLIDE);
                 serviceThread.setCurSlide(curSlide);
-                serviceThread.setCurAnimation(curAnimation);
-                serviceThread.setCurVideo(curVideo);
-                serviceThread.setCurAudio(curAudio);
+                serviceThread.setCurMedia(curMedia);
                 serviceThread.start();
                 break;
             case STOP:
