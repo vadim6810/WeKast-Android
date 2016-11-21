@@ -211,7 +211,8 @@ public class WifiController {
 
         int networkId = wifiManager.addNetwork(wifiConfig);
         if (networkId < 0) {
-            throw new RuntimeException("couldn't add network " + curSsid);
+//            throw new RuntimeException("couldn't add network " + curSsid);
+            Log.e("WifiController", "connectToAccessPoint: " + "couldn't add network " + curSsid);
         }
         wifiManager.disconnect();
         wifiManager.enableNetwork(networkId, true);

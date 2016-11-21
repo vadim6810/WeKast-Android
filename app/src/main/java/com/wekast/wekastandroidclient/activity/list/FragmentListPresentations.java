@@ -52,7 +52,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
 
     @Override
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
-        toastShow(getActivity(), "Selected items: " + selectedEzs);
+//      toastShow(getActivity(), "Selected items: " + selectedEzs);
         serverEzsDel = new ArrayList<>();
         for (Integer id : selectedEzs) {
             serverEzsDel.add(localEzs.get(id)[0]);
@@ -70,7 +70,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     }
 
     /**
-     * onAttach(Context) не вызовется до API 23 версии вместо этого будет вызван onAttach(Activity), который устарел с 23 API
+     * onAttach(Context) не вызовется до API 23 версии вместо этого будет вызван onAttach(Activity),
+     * который устарел с 23 API
      * Так что вызовем onAttachToContext
      */
     @TargetApi(23)
