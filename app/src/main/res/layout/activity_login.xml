@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_grey_bg"
+            android:background="@drawable/btn_ripple_grey"
             android:onClick="btnBack_Click"
             android:text="CANCEL"
             android:textColor="@color/black"
@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_orange_bg"
+            android:background="@drawable/btn_ripple_orange"
             android:onClick="btnLogin_Click"
             android:text="Login"
             android:textAllCaps="false"
@@ -116,13 +116,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/btn_orange_bg"
+            android:background="@drawable/btn_ripple_orange"
             android:onClick="btnReg_Click"
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="normal|bold"
             android:text="New registration" />
+
     </LinearLayout>
 
 </LinearLayout>
