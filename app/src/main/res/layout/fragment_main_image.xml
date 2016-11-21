@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/images_frame_border"
+    android:background="@drawable/frame_border_images"
     android:padding="5dp">
 
     <ImageView
@@ -18,7 +18,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="10">
+        android:layout_weight="10"
+        android:background="@android:color/holo_orange_light">
 
         <TextView
             android:id="@+id/current_slide_title"

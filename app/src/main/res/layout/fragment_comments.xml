@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/comments_frame_border"
+    android:background="@drawable/frame_border_comments"
     android:padding="10dp">
     <TextView
         android:id="@+id/comments_title"

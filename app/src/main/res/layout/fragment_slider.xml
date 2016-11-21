@@ -73,7 +73,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="90dp"
-            android:background="@drawable/comments_frame_border"
+            android:background="@drawable/frame_border_comments"
             android:visibility="gone">
 
             <LinearLayout
