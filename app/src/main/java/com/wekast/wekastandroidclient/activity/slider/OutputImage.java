@@ -26,6 +26,7 @@ public class OutputImage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_output_image, container, false);
+        view.setAlpha(0.5f);
         title = (TextView) view.findViewById(R.id.output_slide_title);
         image = (ImageView) view.findViewById(R.id.output_slide_picture);
 
