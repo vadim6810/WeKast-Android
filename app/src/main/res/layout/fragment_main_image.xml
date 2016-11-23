@@ -3,23 +3,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/frame_border_images"
+    android:orientation="vertical"
     android:padding="5dp">
 
-    <ImageView
-        android:id="@+id/current_slide_picture"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center|center_vertical" />
+        android:background="@android:color/background_light">
+
+        <ImageView
+            android:id="@+id/current_slide_picture"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/current_slide_picture2"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center|center_vertical"
+            android:scaleType="centerCrop" />
+    </RelativeLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="10"
-        android:background="@android:color/holo_orange_light">
+        android:background="@android:color/holo_orange_light"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/current_slide_title"
@@ -27,8 +43,8 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:gravity="center_vertical|center"
-            android:textColor="@color/black"
-            android:text="slideID" />
+            android:text="slideID"
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/current_chid_title"
@@ -36,8 +52,8 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:gravity="center|center_vertical"
-            android:textColor="@color/black"
-            android:text="chID" />
+            android:text="chID"
+            android:textColor="@color/black" />
     </LinearLayout>
 
 </LinearLayout>
