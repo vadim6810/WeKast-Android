@@ -1,6 +1,7 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -39,6 +40,13 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
         sTitle = getResources().getStringArray(R.array.settings_title);
         sSubtitle = getResources().getStringArray(R.array.settings_subtitle);
+        try  {
+            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            sSubtitle[6] = "Ver " + versionName + "  |  Latest Version";
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
         sIcon = new Object[]{
                 R.drawable.ic_phone,
                 R.drawable.ic_curt,
