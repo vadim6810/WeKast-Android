@@ -2,8 +2,10 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,11 +42,11 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
 
         sTitle = getResources().getStringArray(R.array.settings_title);
         sSubtitle = getResources().getStringArray(R.array.settings_subtitle);
-        try  {
+        try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             sSubtitle[6] = "Ver " + versionName + "  |  Latest Version";
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.e("SettingsActivity", "versionName: " + e.toString());
         }
 
         sIcon = new Object[]{
@@ -82,6 +84,27 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 Intent i = new Intent(SettingsActivity.this, LoginActivity.class);
                 startActivity(i);
                 break;
+            case 1:
+                openlink("http://wekast.com/order/#.WDcjEPmLRPZ");
+                break;
+            case 2:
+                String textTitle = "Share WeKast";
+                String textMessage = "http://wekast.com/";
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, textMessage);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, textTitle));
+                break;
+            case 3:
+                openlink("http://wekast.com/faqs/");
+                break;
+            case 4:
+                openlink("http://wekast.com/contactus/");
+                break;
+            case 5:
+                openlink("http://wekast.com/privacy-policy-2/");
+                break;
             case 7:
                 Utils.clearSP(this);
                 Utils.toastShow(this, "All settings cleared.");
@@ -90,6 +113,12 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 Utils.toastShow(this, "Pushed item " + position);
                 break;
         }
+    }
+
+    private void openlink(String url) {
+        Uri address = Uri.parse(url);
+        Intent openlinkIntent = new Intent(Intent.ACTION_VIEW, address);
+        startActivity(openlinkIntent);
     }
 
     @Override
