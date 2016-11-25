@@ -1,9 +1,7 @@
 package com.wekast.wekastandroidclient.controllers;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -17,6 +15,7 @@ import com.wekast.wekastandroidclient.model.WifiApManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ELAD on 10/14/2016.
@@ -199,26 +198,34 @@ public class WifiController {
     public boolean connectToAccessPoint() {
         stopAP();
         wifiManager.setWifiEnabled(true);
-        // TODO: change to something else waiting
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitWifiLoading();
+
         String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
         String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
         WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
+        removeConfigIfExistSsid(wifiManager, curSsid);
 
         int networkId = wifiManager.addNetwork(wifiConfig);
         if (networkId < 0) {
-//            throw new RuntimeException("couldn't add network " + curSsid);
             Log.e("WifiController", "connectToAccessPoint: " + "couldn't add network " + curSsid);
+            return false;
         }
         wifiManager.disconnect();
         wifiManager.enableNetwork(networkId, true);
         wifiManager.reconnect();
 
         return true;
+    }
+
+    private boolean removeConfigIfExistSsid(WifiManager wifiManager, String ssid) {
+        List<WifiConfiguration> existingConfigs = wifiManager.getConfiguredNetworks();
+        for (WifiConfiguration existingConfig : existingConfigs) {
+            if (existingConfig.SSID.equals("\"" + ssid + "\"")) {
+                wifiManager.removeNetwork(existingConfig.networkId);
+                return true;
+            }
+        }
+        return false;
     }
 
     public WifiState getSavedWifiState() {
@@ -349,6 +356,17 @@ public class WifiController {
 //                Utils.toastShow(activity, message);
             }
         });
+    }
+
+    private boolean waitWifiLoading() {
+        while(!wifiManager.isWifiEnabled()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 
 }
