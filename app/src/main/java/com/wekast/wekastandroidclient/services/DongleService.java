@@ -11,6 +11,7 @@ import com.wekast.wekastandroidclient.commands.FileCommand;
 import com.wekast.wekastandroidclient.commands.PingCommand;
 import com.wekast.wekastandroidclient.commands.SlideCommand;
 import com.wekast.wekastandroidclient.commands.StopCommand;
+import com.wekast.wekastandroidclient.controllers.CommandController;
 import com.wekast.wekastandroidclient.controllers.SocketController;
 import com.wekast.wekastandroidclient.controllers.WifiController;
 import com.wekast.wekastandroidclient.model.Utils;
@@ -120,7 +121,7 @@ public class DongleService extends Service {
     private final String TAG = "DongleService";
     private WifiController wifiController;
     private SocketController socketController;
-//    private CommandController commandController;
+    private CommandController commandController;
 
     public WifiController getWifiController() {
         return wifiController;
@@ -130,16 +131,17 @@ public class DongleService extends Service {
         return socketController;
     }
 
-//    public CommandController getCommandController() {
-//        return commandController;
-//    }
+    public CommandController getCommandController() {
+        return commandController;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Thread.currentThread().setName("DongleService");
         wifiController = new WifiController(getApplicationContext());
-        socketController = new SocketController(this);
+        commandController = new CommandController(this);
+        socketController = new SocketController(this, commandController);
         Log.d(TAG, "onCreate: ");
     }
 
@@ -232,7 +234,7 @@ public class DongleService extends Service {
     private void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
-//                Utils.toastShow(activity, message);
+                Utils.toastShow(activity, message);
             }
         });
     }
@@ -245,9 +247,9 @@ public class DongleService extends Service {
             return false;
         }
 
-        if (wifiController.saveGatewayIP())
-            showMessage("Dongle IP saved");
-        else {
+        if (wifiController.saveGatewayIP()){
+//            showMessage("Dongle IP saved");
+        } else {
             showMessage("Dongle not reached");
             return false;
         }

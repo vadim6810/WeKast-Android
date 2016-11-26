@@ -10,6 +10,21 @@ import org.json.JSONObject;
 public class StopCommand implements ICommand {
 
     @Override
+    public Answer execute() {
+        return null;
+    }
+
+    @Override
+    public void parseArgs(JSONObject jsonObject) throws JSONException {
+
+    }
+
+    @Override
+    public String getCommand() {
+        return null;
+    }
+
+    @Override
     public String getJsonString() {
         JSONObject jsonObject = new JSONObject();
         try {

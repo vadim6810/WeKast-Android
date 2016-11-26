@@ -3,6 +3,7 @@ package com.wekast.wekastandroidclient.controllers;
 import android.util.Log;
 
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
+import com.wekast.wekastandroidclient.commands.ICommand;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.services.DongleService;
 
@@ -30,9 +31,11 @@ public class SocketController {
     public boolean FILE_UPLOADED = false;
     private WelcomeActivity activity = WelcomeActivity.welcomeActivity;
     private DongleService dongleService;
+    private CommandController commandController;
 
-    public SocketController(DongleService dongleService) {
+    public SocketController(DongleService dongleService, CommandController commandController) {
         this.dongleService = dongleService;
+        this.commandController = commandController;
     }
 
     public void initDstAddrPort(String dstAddr, String dstPort) {
@@ -60,7 +63,7 @@ public class SocketController {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter printWriter = new PrintWriter(outputStream, true);
             printWriter.println(command);
-            showMessage("request: " + command);
+//            showMessage("request: " + command);
             Log.i("SocketController", "sendTask command=" + command);
 
             while (true) {
@@ -83,8 +86,6 @@ public class SocketController {
                         if (!message.equals("ok"))
                             reconfigDevices();
                     }
-
-
                     if (message.equals("ok")) {
                         Log.i("SocketController", "Request received OK");
                     }
@@ -107,9 +108,8 @@ public class SocketController {
     }
 
     public void sendFile(String filePath) throws IOException {
-
         socket = new Socket(this.dstAddr, 9999);
-        // sendfile
+        showMessage("Sending presentation...");
         File myFile = new File (filePath);
         byte [] mybytearray  = new byte [(int)myFile.length()];
         FileInputStream fis = new FileInputStream(myFile);
@@ -118,14 +118,24 @@ public class SocketController {
         OutputStream os = socket.getOutputStream();
         os.write(mybytearray,0,mybytearray.length);
         os.flush();
-        showMessage("send file: " + filePath);
+//        showMessage("send file: " + filePath);
 
         //RESPONSE FROM THE SERVER
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         in.ready();
         String response = in.readLine();
-//        showMessage("response: " + response);
-//        System.out.println("Response from server..." + response);
+
+        try {
+            JSONObject jsonObject1 = new JSONObject(response);
+            String type = jsonObject1.getString("type");
+            String message = jsonObject1.getString("message");
+            if (type.equals("file")) {
+                if (message.equals("ok"))
+                    showMessage("Dongle received file");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         dongleService.reconfigDevice();
         socket.close();
@@ -146,7 +156,7 @@ public class SocketController {
     public void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
-//                Utils.toastShow(activity, message);
+                Utils.toastShow(activity, message);
             }
         });
     }

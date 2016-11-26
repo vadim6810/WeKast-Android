@@ -371,7 +371,7 @@ public class WifiController {
         return ipString;
     }
 
-    // TODO: if clients more than one think about new solution
+    // TODO: check if clients more than one think about new solution
     public void saveConnectedDeviceIp() {
 
         while (true) {
@@ -394,7 +394,8 @@ public class WifiController {
                 }
                 Log.i("------------------- IP", ip);
                 Utils.setFieldSP(context, "DONGLE_IP", ip);
-                showMessage("Dongle " + ip + " connected to AP");
+//                showMessage("Dongle " + ip + " connected to AP");
+                showMessage("Dongle connected to AP");
                 break;
             }
         }
@@ -403,7 +404,7 @@ public class WifiController {
     private void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
-//                Utils.toastShow(activity, message);
+                Utils.toastShow(activity, message);
             }
         });
     }
