@@ -60,10 +60,6 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         activityState = PRESENTATION_LIST;
         fragmentTransaction.commit();
 
-        // TODO: remove from shared preferences
-        // DONGLE_IP
-        // FILE_UPLOAD
-
 //        testRemoveConnectionWithDongle();
 //        showSharedPreferencesVariables();
         clearSharedPreferencesValues();
@@ -94,11 +90,10 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 //        fragmentTransaction.addToBackStack(null);
         activityState = SLIDER;
         fragmentTransaction.commit();
-        // uploadPresentationToDongle(presPath);
-        uploadToDongle(presPath);
+        uploadPresentationToDongle(presPath);
     }
 
-    private void uploadToDongle(String presPath) {
+    private void uploadPresentationToDongle(String presPath) {
         Intent i = new Intent(this, DongleService.class);
         i.putExtra("command", UPLOAD);
         i.putExtra("UPLOAD", presPath);
@@ -170,7 +165,7 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     }
 
     private void clearSharedPreferencesValues() {
-        Utils.setFieldSP(context, "DONGLE_IP", "");
+        Utils.removeFromSharedPreferences(context, "DONGLE_IP");
     }
 
     private boolean requestSettingsPermissions() {

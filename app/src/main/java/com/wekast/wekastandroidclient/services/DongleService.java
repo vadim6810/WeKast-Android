@@ -188,7 +188,7 @@ public class DongleService extends Service {
     }
 
     private void cleanSharedPreferences() {
-        Utils.setFieldSP(getApplicationContext(), "FILE_UPLOAD", "");
+        Utils.removeFromSharedPreferences(getApplicationContext(), "FILE_UPLOAD");
     }
 
     @Override
