@@ -1,6 +1,5 @@
 package com.wekast.wekastandroidclient.activity;
 
-
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -61,8 +60,14 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         activityState = PRESENTATION_LIST;
         fragmentTransaction.commit();
 
+        // TODO: remove from shared preferences
+        // DONGLE_IP
+        // FILE_UPLOAD
+
+//        testRemoveConnectionWithDongle();
+//        showSharedPreferencesVariables();
         clearSharedPreferencesValues();
-        // TODO: on 4.4.2 when application tryed to reinstall was error (with requestSettingsPermissions)
+        // TODO: CHECK on 4.4.2 when application tryed to reinstall was error (with requestSettingsPermissions)
         if (requestSettingsPermissions()) {
             startService(new Intent(this, DongleService.class));
         }
@@ -178,5 +183,18 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         }
         return true;
     }
+
+//    private void showSharedPreferencesVariables() {
+//        SharedPreferences sp = Utils.getSharedPreferences(context);
+//        Map<String, ?> mapSP = sp.getAll();
+//        for (Map.Entry<String, ?> entry : mapSP.entrySet()) {
+//            System.out.println(entry.getKey() + "/" + entry.getValue());
+//        }
+//    }
+
+//    private void testRemoveConnectionWithDongle() {
+//        Utils.removeFromSharedPreferences(context, "ACCESS_POINT_SSID_ON_APP");
+//        Utils.removeFromSharedPreferences(context, "ACCESS_POINT_PASS_ON_APP");
+//    }
 
 }

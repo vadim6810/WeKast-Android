@@ -151,13 +151,28 @@ public class SocketController {
 
 
     private boolean reconfigDevices() {
-        if (!dongleService.connectToDefaultAP()) {
-            showMessage("Error connect to default AP");
-            return false;
+        //TODO: if SharedPreferences contain key
+//        showSharedPreferencesVariables();
+        Boolean ClientSsidExist = Utils.getContainsSP(dongleService.getWifiController().getContext(), "ACCESS_POINT_SSID_ON_APP");
+        if (!ClientSsidExist) {
+            if (!dongleService.connectToDefaultAP()) {
+                showMessage("Error connect to default AP");
+                return false;
+            }
+            dongleService.sendConfigToDongle();
+        } else {
+            dongleService.generateRandomSsidPass();
         }
-        dongleService.sendConfigToDongle();
         dongleService.reconfigDevice();
         return true;
     }
+
+//    private void showSharedPreferencesVariables() {
+//        SharedPreferences sp = Utils.getSharedPreferences(dongleService.getApplicationContext());
+//        Map<String, ?> mapSP = sp.getAll();
+//        for (Map.Entry<String, ?> entry : mapSP.entrySet()) {
+//            System.out.println(entry.getKey() + "/" + entry.getValue());
+//        }
+//    }
 
 }

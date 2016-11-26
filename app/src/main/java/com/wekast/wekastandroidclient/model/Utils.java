@@ -90,6 +90,8 @@ public class Utils {
     // ACCESS_POINT_STATE_BEFORE_LAUNCH_APP     // save state of access point
     // ACCESS_POINT_SSID_NEW         // new value of ssid
     // ACCESS_POINT_PASS_NEW         // new value of pass
+    // ACCESS_POINT_SSID_ON_APP
+    // ACCESS_POINT_PASS_ON_APP
 
     public static void initWorkFolder() {
         ArrayList<String> workFolder = new ArrayList<>();
@@ -131,6 +133,18 @@ public class Utils {
                 clearDirectory(tmp2);
             }
         } else file.delete();
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
+    }
+
+    public static boolean removeFromSharedPreferences(Context context, String field) {
+        SharedPreferences settingsActivity = context.getSharedPreferences(SHAREDPREFERNCE, context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settingsActivity.edit();
+        editor.remove(field);
+        editor.apply();
+        return true;
     }
 
     public static boolean getContainsSP(Context context, String field) {

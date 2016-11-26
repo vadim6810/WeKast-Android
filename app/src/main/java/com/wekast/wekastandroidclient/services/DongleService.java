@@ -139,7 +139,6 @@ public class DongleService extends Service {
         super.onCreate();
         Thread.currentThread().setName("DongleService");
         wifiController = new WifiController(getApplicationContext());
-        wifiController.saveWifiConfig(DONGLE_AP_SSID_DEFAULT, DONGLE_AP_PASS_DEFAULT);
         socketController = new SocketController(this);
         Log.d(TAG, "onCreate: ");
     }
@@ -208,7 +207,7 @@ public class DongleService extends Service {
 //        }
 //    }
 
-    private String[] generateRandomSsidPass() {
+    public String[] generateRandomSsidPass() {
         Random random = new Random();
         String[] ssidPass = new String[2];
         ssidPass[0] = randomSsid(random);
@@ -241,6 +240,7 @@ public class DongleService extends Service {
 
     // Connecting to Dongle default Access Point
     public boolean connectToDefaultAP() {
+        wifiController.saveWifiConfig(DONGLE_AP_SSID_DEFAULT, DONGLE_AP_PASS_DEFAULT);
         if (!wifiController.connectToAccessPoint()) {
             showMessage("Error connecting to dongle");
             return false;
