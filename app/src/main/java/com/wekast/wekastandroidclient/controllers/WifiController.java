@@ -107,7 +107,8 @@ public class WifiController {
     private final WifiManager wifiManager;
     private Context context;
     private WelcomeActivity activity;
-    private WifiConfiguration wifiConfigOnBoot;
+    private WifiConfiguration APConfigOnBoot;
+    private Boolean isAPEnabledOnBoot;
     private WifiApManager wifiApManager;
 
     public Context getContext() {
@@ -119,7 +120,10 @@ public class WifiController {
         activity = WelcomeActivity.welcomeActivity;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         // Save old settings of Access Point
-        wifiConfigOnBoot = getWifiApConfiguration(wifiManager);
+        APConfigOnBoot = getWifiApConfiguration(wifiManager);
+        isAPEnabledOnBoot = isWifiApEnabled(wifiManager);
+        if (isAPEnabledOnBoot)
+            stopAP();
         // Save status Wifi
         wifiEnabledOnBoot = wifiManager.isWifiEnabled();
         wifiApManager = new WifiApManager(context);
@@ -158,7 +162,7 @@ public class WifiController {
     }
 
     private boolean stopAP() {
-        return setWifiApEnabled(wifiManager, wifiConfigOnBoot, false);
+        return setWifiApEnabled(wifiManager, APConfigOnBoot, false);
     }
 
     public boolean switchFromWifiToAP() {
@@ -243,7 +247,9 @@ public class WifiController {
             stopAP();
         }
         wifiManager.setWifiEnabled(wifiEnabledOnBoot);
-        setWifiApConfiguration(wifiManager, wifiConfigOnBoot);
+        setWifiApConfiguration(wifiManager, APConfigOnBoot);
+        if (isAPEnabledOnBoot)
+            setWifiApEnabled(wifiManager, APConfigOnBoot, true);
     }
 
     public void changeState(WifiState wifiState) {
