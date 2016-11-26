@@ -61,6 +61,7 @@ public class SocketController {
             PrintWriter printWriter = new PrintWriter(outputStream, true);
             printWriter.println(command);
             showMessage("request: " + command);
+            Log.i("SocketController", "sendTask command=" + command);
 
             while (true) {
                 String task = br.readLine();
@@ -69,6 +70,7 @@ public class SocketController {
                     break;
                 }
 //                showMessage("response: " + task);
+                Log.i("SocketController", "sendTask response=" + task);
 
                 // TODO: think about command response
                 // parse response and get message (if "ok")

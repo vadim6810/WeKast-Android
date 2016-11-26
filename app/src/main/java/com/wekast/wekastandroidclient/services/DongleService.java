@@ -214,7 +214,6 @@ public class DongleService extends Service {
         ssidPass[1] = String.valueOf(random.nextInt(99999999 - 10000000) + 10000000);
         ssidPass[0] = "wekastrandom";
         ssidPass[1] = "87654321";
-        // TODO: check if it need
         wifiController.saveWifiConfig(ssidPass[0], ssidPass[1]);
         return ssidPass;
     }
