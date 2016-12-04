@@ -43,8 +43,11 @@ public class SocketController {
         this.dstPort = Integer.valueOf(dstPort);
     }
 
-    public boolean sendTask(String command) throws IOException {
-        if (command.equals("{\"command\":\"ping\"}")) {
+    public boolean sendTask(ICommand command) throws IOException {
+//    public boolean sendTask(String command) throws IOException {
+
+//        if (command.equals("{\"command\":\"ping\"}")) {
+        if (command.getCommand().equals("ping")) {
             if (this.dstAddr.equals("")) {
                 if (!reconfigDevices()) {
 //                    showMessage("Error reconfig Devices");
@@ -66,9 +69,11 @@ public class SocketController {
             OutputStream outputStream = socket.getOutputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter printWriter = new PrintWriter(outputStream, true);
-            printWriter.println(command);
+//            printWriter.println(command);
+            printWriter.println(command.getJsonString());
 //            showMessage("request: " + command);
-            Log.i("SocketController", "sendTask command=" + command);
+//            Log.i("SocketController", "sendTask command=" + command);
+            Log.i("SocketController", "sendTask command=" + command.getJsonString());
 
             while (true) {
                 String task = br.readLine();

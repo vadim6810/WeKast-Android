@@ -8,6 +8,7 @@ import android.util.Log;
 import com.wekast.wekastandroidclient.activity.WelcomeActivity;
 import com.wekast.wekastandroidclient.commands.ConfigCommand;
 import com.wekast.wekastandroidclient.commands.FileCommand;
+import com.wekast.wekastandroidclient.commands.ICommand;
 import com.wekast.wekastandroidclient.commands.PingCommand;
 import com.wekast.wekastandroidclient.commands.SlideCommand;
 import com.wekast.wekastandroidclient.commands.StopCommand;
@@ -73,7 +74,8 @@ public class DongleService extends Service {
                     // If connection with dongle not exist -> reconfig devices
                     setDstAddrAndPort();            // remove becouse in sending also exist setDstAddrAndPort()
 
-                    if (!sendTaskToDongle(new PingCommand().getJsonString())) {
+//                    if (!sendTaskToDongle(new PingCommand().getJsonString())) {
+                    if (!sendTaskToDongle(new PingCommand())) {
                         wifiController.showMessage("Error uploading presentation");
 //                        Utils.toastShow(wifiController.getContext(), "Error upload presentation");
                         break;
@@ -90,7 +92,8 @@ public class DongleService extends Service {
                     int fileSize = (int) presentationFile.length();
 
 //                    sendTaskToDongle(Utils.createJsonTaskFile(String.valueOf(fileSize)));
-                    sendTaskToDongle(new FileCommand(String.valueOf(fileSize)).getJsonString());
+//                    sendTaskToDongle(new FileCommand(String.valueOf(fileSize)).getJsonString());
+                    sendTaskToDongle(new FileCommand(String.valueOf(fileSize)));
                     sendFileToDongle(presentationPath);
                     // Send file
                     // pending intent to activity when upload ready
@@ -101,14 +104,16 @@ public class DongleService extends Service {
                     if (curState.equals(WifiController.WifiState.WIFI_STATE_CONNECT)) {
                         boolean fileUploaded = checkIfFileUploaded();
                         if (fileUploaded)
-                            sendTaskToDongle(new SlideCommand(curSlide, curMedia).getJsonString());
+                            sendTaskToDongle(new SlideCommand(curSlide, curMedia));
+//                            sendTaskToDongle(new SlideCommand(curSlide, curMedia).getJsonString());
 //                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
 //                    setDstAddrAndPort();
                         break;
                     }
                 case STOP:
                     if (curState.equals(WifiController.WifiState.WIFI_STATE_CONNECT)) {
-                        sendTaskToDongle(new StopCommand().getJsonString());
+//                        sendTaskToDongle(new StopCommand().getJsonString());
+                        sendTaskToDongle(new StopCommand());
                     }
                 default:
                     Log.d(TAG, "COMMAND NOT FOUND");
@@ -288,7 +293,8 @@ public class DongleService extends Service {
         String[] ssidPass = generateRandomSsidPass();
 //            ConfigCommand configCommand = new ConfigCommand(ssidPass[0], ssidPass[1]);
 //            sendTaskToDongle(Utils.createJsonTaskSendSsidPass("config", ssidPass[0], ssidPass[1]));
-        sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
+//        sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
+        sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]));
     }
 
     public boolean reconfigDevice() {
@@ -306,7 +312,8 @@ public class DongleService extends Service {
         socketController.initDstAddrPort(dstAddress, dstPort);
     }
 
-    private boolean sendTaskToDongle(String command) {
+//    private boolean sendTaskToDongle(String command) {
+    private boolean sendTaskToDongle(ICommand command) {
         setDstAddrAndPort();
         try {
             if (!socketController.sendTask(command)) {

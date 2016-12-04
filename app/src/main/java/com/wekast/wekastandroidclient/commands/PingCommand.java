@@ -16,12 +16,11 @@ public class PingCommand implements ICommand {
 
     @Override
     public void parseArgs(JSONObject jsonObject) throws JSONException {
-
     }
 
     @Override
     public String getCommand() {
-        return null;
+        return "ping";
     }
 
     @Override
