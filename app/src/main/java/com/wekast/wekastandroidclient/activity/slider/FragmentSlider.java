@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,7 +24,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.Utils.CASH_ABSOLUTE_PATH;
+import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
+import static com.wekast.wekastandroidclient.model.Utils.infoXML;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 import static java.lang.Math.abs;
 
 /**
@@ -49,17 +53,15 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FragmentTransaction tr;
     int currentSlide = 0;
     int currentChID = 1;
-    ArrayList<Slide> slidesList;
+    ArrayList<Slide> slidesList = new ArrayList<>();
     ArrayList<Integer> chID = new ArrayList<>();
     private int slideNumber;
     private String comments;
     private String filePath;
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
-
-    public FragmentSlider() {
-        slidesList = new ArrayList<>();
-    }
+    Vibrator vibrator;
+    long mills = 30L;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsContainer = (FrameLayout) view.findViewById(R.id.comments_container);
         commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
+        vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
         createWorkArray();
 
         inputImage = new InputImage();
@@ -210,6 +213,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (currentChID > 1) {
             currentChID--;
             changeSlideToDongle(currentSlide + 1, currentChID);
+            vibrator.vibrate(mills);
         }
         mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
@@ -218,6 +222,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (currentChID < slidesList.get(currentSlide).getChID().size()) {
             currentChID++;
             changeSlideToDongle(currentSlide + 1, currentChID);
+            vibrator.vibrate(mills);
         }
         mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
@@ -268,6 +273,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
+            vibrator.vibrate(mills);
         }
     }
 
@@ -290,6 +296,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
+            vibrator.vibrate(mills);
         }
     }
 

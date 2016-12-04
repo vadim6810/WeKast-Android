@@ -14,9 +14,8 @@
     <uses-permission android:name="android.permission.WRITE_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <permission android:name="android.permission.MODIFY_PHONE_STATE" />
-
     <uses-permission android:name="android.permission.CALL_PHONE" />
  <!--   <uses-permission android:name="android.permission.SEND_SMS" />-->
 
