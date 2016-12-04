@@ -24,6 +24,7 @@ import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_PASS_DEFAULT;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_SSID_DEFAULT;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_SOCKET_PORT;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
+import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRESENTATION;
 import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
 import static com.wekast.wekastandroidclient.model.Utils.STOP;
 
@@ -65,12 +66,21 @@ public class DongleService extends Service {
 
         @Override
         public void run() {
+            WifiController.WifiState curState = curState = wifiController.getSavedWifiState();
             switch (curServiceTask) {
                 case UPLOAD:
                     // TODO: ping if answered then continue else reconfigDevice before
                     // If connection with dongle not exist -> reconfig devices
-                    setDstAddrAndPort();
-                    sendTaskToDongle(new PingCommand().getJsonString());
+                    setDstAddrAndPort();            // remove becouse in sending also exist setDstAddrAndPort()
+
+                    if (!sendTaskToDongle(new PingCommand().getJsonString())) {
+                        wifiController.showMessage("Error uploading presentation");
+//                        Utils.toastShow(wifiController.getContext(), "Error upload presentation");
+                        break;
+                        // show message that error uploading presentation
+                    }
+                    // wait for response from dongle that he received task
+
 //                    connectToDefaultAP();
 //                    sendConfigToDongle();
 //                    reconfigDevice();
@@ -87,31 +97,46 @@ public class DongleService extends Service {
                     socketController.FILE_UPLOADED = true;
                     break;
                 case SLIDE:
-                    checkIfFileUploaded();
+                    // TODO: check if connection established? then send slide
+                    if (curState.equals(WifiController.WifiState.WIFI_STATE_CONNECT)) {
+                        boolean fileUploaded = checkIfFileUploaded();
+                        if (fileUploaded)
+                            sendTaskToDongle(new SlideCommand(curSlide, curMedia).getJsonString());
 //                    sendTaskToDongle(Utils.createJsonTaskSlide(curSlide));
 //                    setDstAddrAndPort();
-                    sendTaskToDongle(new SlideCommand(curSlide, curMedia).getJsonString());
-                    break;
+                        break;
+                    }
                 case STOP:
-                    sendTaskToDongle(new StopCommand().getJsonString());
+                    if (curState.equals(WifiController.WifiState.WIFI_STATE_CONNECT)) {
+                        sendTaskToDongle(new StopCommand().getJsonString());
+                    }
                 default:
                     Log.d(TAG, "COMMAND NOT FOUND");
             }
             this.interrupt();
         }
 
-        private void checkIfFileUploaded() {
+        long startTimeCheckIfFileUploaded = 0L;
+        private boolean checkIfFileUploaded() {
+            if (startTimeCheckIfFileUploaded == 0L)
+                startTimeCheckIfFileUploaded = System.currentTimeMillis();
+
+            int passedTime = (int) (System.currentTimeMillis() - startTimeCheckIfFileUploaded) / 1000;
+            if (passedTime > TIME_TO_TRYING_SEND_PRESENTATION)
+                return false;
+
 //            String fileUploadStatus = Utils.getFieldSP(getApplicationContext(), "FILE_UPLOAD");
             boolean isFileUploaded = socketController.FILE_UPLOADED;
-//            if (!fileUploadStatus.equals("UPLOADED")) {
             if (!isFileUploaded) {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                checkIfFileUploaded();
+                if (!checkIfFileUploaded())
+                    return false;
             }
+            return true;
         }
 
     }
@@ -266,11 +291,13 @@ public class DongleService extends Service {
         sendTaskToDongle(new ConfigCommand(ssidPass[0], ssidPass[1]).getJsonString());
     }
 
-    public void reconfigDevice() {
+    public boolean reconfigDevice() {
         wifiController.switchFromWifiToAP();
         wifiController.changeState(WifiController.WifiState.WIFI_STATE_AP);
         // TODO: broadcast receiver
-        wifiController.saveConnectedDeviceIp();
+        if (!wifiController.saveConnectedDeviceIp())
+            return false;
+        return true;
     }
 
     private void setDstAddrAndPort() {
@@ -283,7 +310,7 @@ public class DongleService extends Service {
         setDstAddrAndPort();
         try {
             if (!socketController.sendTask(command)) {
-                showMessage("Error sending task: " + command);
+//                showMessage("Error sending task: " + command);
                 return false;
             }
         } catch (IOException e) {
@@ -297,6 +324,7 @@ public class DongleService extends Service {
             socketController.sendFile(filePath);
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("WEKAST.DONGLE", "Error sending presentation to dongle");
         }
     }
 

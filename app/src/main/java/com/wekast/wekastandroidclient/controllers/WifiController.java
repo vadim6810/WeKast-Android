@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRESENTATION;
+
 /**
  * Created by ELAD on 10/14/2016.
  */
@@ -112,7 +114,6 @@ public class WifiController {
     private WifiConfiguration APConfigOnBoot;
     private boolean isWifiEnabledOnBoot;
     private boolean isWifiConnectedOnBoot;
-//    private String wifiSsidOnBoot;
     private int wifiNetworkIdOnBoot;
     private WifiApManager wifiApManager;
 
@@ -197,34 +198,6 @@ public class WifiController {
         return true;
     }
 
-//    /**
-//     * Connect to Access Point on Client (Android or iOs)
-//     *
-//     * @return
-//     */
-//    public boolean startConnection() {
-//        stopAP();
-//        wifiManager.setWifiEnabled(true);
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
-//        String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
-//        WifiConfiguration wifiConfig = configureWifi(curSsid, curPass);
-//
-//        int networkId = wifiManager.addNetwork(wifiConfig);
-//        if (networkId < 0) {
-//            throw new RuntimeException("coudn't add network " + curSsid);
-//        }
-//        wifiManager.disconnect();
-//        wifiManager.enableNetwork(networkId, true);
-//        wifiManager.reconnect();
-//
-//        return true;
-//    }
-
     public boolean connectToAccessPoint() {
         stopAP();
         wifiManager.setWifiEnabled(true);
@@ -278,7 +251,6 @@ public class WifiController {
     private void restoreAP() {
         if (isWifiApEnabled(wifiManager))
             stopAP();
-//        wifiManager.setWifiEnabled(isWifiEnabledOnBoot);
         setWifiApConfiguration(wifiManager, APConfigOnBoot);
         if (isAPEnabledOnBoot)
             setWifiApEnabled(wifiManager, APConfigOnBoot, true);
@@ -312,20 +284,6 @@ public class WifiController {
         WIFI_STATE_AP,
         WIFI_STATE_CONNECT
     }
-
-//    public boolean isWifiEnabled() {
-//        // TODO: refactor to less rows
-//        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-//        WifiInfo info = wifiManager.getConnectionInfo();
-//        String curSsid = info.getSSID();
-//        boolean isConnected = networkInfo.isConnected();
-//        String curSsidFromSP = Utils.getFieldSP(context, AP_SSID_KEY);
-//        int i = 0;
-//        if (curSsid.equals("\"" + curSsidFromSP + "\"") && isConnected)
-//            return true;
-//        return false;
-//    }
 
     public boolean saveGatewayIP() {
         DhcpInfo info = null;
@@ -372,16 +330,16 @@ public class WifiController {
     }
 
     // TODO: check if clients more than one think about new solution
-    public void saveConnectedDeviceIp() {
-
+    public boolean saveConnectedDeviceIp() {
+        long startTime = System.currentTimeMillis();
         while (true) {
             ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
+
+            int passedTime = (int) (System.currentTimeMillis() - startTime) / 1000;
+            if (passedTime > TIME_TO_TRYING_SEND_PRESENTATION)
+                return false;
+
             if (clients.size() > 0) {
-//                String ip = clients.get(0).getIpAddr();
-//                // TODO: check is availible 8080 on this ip
-//                Log.i("------------------- IP", ip);
-//                Utils.setFieldSP(context, "DONGLE_IP", ip);
-//                isSavedDeviceIp = true;
                 ClientScanResult clientScanResult = clients.get(0);
                 String ip = clientScanResult.getIpAddr();
                 if (ip.equals("192.168.43.1") || ip.equals("192.168.1.1")) {
@@ -389,19 +347,18 @@ public class WifiController {
                         Thread.sleep(100);
                     } catch (InterruptedException ignore) {
                     }
-                    Log.w("------------------- IP", "No clients");
+                    Log.e("WEKAST.ANDROID", "No connected dongle");
                     continue;
                 }
-                Log.i("------------------- IP", ip);
+                Log.e("WEKAST.ANDROID", "Connected dongle with ip: " + ip);
                 Utils.setFieldSP(context, "DONGLE_IP", ip);
-//                showMessage("Dongle " + ip + " connected to AP");
-                showMessage("Dongle connected to AP");
-                break;
+                showMessage("DONGLE CONNECTED");
+                return true;
             }
         }
     }
 
-    private void showMessage(final String message) {
+    public void showMessage(final String message) {
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 Utils.toastShow(activity, message);

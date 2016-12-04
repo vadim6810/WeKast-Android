@@ -47,15 +47,19 @@ public class SocketController {
         if (command.equals("{\"command\":\"ping\"}")) {
             if (this.dstAddr.equals("")) {
                 if (!reconfigDevices()) {
-                    showMessage("Error reconfig Devices");
+//                    showMessage("Error reconfig Devices");
                     return false;
                 }
                 return true;
             }
             if (socket == null)
                 socket = new Socket(this.dstAddr, this.dstPort);
-        } else
-            socket = new Socket(this.dstAddr, this.dstPort);
+        } else {
+            if (this.dstAddr.equals(""))
+                return false;
+            else
+                socket = new Socket(this.dstAddr, this.dstPort);
+        }
 
         try {
             InputStream inputStream = socket.getInputStream();
@@ -137,7 +141,9 @@ public class SocketController {
             e.printStackTrace();
         }
 
-        dongleService.reconfigDevice();
+        if (!dongleService.reconfigDevice()) {
+            // error reconfig
+        }
         socket.close();
     }
 
@@ -168,14 +174,15 @@ public class SocketController {
         Boolean ClientSsidExist = Utils.getContainsSP(dongleService.getWifiController().getContext(), "ACCESS_POINT_SSID_ON_APP");
         if (!ClientSsidExist) {
             if (!dongleService.connectToDefaultAP()) {
-                showMessage("Error connect to default AP");
+//                showMessage("Error connect to default AP");
                 return false;
             }
             dongleService.sendConfigToDongle();
         } else {
             dongleService.generateRandomSsidPass();
         }
-        dongleService.reconfigDevice();
+        if (!dongleService.reconfigDevice())
+            return false;
         return true;
     }
 
