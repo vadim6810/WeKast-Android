@@ -24,10 +24,13 @@ import java.util.Random;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_PASS_DEFAULT;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_AP_SSID_DEFAULT;
 import static com.wekast.wekastandroidclient.model.Utils.DONGLE_SOCKET_PORT;
+import static com.wekast.wekastandroidclient.model.Utils.SETTINGS;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
-import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRESENTATION;
-import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
 import static com.wekast.wekastandroidclient.model.Utils.STOP;
+import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRESENTATION;
+import static com.wekast.wekastandroidclient.model.Utils.UPDATE;
+import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
+
 
 /**
  * Created by RDL on 20.10.2016.
@@ -53,7 +56,7 @@ public class DongleService extends Service {
             this.curSlide = "";
         }
 
-        public void setCurSlide(String slide)        {
+        public void setCurSlide(String slide) {
             this.curSlide = slide;
         }
 
@@ -122,6 +125,7 @@ public class DongleService extends Service {
         }
 
         long startTimeCheckIfFileUploaded = 0L;
+
         private boolean checkIfFileUploaded() {
             if (startTimeCheckIfFileUploaded == 0L)
                 startTimeCheckIfFileUploaded = System.currentTimeMillis();
@@ -247,6 +251,7 @@ public class DongleService extends Service {
         ssidPass[0] = "wekastrandom";
         ssidPass[1] = "87654321";
         wifiController.saveWifiConfig(ssidPass[0], ssidPass[1]);
+        startSyncSettings();
         return ssidPass;
     }
 
@@ -277,7 +282,7 @@ public class DongleService extends Service {
             return false;
         }
 
-        if (wifiController.saveGatewayIP()){
+        if (wifiController.saveGatewayIP()) {
 //            showMessage("Dongle IP saved");
         } else {
             showMessage("Dongle not reached");
@@ -333,6 +338,13 @@ public class DongleService extends Service {
             e.printStackTrace();
             Log.e("WEKAST.DONGLE", "Error sending presentation to dongle");
         }
+    }
+
+    private void startSyncSettings() {
+        Intent i = new Intent(this, DownloadService.class);
+        i.putExtra("command", SETTINGS);
+        i.putExtra("settings", UPDATE);
+        startService(i);
     }
 
 }

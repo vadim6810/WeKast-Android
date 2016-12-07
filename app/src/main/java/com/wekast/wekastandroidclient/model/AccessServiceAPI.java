@@ -37,7 +37,7 @@ public class AccessServiceAPI {
             Log.w("convertJSONString2Obj", "JsonString=" + jsonString);
             jObj = new JSONObject(jsonString);
         } catch (JSONException e) {
-            Log.w("convertJSONString2Obj ", e.getMessage());
+            Log.e("convertJSONString2Obj ", e.getMessage());
         }
         return jObj;
     }
@@ -57,7 +57,7 @@ public class AccessServiceAPI {
         try {
             url = new URL(serviceUrl);
         } catch (MalformedURLException e) {
-            Log.d(TAG, "getJSONStringWithParam_POST: " + e.getMessage());
+            Log.e(TAG, "getJSONStringWithParam_POST: " + e.getMessage());
         }
         StringBuilder bodyBuilder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
@@ -111,7 +111,6 @@ public class AccessServiceAPI {
         } finally {
             conn.disconnect();
         }
-
         return jsonString;
     }
 
@@ -123,7 +122,7 @@ public class AccessServiceAPI {
      * @return byte[]
      * @throws IOException
      */
-    public boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
+    public static boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
                                              FileOutputStream file) throws IOException {
         try {
             HttpURLConnection conn;
@@ -177,7 +176,6 @@ public class AccessServiceAPI {
             Log.e(TAG, e.getMessage());
             throw new IOException("Error download EZS");
         }
-
         return true;
     }
 }

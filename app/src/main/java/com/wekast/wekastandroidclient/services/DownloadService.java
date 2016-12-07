@@ -1,31 +1,55 @@
 package com.wekast.wekastandroidclient.services;
 
 import android.app.IntentService;
-
 import android.content.Intent;
 import android.util.Log;
 
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
-import com.wekast.wekastandroidclient.model.AccessServiceAPI;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wekast.wekastandroidclient.model.Utils.*;
-
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
+import static com.wekast.wekastandroidclient.model.Utils.AP_PASS_KEY;
+import static com.wekast.wekastandroidclient.model.Utils.AP_SSID_KEY;
+import static com.wekast.wekastandroidclient.model.Utils.CHECK;
+import static com.wekast.wekastandroidclient.model.Utils.DELETE;
+import static com.wekast.wekastandroidclient.model.Utils.DIRECTORY;
+import static com.wekast.wekastandroidclient.model.Utils.DIRECTORY_PREVIEW;
+import static com.wekast.wekastandroidclient.model.Utils.DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.ERROR_DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_DELETE;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_GETSETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_LIST;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_PREVIEW;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_SETSETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.SETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ALL;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ONE;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_PREVIEW;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_START;
+import static com.wekast.wekastandroidclient.model.Utils.UPDATE;
+import static com.wekast.wekastandroidclient.model.Utils.clearDirectory;
+import static com.wekast.wekastandroidclient.model.Utils.getAllFilesList;
+import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.mapEzsForDeleted;
+import static com.wekast.wekastandroidclient.model.Utils.mapEzsForDownload;
+import static com.wekast.wekastandroidclient.model.Utils.parseJSONArrayMap;
+import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 
 public class DownloadService extends IntentService {
 
     private static final String TAG = "DownloadService";
-    private AccessServiceAPI m_AccessServiceAPI = new AccessServiceAPI();
+//    private AccessServiceAPI serviceAPI = new AccessServiceAPI();
     private HashMap<String, String> hashMap = new HashMap<>();
 
     public DownloadService() {
@@ -41,9 +65,73 @@ public class DownloadService extends IntentService {
             case DELETE:
                 delete(intent.getStringArrayListExtra("serverEzsDel"));
                 break;
+            case SETTINGS:
+                settings(intent.getIntExtra("settings", 0));
+                break;
             default:
                 Log.d(TAG, "onHandleIntent: NO COMMAND");
         }
+    }
+
+    private void settings(int settings) {
+        String ssid = getFieldSP(this, AP_SSID_KEY);
+        String pass = getFieldSP(this, AP_PASS_KEY);
+        Log.d(TAG, "client settings: ssid = " + ssid + " pass = " + pass);
+        switch (settings) {
+            case CHECK:
+                if (ssid.equals("")) {
+                    String[] res = getServerSettings();
+                    if (!res[0].equals("")) {
+                        setFieldSP(this, AP_SSID_KEY, res[0]);
+                        setFieldSP(this, AP_PASS_KEY, res[1]);
+                        Log.d(TAG, "settings saved on client");
+                    }
+                }
+                break;
+            case UPDATE:
+                setServerSettings(ssid, pass);
+                break;
+        }
+    }
+
+    private void setServerSettings(String ssid, String pass) {
+        HashMap<String, String> param = new HashMap<>();
+        param.put(LOGIN, getFieldSP(this, LOGIN));
+        param.put(PASSWORD, getFieldSP(this, PASSWORD));
+        param.put("sid", ssid);
+        param.put("pass", pass);
+        try {
+            String response = getJSONStringWithParam_POST(SERVICE_API_URL_SETSETTINGS, param);
+            JSONObject jsonObject = convertJSONString2Obj(response);
+            if (jsonObject.getInt("status") == 0) {
+                Log.d(TAG, "setServerSettings: " + jsonObject.getString("answer"));
+            } else {
+                Log.d(TAG, "ERROR status");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "set settings ERROR");
+        }
+    }
+
+    private String[] getServerSettings() {
+        HashMap<String, String> param = new HashMap<>();
+        param.put(LOGIN, getFieldSP(this, LOGIN));
+        param.put(PASSWORD, getFieldSP(this, PASSWORD));
+        String[] serSettings = new String[2];
+        try {
+            String response = getJSONStringWithParam_POST(SERVICE_API_URL_GETSETTINGS, param);
+            JSONObject jsonObject = convertJSONString2Obj(response);
+            if (jsonObject.getInt("status") == 0) {
+                serSettings[0] = jsonObject.getJSONObject("answer").getString("sid");
+                serSettings[1] = jsonObject.getJSONObject("answer").getString("pass");
+            } else {
+                Log.d(TAG, "ERROR status");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "get settings ERROR");
+        }
+        Log.d(TAG, "server settings: " + serSettings[0] + ":" + serSettings[1]);
+        return serSettings;
     }
 
     private void delete(ArrayList<String> serverEzsDel) {
@@ -51,10 +139,10 @@ public class DownloadService extends IntentService {
         HashMap<String, String> param = new HashMap<>();
         param.put(LOGIN, getFieldSP(this, LOGIN));
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
-        //getEZSOnServer
+        //get EZS on Server
         try {
-            String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
-            JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
+            String response = getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+            JSONObject jsonObject = convertJSONString2Obj(response);
             if (jsonObject.getInt("status") == 0) {
                 response = jsonObject.getString("answer");
                 hashMap = mapEzsForDeleted(parseJSONArrayMap(response), serverEzsDel);
@@ -69,8 +157,8 @@ public class DownloadService extends IntentService {
         if (!hashMap.isEmpty()) {
             for (Map.Entry<String, String> item : hashMap.entrySet()) {
                 try {
-                    String response2 = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
-                    JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response2);
+                    String response2 = getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
+                    JSONObject jsonObject = convertJSONString2Obj(response2);
                     if (jsonObject.getInt("status") != 0) {
                         Log.d(TAG, jsonObject.toString());
                     }
@@ -95,8 +183,8 @@ public class DownloadService extends IntentService {
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         //getListOnServer
         try {
-            String response = m_AccessServiceAPI.getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
-            JSONObject jsonObject = m_AccessServiceAPI.convertJSONString2Obj(response);
+            String response = getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+            JSONObject jsonObject = convertJSONString2Obj(response);
 
             if (jsonObject.getInt("status") == 0) {
                 response = jsonObject.getString("answer");
@@ -136,11 +224,11 @@ public class DownloadService extends IntentService {
     }
 
     private void actionDownload(String URL, HashMap<String, String> param, String fileName, File pathSave)
-            throws IOException{
+            throws IOException {
         File tmpFile = new File(pathSave, fileName + ".tmp");
         Log.d(TAG, "actionDownload: " + tmpFile);
         try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
-            m_AccessServiceAPI.getDownloadWithParam_POST(URL, param, fos);
+            getDownloadWithParam_POST(URL, param, fos);
             tmpFile.renameTo(new File(pathSave, fileName));
         }
     }

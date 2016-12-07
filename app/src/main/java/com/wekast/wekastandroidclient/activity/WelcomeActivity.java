@@ -21,6 +21,7 @@ import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.services.DongleService;
+import com.wekast.wekastandroidclient.services.DownloadService;
 
 import static com.wekast.wekastandroidclient.model.Utils.*;
 
@@ -53,12 +54,16 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        //sync SSID & PASS with SERVER
+        startSyncSettings();
+
         fragmentListPresentations = new FragmentListPresentations();
         fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.fragmContainer, fragmentListPresentations);
 //        fragmentTransaction.addToBackStack(null);
         activityState = PRESENTATION_LIST;
         fragmentTransaction.commit();
+
 
 //        testRemoveConnectionWithDongle();
 //        showSharedPreferencesVariables();
@@ -132,6 +137,13 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     protected void onDestroy() {
         stopService(new Intent(this, DongleService.class));
         super.onDestroy();
+    }
+
+    private void startSyncSettings() {
+        Intent i = new Intent(this, DownloadService.class);
+        i.putExtra("command", SETTINGS);
+        i.putExtra("settings", CHECK);
+        startService(i);
     }
 
     @Override

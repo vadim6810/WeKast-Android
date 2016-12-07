@@ -32,6 +32,8 @@ public class Utils {
     public static final String SERVICE_API_URL_DOWNLOAD = SERVICE_API_URL + "/download/";
     public static final String SERVICE_API_URL_PREVIEW = SERVICE_API_URL + "/preview/";
     public static final String SERVICE_API_URL_DELETE = SERVICE_API_URL + "/delete/";
+    public static final String SERVICE_API_URL_GETSETTINGS = SERVICE_API_URL + "/settings";
+    public static final String SERVICE_API_URL_SETSETTINGS = SERVICE_API_URL + "/settings/set";
     public static final String LOGIN = "login";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
@@ -50,6 +52,8 @@ public class Utils {
     public static final String infoXML = CASH_ABSOLUTE_PATH + "/info.xml";
     public static File DIRECTORY = new File(DEFAULT_PATH_DIRECTORY + WORK_DIRECTORY);
     public static File DIRECTORY_PREVIEW = new File(PREVIEW_ABSOLUTE_PATH);
+    public static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
+    public static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
 
     /**
      * StateMachine
@@ -73,8 +77,10 @@ public class Utils {
     public static final int STATUS_FINISH_ALL = 200;
     public static final int DOWNLOAD = 10;
     public static final int DELETE = 20;
+    public static final int SETTINGS = 30;
+    public static final int CHECK = 31;
+    public static final int UPDATE = 32;
     public static final int ERROR_DOWNLOAD = 666;
-
 
     /**
      * Default Dongle Access Point

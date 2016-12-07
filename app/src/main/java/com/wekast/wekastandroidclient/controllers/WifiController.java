@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRESENTATION;
+import static com.wekast.wekastandroidclient.model.Utils.*;
 
 /**
  * Created by ELAD on 10/14/2016.
@@ -27,8 +27,8 @@ import static com.wekast.wekastandroidclient.model.Utils.TIME_TO_TRYING_SEND_PRE
 
 public class WifiController {
 
-    private static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
-    private static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
+//    private static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
+//    private static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
 
     private static Method setWifiApEnabled;
     private static Method isWifiApEnabled;
