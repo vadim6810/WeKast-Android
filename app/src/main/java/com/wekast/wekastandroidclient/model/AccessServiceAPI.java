@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -103,10 +104,16 @@ public class AccessServiceAPI {
 
             jsonString = stringBuilder.toString();
         } catch (MalformedURLException e) {
+            Log.e(TAG, "MalformedURLException");
             e.printStackTrace();
         } catch (ProtocolException e) {
+            Log.e(TAG, "ProtocolException");
+            e.printStackTrace();
+        } catch (SocketTimeoutException e) {
+            Log.e(TAG, "SocketTimeoutException");
             e.printStackTrace();
         } catch (IOException e) {
+            Log.e(TAG, "IOException");
             e.printStackTrace();
         } finally {
             conn.disconnect();
@@ -123,9 +130,9 @@ public class AccessServiceAPI {
      * @throws IOException
      */
     public static boolean getDownloadWithParam_POST(String serviceUrl, Map<String, String> params,
-                                             FileOutputStream file) throws IOException {
+                                                    FileOutputStream file) throws IOException {
+        HttpURLConnection conn = null;
         try {
-            HttpURLConnection conn;
             URL url = new URL(serviceUrl);
             StringBuilder bodyBuilder = new StringBuilder();
             Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
@@ -171,10 +178,11 @@ public class AccessServiceAPI {
                 file.write(buffer, 0, bufferLength);
             }
             stream.close();
-            conn.disconnect();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             throw new IOException("Error download EZS");
+        } finally {
+            conn.disconnect();
         }
         return true;
     }

@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.convertJSONString2Obj;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getDownloadWithParam_POST;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getJSONStringWithParam_POST;
 import static com.wekast.wekastandroidclient.model.Utils.AP_PASS_KEY;
 import static com.wekast.wekastandroidclient.model.Utils.AP_SSID_KEY;
 import static com.wekast.wekastandroidclient.model.Utils.CHECK;
@@ -49,7 +51,7 @@ import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 public class DownloadService extends IntentService {
 
     private static final String TAG = "DownloadService";
-//    private AccessServiceAPI serviceAPI = new AccessServiceAPI();
+    //    private AccessServiceAPI serviceAPI = new AccessServiceAPI();
     private HashMap<String, String> hashMap = new HashMap<>();
 
     public DownloadService() {
@@ -100,16 +102,27 @@ public class DownloadService extends IntentService {
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         param.put("sid", ssid);
         param.put("pass", pass);
-        try {
-            String response = getJSONStringWithParam_POST(SERVICE_API_URL_SETSETTINGS, param);
-            JSONObject jsonObject = convertJSONString2Obj(response);
-            if (jsonObject.getInt("status") == 0) {
-                Log.d(TAG, "setServerSettings: " + jsonObject.getString("answer"));
-            } else {
-                Log.d(TAG, "ERROR status");
+        for (int i = 0; i < 10; i++) {
+            Log.e(TAG, "timeout: " + i);
+            try {
+                String response = getJSONStringWithParam_POST(SERVICE_API_URL_SETSETTINGS, param);
+                JSONObject jsonObject = convertJSONString2Obj(response);
+                if (jsonObject.getInt("status") == 0) {
+                    Log.d(TAG, "setServerSettings: " + jsonObject.getString("answer"));
+                    break;
+                } else {
+                    Log.d(TAG, "ERROR status");
+                    break;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "set settings ERROR");
+
             }
-        } catch (Exception e) {
-            Log.e(TAG, "set settings ERROR");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
