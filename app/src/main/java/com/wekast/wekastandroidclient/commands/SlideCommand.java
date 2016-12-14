@@ -29,7 +29,7 @@ public class SlideCommand implements ICommand {
 
     @Override
     public String getCommand() {
-        return null;
+        return "slide";
     }
 
     @Override

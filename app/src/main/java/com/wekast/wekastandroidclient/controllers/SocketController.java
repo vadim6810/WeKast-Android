@@ -24,7 +24,7 @@ import java.net.SocketException;
 
 public class SocketController {
 
-    public static final String TAG = "DongleSocket";
+    public static final String TAG = "SocketController";
     private Socket socket;
     private String dstAddr;
     private int dstPort;
@@ -46,18 +46,28 @@ public class SocketController {
     public boolean sendTask(ICommand command) throws IOException {
 //    public boolean sendTask(String command) throws IOException {
 
+        Log.e(TAG, "curCommand: " + command);
+        Log.e(TAG, "curCommand name: " + command.getCommand());
+        Log.e(TAG, "curDstAddr: " + this.dstAddr);
+
+        if (command == null)
+            System.out.println("command == null");
+
 //        if (command.equals("{\"command\":\"ping\"}")) {
         if (command.getCommand().equals("ping")) {
             if (this.dstAddr.equals("")) {
                 if (!reconfigDevices()) {
 //                    showMessage("Error reconfig Devices");
+                    Log.e(TAG, "Error reconfig Devices");
                     return false;
                 }
+                // TODO: check if needed
                 return true;
             }
             if (socket == null)
                 socket = new Socket(this.dstAddr, this.dstPort);
         } else {
+
             if (this.dstAddr.equals(""))
                 return false;
             else
@@ -73,16 +83,17 @@ public class SocketController {
             printWriter.println(command.getJsonString());
 //            showMessage("request: " + command);
 //            Log.i("SocketController", "sendTask command=" + command);
-            Log.i("SocketController", "sendTask command=" + command.getJsonString());
+            Log.e(TAG, "sendTask command=" + command.getJsonString());
 
             while (true) {
                 String task = br.readLine();
                 if (task == null || task.equals("")) {
                     socket.close();
+                    Log.e(TAG, "socket.close()");
                     break;
                 }
 //                showMessage("response: " + task);
-                Log.i("SocketController", "sendTask response=" + task);
+                Log.e(TAG, "sendTask response=" + task);
 
                 // TODO: think about command response
                 // parse response and get message (if "ok")
@@ -96,18 +107,19 @@ public class SocketController {
                             reconfigDevices();
                     }
                     if (message.equals("ok")) {
-                        Log.i("SocketController", "Request received OK");
+                        Log.e(TAG, "Request received OK");
                     }
                 } catch (JSONException e) {
+                    Log.e(TAG, "Exception message: " + e.getMessage());
                     e.printStackTrace();
                 }
 
                 socket.close();
-
             }
         } catch (SocketException e) {
-            Log.i(TAG, "Socket closed: interrupting");
+            Log.e(TAG, "Exception message: " + e.getMessage());
         } catch (IOException e) {
+            Log.e(TAG, "Exception message: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (socket != null)
@@ -118,7 +130,8 @@ public class SocketController {
 
     public void sendFile(String filePath) throws IOException {
         socket = new Socket(this.dstAddr, 9999);
-        showMessage("Sending presentation...");
+//        showMessage("Sending presentation...");
+        Log.e(TAG, "Sending presentation...");
         File myFile = new File (filePath);
         byte [] mybytearray  = new byte [(int)myFile.length()];
         FileInputStream fis = new FileInputStream(myFile);
@@ -139,10 +152,13 @@ public class SocketController {
             String type = jsonObject1.getString("type");
             String message = jsonObject1.getString("message");
             if (type.equals("file")) {
-                if (message.equals("ok"))
-                    showMessage("Dongle received file");
+                if (message.equals("ok")) {
+//                    showMessage("Dongle received file");
+                    Log.e(TAG, "Dongle received file");
+                }
             }
         } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
 
@@ -158,19 +174,20 @@ public class SocketController {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    Log.e("SocketController", "Error closing socket");
+                    Log.e(TAG, "Exception message: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    public void showMessage(final String message) {
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                Utils.toastShow(activity, message);
-            }
-        });
-    }
+//    public void showMessage(final String message) {
+//        activity.runOnUiThread(new Runnable() {
+//            public void run() {
+//                Utils.toastShow(activity, message);
+//            }
+//        });
+//    }
 
 
     private boolean reconfigDevices() {
@@ -180,6 +197,7 @@ public class SocketController {
         if (!ClientSsidExist) {
             if (!dongleService.connectToDefaultAP()) {
 //                showMessage("Error connect to default AP");
+                Log.e(TAG, "Error connect to default AP");
                 return false;
             }
             dongleService.sendConfigToDongle();

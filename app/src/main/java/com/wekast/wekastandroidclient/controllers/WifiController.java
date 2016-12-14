@@ -26,6 +26,7 @@ import static com.wekast.wekastandroidclient.model.Utils.*;
  */
 
 public class WifiController {
+    public static final String TAG = "WifiController";
 
 //    private static final String AP_SSID_KEY = "ACCESS_POINT_SSID_ON_APP";
 //    private static final String AP_PASS_KEY = "ACCESS_POINT_PASS_ON_APP";
@@ -178,13 +179,20 @@ public class WifiController {
      * @return true if Access Point started
      */
     private boolean startAP() {
+        if (isWifiApEnabled(wifiManager))
+            return true;
+
         String curSsid = Utils.getFieldSP(context, AP_SSID_KEY);
         String curPass = Utils.getFieldSP(context, AP_PASS_KEY);
-        boolean result = isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
-        if (result)
+//        boolean result = isWifiApEnabled(wifiManager) || setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
+        boolean result = setWifiApEnabled(wifiManager, configureAP(curSsid, curPass), true);
+        if (result) {
             showMessage("AP started");
-        else
+            Log.e(TAG, "AP started");
+        } else {
             showMessage("AP didn't start");
+            Log.e(TAG, "AP didn't start");
+        }
         return result;
     }
 
@@ -210,7 +218,7 @@ public class WifiController {
 
         int networkId = wifiManager.addNetwork(wifiConfig);
         if (networkId < 0) {
-            Log.e("WifiController", "connectToAccessPoint: " + "couldn't add network " + curSsid);
+            Log.e(TAG, "couldn't add network " + curSsid);
             return false;
         }
         wifiManager.disconnect();
@@ -231,9 +239,13 @@ public class WifiController {
         return false;
     }
 
-    public WifiState getSavedWifiState() {
+    public WifiState getWifiState() {
         return curWifiState;
     }
+
+//    public void setWifiState(WifiState wifiState) {
+//        this.curWifiState = wifiState;
+//    }
 
     public void saveWifiConfig(String ssid, String pass) {
         Utils.setFieldSP(context, AP_SSID_KEY, ssid);
@@ -297,6 +309,7 @@ public class WifiController {
                 String ssid = connectionInfo.getSSID();
                 if (ssid.equals("\"wekast\"")) {
                     showMessage("Connected to AP dongle");
+                    Log.e(TAG, "Connected to AP dongle");
                     isIpReceived = true;
                 }
             }
@@ -310,6 +323,7 @@ public class WifiController {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                Log.e(TAG, "Exception message: " + e.getMessage());
                 e.printStackTrace();
                 return false;
             }
@@ -336,8 +350,10 @@ public class WifiController {
             ArrayList<ClientScanResult> clients = wifiApManager.getClientList(false);
 
             int passedTime = (int) (System.currentTimeMillis() - startTime) / 1000;
-            if (passedTime > TIME_TO_TRYING_SEND_PRESENTATION)
+            if (passedTime > TIME_TO_TRYING_SEND_PRESENTATION) {
+                Log.e(TAG, "Time to trying send presentation PASSED");
                 return false;
+            }
 
             if (clients.size() > 0) {
                 ClientScanResult clientScanResult = clients.get(0);
@@ -345,14 +361,16 @@ public class WifiController {
                 if (ip.equals("192.168.43.1") || ip.equals("192.168.1.1")) {
                     try {
                         Thread.sleep(100);
-                    } catch (InterruptedException ignore) {
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "Exception message: " + e.getMessage());
                     }
-                    Log.e("WEKAST.ANDROID", "No connected dongle");
+                    Log.e(TAG, "No connected dongle");
                     continue;
                 }
-                Log.e("WEKAST.ANDROID", "Connected dongle with ip: " + ip);
+                changeState(WifiState.WIFI_STATE_CONNECT);
                 Utils.setFieldSP(context, "DONGLE_IP", ip);
                 showMessage("DONGLE CONNECTED");
+                Log.e(TAG, "Connected dongle with ip: " + ip);
                 return true;
             }
         }
@@ -371,6 +389,7 @@ public class WifiController {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
                 e.printStackTrace();
             }
         }

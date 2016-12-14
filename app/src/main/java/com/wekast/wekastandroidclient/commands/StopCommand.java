@@ -21,7 +21,7 @@ public class StopCommand implements ICommand {
 
     @Override
     public String getCommand() {
-        return null;
+        return "stop";
     }
 
     @Override

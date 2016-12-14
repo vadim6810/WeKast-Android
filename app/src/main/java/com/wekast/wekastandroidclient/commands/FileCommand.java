@@ -27,7 +27,7 @@ public class FileCommand implements ICommand  {
 
     @Override
     public String getCommand() {
-        return null;
+        return "file";
     }
 
     @Override

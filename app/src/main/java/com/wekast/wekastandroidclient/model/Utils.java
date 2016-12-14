@@ -88,7 +88,7 @@ public class Utils {
     public static final String DONGLE_AP_SSID_DEFAULT = "wekast";
     public static final String DONGLE_AP_PASS_DEFAULT = "12345678";
     public static final String DONGLE_SOCKET_PORT = "8888";
-    public static final int TIME_TO_TRYING_SEND_PRESENTATION = 10;  // in seconds
+    public static final int TIME_TO_TRYING_SEND_PRESENTATION = 20;  // in seconds
 
     // SharedPreferences params
     // DONGLE_IP        // set when connecting to dongle access point for sending new ssid and pass
