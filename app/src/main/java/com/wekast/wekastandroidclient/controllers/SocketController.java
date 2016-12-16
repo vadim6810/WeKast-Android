@@ -110,16 +110,17 @@ public class SocketController {
                         Log.e(TAG, "Request received OK");
                     }
                 } catch (JSONException e) {
-                    Log.e(TAG, "Exception message: " + e.getMessage());
+                    Log.e(TAG, "Exception1 message: " + e.getMessage());
                     e.printStackTrace();
                 }
 
                 socket.close();
             }
         } catch (SocketException e) {
-            Log.e(TAG, "Exception message: " + e.getMessage());
+            Log.e(TAG, "Exception2 message: " + e.getMessage());
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "Exception message: " + e.getMessage());
+            Log.e(TAG, "Exception3 message: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (socket != null)
@@ -158,7 +159,7 @@ public class SocketController {
                 }
             }
         } catch (JSONException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "Exception5 message: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -174,7 +175,7 @@ public class SocketController {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    Log.e(TAG, "Exception message: " + e.getMessage());
+                    Log.e(TAG, "Exception4 message: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
