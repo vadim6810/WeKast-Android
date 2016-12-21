@@ -115,6 +115,7 @@ public class SocketController {
                 }
 
                 socket.close();
+                break;
             }
         } catch (SocketException e) {
             Log.e(TAG, "Exception2 message: " + e.getMessage());

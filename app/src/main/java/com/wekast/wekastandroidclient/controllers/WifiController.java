@@ -358,7 +358,9 @@ public class WifiController {
             if (clients.size() > 0) {
                 ClientScanResult clientScanResult = clients.get(0);
                 String ip = clientScanResult.getIpAddr();
-                if (ip.equals("192.168.43.1") || ip.equals("192.168.1.1")) {
+
+                String curIPSS = ip.substring(0,3);
+                if (ip.equals("192.168.43.1") || ip.equals("192.168.1.1") || !ip.substring(0,3).equals("192")) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

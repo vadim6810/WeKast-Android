@@ -70,7 +70,8 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         clearSharedPreferencesValues();
         // TODO: CHECK on 4.4.2 when application tryed to reinstall was error (with requestSettingsPermissions)
         if (requestSettingsPermissions()) {
-            startService(new Intent(this, DongleService.class));
+            Log.d(TAG, "onCreate: requestSettingsPermissions TRUE");
+//            startService(new Intent(this, DongleService.class));
         }
     }
 
