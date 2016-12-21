@@ -1,7 +1,9 @@
 package com.wekast.wekastandroidclient.activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,8 +18,17 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.convertJSONString2Obj;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getJSONStringWithParam_POST;
+import static com.wekast.wekastandroidclient.model.Utils.EMAIL;
+import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
+import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
+import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_REGISTER;
+import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 
 
 /**
@@ -62,8 +73,31 @@ public class RegisterActivity extends AppCompatActivity {
             txtEmail.setError("Email is required!");
             return;
         }
-        //Call async task to register
-        new TaskRegister().execute();
+
+        //TODO this block-code only testers
+        if (txtLogin.getText().toString().charAt(0) == '0') {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setIcon(android.R.drawable.ic_dialog_alert);
+            builder.setTitle("Attention!");
+            builder.setMessage("Первая цифра '0' в номере телефона отключает подтверждение регистрации по почте и смс!");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //Call async task to register
+                    new TaskRegister().execute();
+                }
+            });
+            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            //Call async task to register
+            new TaskRegister().execute();
+        }
+
     }
 
     public void btnLogin_Click(View v) {
