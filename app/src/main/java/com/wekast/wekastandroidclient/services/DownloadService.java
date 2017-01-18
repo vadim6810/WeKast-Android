@@ -130,7 +130,7 @@ public class DownloadService extends IntentService {
         HashMap<String, String> param = new HashMap<>();
         param.put(LOGIN, getFieldSP(this, LOGIN));
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
-        String[] serSettings = new String[2];
+        String[] serSettings = new String[]{"",""};
         try {
             String response = getJSONStringWithParam_POST(SERVICE_API_URL_GETSETTINGS, param);
             JSONObject jsonObject = convertJSONString2Obj(response);
