@@ -79,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setIcon(android.R.drawable.ic_dialog_alert);
             builder.setTitle("Attention!");
-            builder.setMessage("Первая цифра '0' в номере телефона отключает подтверждение регистрации по почте и смс!");
+            builder.setMessage("The first digit '0' in the phone number, disables the confirmation of registration by e-mail and SMS!");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //Call async task to register
