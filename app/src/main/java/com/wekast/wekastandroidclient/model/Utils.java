@@ -84,6 +84,7 @@ public class Utils {
     public static final int CHECK = 31;
     public static final int UPDATE = 32;
     public static final int ERROR_DOWNLOAD = 666;
+    public static final int ERROR_CONFIRM = 405;
 
     /**
      * Default Dongle Access Point

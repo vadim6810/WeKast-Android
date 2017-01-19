@@ -25,6 +25,7 @@ import static com.wekast.wekastandroidclient.model.Utils.DELETE;
 import static com.wekast.wekastandroidclient.model.Utils.DIRECTORY;
 import static com.wekast.wekastandroidclient.model.Utils.DIRECTORY_PREVIEW;
 import static com.wekast.wekastandroidclient.model.Utils.DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.ERROR_CONFIRM;
 import static com.wekast.wekastandroidclient.model.Utils.ERROR_DOWNLOAD;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
@@ -201,7 +202,12 @@ public class DownloadService extends IntentService {
             if (jsonObject.getInt("status") == 0) {
                 response = jsonObject.getString("answer");
                 hashMap = mapEzsForDownload(parseJSONArrayMap(response), getAllFilesList());
-            } else {
+            }
+            if (jsonObject.getInt("status") == 13) {
+                intent.putExtra("status", ERROR_CONFIRM);
+                sendBroadcast(intent);
+            }
+            else {
                 Log.d(TAG, "download: ERROR status" + jsonObject.getInt("status"));
             }
         } catch (Exception e) {

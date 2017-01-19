@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.activity.PhoneConfirmActivity;
 import com.wekast.wekastandroidclient.model.EquationsBitmap;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.services.DownloadService;
@@ -146,6 +147,13 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
                     if (status == ERROR_DOWNLOAD) {
                         Log.d(TAG, "onReceive: ERROR_DOWNLOAD");
                         toastShow(getActivity(), "Error download EZS!");
+                    }
+                    if (status == ERROR_CONFIRM) {
+                        Log.d(TAG, "onReceive: ERROR_CONFIRM");
+                        toastShow(getActivity(), "ERROR_CONFIRM!");
+                        Intent i = new Intent(context, PhoneConfirmActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        context.startActivity(i);
                     }
                 }
             }
