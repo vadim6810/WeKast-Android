@@ -29,6 +29,7 @@ public class Utils {
     public static final String SERVICE_API_URL = "http://78.153.150.254";
     public static final String SERVICE_API_URL_LIST = SERVICE_API_URL + "/list";
     public static final String SERVICE_API_URL_REGISTER = SERVICE_API_URL + "/register";
+    public static final String SERVICE_API_URL_CONFIRM = SERVICE_API_URL + "/code";
     public static final String SERVICE_API_URL_DOWNLOAD = SERVICE_API_URL + "/download/";
     public static final String SERVICE_API_URL_PREVIEW = SERVICE_API_URL + "/preview/";
     public static final String SERVICE_API_URL_DELETE = SERVICE_API_URL + "/delete/";
@@ -37,6 +38,7 @@ public class Utils {
     public static final String LOGIN = "login";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
+    public static final String CODESMS = "code";
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ERROR = -1;
     public static final String SHAREDPREFERNCE = "WeKastPreference";
