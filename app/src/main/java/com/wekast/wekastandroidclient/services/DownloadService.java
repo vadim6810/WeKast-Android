@@ -51,7 +51,6 @@ import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 public class DownloadService extends IntentService {
 
     private static final String TAG = "DownloadService";
-    //    private AccessServiceAPI serviceAPI = new AccessServiceAPI();
     private HashMap<String, String> hashMap = new HashMap<>();
 
     public DownloadService() {

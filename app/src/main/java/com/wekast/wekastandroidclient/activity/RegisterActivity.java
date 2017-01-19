@@ -166,14 +166,14 @@ public class RegisterActivity extends AppCompatActivity {
                 toastShow(context, "Register success! Password: " + password);
                 setFieldSP(context, LOGIN, login);
                 setFieldSP(context, PASSWORD, password.toString());
-                startWelcome();
+                startActivity(WelcomeActivity.class);
             } else {
                 toastShow(context, "Registration fail: " + JSONresponse);
             }
         }
 
-        private void startWelcome() {
-            Intent i = new Intent(context, WelcomeActivity.class)
+        private void startActivity(Class<?> clazz) {
+            Intent i = new Intent(context, clazz)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);
         }

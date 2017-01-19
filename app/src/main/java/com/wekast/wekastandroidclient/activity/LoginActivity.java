@@ -19,8 +19,17 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wekast.wekastandroidclient.model.AccessServiceAPI.*;
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.convertJSONString2Obj;
+import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getJSONStringWithParam_POST;
+import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
+import static com.wekast.wekastandroidclient.model.Utils.RESULT_CONFIRM;
+import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
+import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
+import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_LIST;
+import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 
 
 /**
@@ -58,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void btnConfirm_Click(View v) {
+    public void btnLogin_Click(View v) {
         //validate input
         if ("".equals(txtLogin.getText().toString())) {
             txtLogin.setError("Login is required!");
@@ -120,6 +129,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (jsonObject.getInt("status") == 0) {
                     JSONList = jsonObject.getString("answer");
                     return RESULT_SUCCESS;
+                }
+                if (jsonObject.getInt("status") == 13) {
+                    return RESULT_CONFIRM;
                 } else {
                     JSONresponse = jsonObject.getString("error");
                     return RESULT_ERROR;
@@ -133,18 +145,19 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             progressDialog.dismiss();
-            if (result == RESULT_SUCCESS) {
+            if (result == RESULT_SUCCESS || result == RESULT_CONFIRM) {
                 toastShow(context, "Login success");
                 setFieldSP(context, LOGIN, login);
                 setFieldSP(context, PASSWORD, password);
-                startWelcome();
+                startActivity(result == RESULT_SUCCESS ?
+                        WelcomeActivity.class : PhoneConfirmActivity.class);
             } else {
                 toastShow(context, "Login fail: " + JSONresponse);
             }
         }
 
-        private void startWelcome() {
-            Intent i = new Intent(context, WelcomeActivity.class)
+        private void startActivity(Class<?> clazz) {
+            Intent i = new Intent(context, clazz)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);
         }

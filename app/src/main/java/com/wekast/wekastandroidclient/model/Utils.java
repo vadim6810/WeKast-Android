@@ -40,6 +40,7 @@ public class Utils {
     public static final String PASSWORD = "password";
     public static final String CODESMS = "code";
     public static final int RESULT_SUCCESS = 0;
+    public static final int RESULT_CONFIRM = 13;
     public static final int RESULT_ERROR = -1;
     public static final String SHAREDPREFERNCE = "WeKastPreference";
     public static final String DEFAULT_PATH_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";

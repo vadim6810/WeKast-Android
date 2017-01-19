@@ -20,11 +20,9 @@ import static com.wekast.wekastandroidclient.model.AccessServiceAPI.convertJSONS
 import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getJSONStringWithParam_POST;
 import static com.wekast.wekastandroidclient.model.Utils.CODESMS;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
-import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
 import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_CONFIRM;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_LIST;
 import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
@@ -49,10 +47,9 @@ public class PhoneConfirmActivity extends AppCompatActivity {
         txtCodeSms = (EditText) findViewById(R.id.txt_code_sms);
 
         txtLogin.setText(getFieldSP(context, LOGIN));
-//        txtCodeSms.setText(getFieldSP(context, PASSWORD));
     }
 
-    public void btnLogin_Click(View v) {
+    public void btnConfirm_Click(View v) {
         //validate input
         if ("".equals(txtLogin.getText().toString())) {
             txtLogin.setError("Login is required!");
@@ -94,7 +91,6 @@ public class PhoneConfirmActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(String... params) {
-            //Create date to pass in param
             Map<String, String> param = new HashMap<>();
             param.put(LOGIN, login);
             param.put(CODESMS, codeSMS);
@@ -123,14 +119,14 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
                 toastShow(context, "Confirm success");
-                startWelcome();
+                startActivity(WelcomeActivity.class);
             } else {
                 toastShow(context, "Confirm fail: " + JSONresponse);
             }
         }
 
-        private void startWelcome() {
-            Intent i = new Intent(context, WelcomeActivity.class)
+        private void startActivity(Class<?> clazz) {
+            Intent i = new Intent(context, clazz)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(i);
         }

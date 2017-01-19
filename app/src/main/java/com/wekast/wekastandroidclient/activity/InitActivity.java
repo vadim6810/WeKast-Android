@@ -11,16 +11,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.VideoView;
 
-
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.model.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.Utils.CODESMS;
+import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
+import static com.wekast.wekastandroidclient.model.Utils.PREVIEW_ABSOLUTE_PATH;
+import static com.wekast.wekastandroidclient.model.Utils.clearWorkDirectory;
+import static com.wekast.wekastandroidclient.model.Utils.getContainsSP;
+import static com.wekast.wekastandroidclient.model.Utils.initWorkFolder;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 
 
 /**
@@ -96,7 +100,7 @@ public class InitActivity extends AppCompatActivity {
         @Override
         public void run() {
             Intent intent;
-            if (Utils.getContainsSP(context, LOGIN)) {
+            if (getContainsSP(context, LOGIN)) {
                 intent = new Intent(getApplicationContext(), WelcomeActivity.class);
             } else {
                 intent = new Intent(getApplicationContext(), RegisterActivity.class);

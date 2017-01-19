@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:text="PLEASE ENTER"
+        android:text="CONFIRM PHONE NUMBER"
         android:textColor="@color/wekast_title"
         android:textSize="22sp" />
 
