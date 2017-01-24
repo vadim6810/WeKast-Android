@@ -29,12 +29,12 @@ import static com.wekast.wekastandroidclient.model.Utils.ERROR_CONFIRM;
 import static com.wekast.wekastandroidclient.model.Utils.ERROR_DOWNLOAD;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_DELETE;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_DOWNLOAD;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_GETSETTINGS;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_LIST;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_PREVIEW;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_SETSETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_DELETE;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.SERVER_GETSETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_LIST;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_PREVIEW;
+import static com.wekast.wekastandroidclient.model.Utils.SERVER_SETSETTINGS;
 import static com.wekast.wekastandroidclient.model.Utils.SETTINGS;
 import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ALL;
 import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ONE;
@@ -105,7 +105,7 @@ public class DownloadService extends IntentService {
         for (int i = 0; i < 10; i++) {
             Log.e(TAG, "timeout: " + i);
             try {
-                String response = getJSONStringWithParam_POST(SERVICE_API_URL_SETSETTINGS, param);
+                String response = getJSONStringWithParam_POST(SERVER_SETSETTINGS, param);
                 JSONObject jsonObject = convertJSONString2Obj(response);
                 if (jsonObject.getInt("status") == 0) {
                     Log.d(TAG, "setServerSettings: " + jsonObject.getString("answer"));
@@ -132,7 +132,7 @@ public class DownloadService extends IntentService {
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         String[] serSettings = new String[]{"",""};
         try {
-            String response = getJSONStringWithParam_POST(SERVICE_API_URL_GETSETTINGS, param);
+            String response = getJSONStringWithParam_POST(SERVER_GETSETTINGS, param);
             JSONObject jsonObject = convertJSONString2Obj(response);
             if (jsonObject.getInt("status") == 0) {
                 serSettings[0] = jsonObject.getJSONObject("answer").getString("sid");
@@ -154,7 +154,7 @@ public class DownloadService extends IntentService {
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         //get EZS on Server
         try {
-            String response = getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+            String response = getJSONStringWithParam_POST(EZS_LIST, param);
             JSONObject jsonObject = convertJSONString2Obj(response);
             if (jsonObject.getInt("status") == 0) {
                 response = jsonObject.getString("answer");
@@ -170,7 +170,7 @@ public class DownloadService extends IntentService {
         if (!hashMap.isEmpty()) {
             for (Map.Entry<String, String> item : hashMap.entrySet()) {
                 try {
-                    String response2 = getJSONStringWithParam_POST(SERVICE_API_URL_DELETE + item.getKey(), param);
+                    String response2 = getJSONStringWithParam_POST(EZS_DELETE + item.getKey(), param);
                     JSONObject jsonObject = convertJSONString2Obj(response2);
                     if (jsonObject.getInt("status") != 0) {
                         Log.d(TAG, jsonObject.toString());
@@ -196,7 +196,7 @@ public class DownloadService extends IntentService {
         param.put(PASSWORD, getFieldSP(this, PASSWORD));
         //getListOnServer
         try {
-            String response = getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+            String response = getJSONStringWithParam_POST(EZS_LIST, param);
             JSONObject jsonObject = convertJSONString2Obj(response);
 
             if (jsonObject.getInt("status") == 0) {
@@ -219,12 +219,12 @@ public class DownloadService extends IntentService {
             try {
                 for (Map.Entry<String, String> item : hashMap.entrySet()) {
                     //download preview
-                    actionDownload(SERVICE_API_URL_PREVIEW + item.getKey(), param, item.getValue(), DIRECTORY_PREVIEW);
+                    actionDownload(EZS_PREVIEW + item.getKey(), param, item.getValue(), DIRECTORY_PREVIEW);
                     intent.putExtra("status", STATUS_FINISH_PREVIEW);
                     sendBroadcast(intent);
 
                     //download EZS
-                    actionDownload(SERVICE_API_URL_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
+                    actionDownload(EZS_DOWNLOAD + item.getKey(), param, item.getValue(), DIRECTORY);
                     clearDirectory(new File(DIRECTORY_PREVIEW, item.getValue()));
                     intent.putExtra("status", STATUS_FINISH_ONE);
                     sendBroadcast(intent);

@@ -27,14 +27,15 @@ import java.util.zip.ZipInputStream;
 public class Utils {
 
     public static final String SERVICE_API_URL = "http://78.153.150.254";
-    public static final String SERVICE_API_URL_LIST = SERVICE_API_URL + "/list";
-    public static final String SERVICE_API_URL_REGISTER = SERVICE_API_URL + "/register";
-    public static final String SERVICE_API_URL_CONFIRM = SERVICE_API_URL + "/code";
-    public static final String SERVICE_API_URL_DOWNLOAD = SERVICE_API_URL + "/download/";
-    public static final String SERVICE_API_URL_PREVIEW = SERVICE_API_URL + "/preview/";
-    public static final String SERVICE_API_URL_DELETE = SERVICE_API_URL + "/delete/";
-    public static final String SERVICE_API_URL_GETSETTINGS = SERVICE_API_URL + "/settings";
-    public static final String SERVICE_API_URL_SETSETTINGS = SERVICE_API_URL + "/settings/set";
+    public static final String EZS_LIST = SERVICE_API_URL + "/list";
+    public static final String USER_REGISTER = SERVICE_API_URL + "/register";
+    public static final String SMS_CONFIRM = SERVICE_API_URL + "/code";
+    public static final String SMS_REMIND = SERVICE_API_URL + "/request";
+    public static final String EZS_DOWNLOAD = SERVICE_API_URL + "/download/";
+    public static final String EZS_PREVIEW = SERVICE_API_URL + "/preview/";
+    public static final String EZS_DELETE = SERVICE_API_URL + "/delete/";
+    public static final String SERVER_GETSETTINGS = SERVICE_API_URL + "/settings";
+    public static final String SERVER_SETSETTINGS = SERVICE_API_URL + "/settings/set";
     public static final String LOGIN = "login";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";

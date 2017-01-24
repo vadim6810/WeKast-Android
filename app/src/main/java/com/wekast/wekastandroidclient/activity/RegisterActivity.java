@@ -25,7 +25,7 @@ import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_REGISTER;
+import static com.wekast.wekastandroidclient.model.Utils.USER_REGISTER;
 import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
@@ -140,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity {
             JSONObject jsonObject;
 
             try {
-                JSONresponse = getJSONStringWithParam_POST(SERVICE_API_URL_REGISTER, postParam);
+                JSONresponse = getJSONStringWithParam_POST(USER_REGISTER, postParam);
                 jsonObject = convertJSONString2Obj(JSONresponse);
 
                 if (jsonObject.getInt("status") == 0) {

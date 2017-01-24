@@ -26,7 +26,7 @@ import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_CONFIRM;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_LIST;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_LIST;
 import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject jsonObject;
 
             try {
-                JSONresponse = getJSONStringWithParam_POST(SERVICE_API_URL_LIST, param);
+                JSONresponse = getJSONStringWithParam_POST(EZS_LIST, param);
                 jsonObject = convertJSONString2Obj(JSONresponse);
 
                 if (jsonObject.getInt("status") == 0) {

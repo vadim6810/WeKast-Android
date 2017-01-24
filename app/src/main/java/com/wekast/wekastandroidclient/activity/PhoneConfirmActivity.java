@@ -22,9 +22,9 @@ import static com.wekast.wekastandroidclient.model.Utils.CODESMS;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
-import static com.wekast.wekastandroidclient.model.Utils.SERVICE_API_URL_CONFIRM;
+import static com.wekast.wekastandroidclient.model.Utils.SMS_CONFIRM;
+import static com.wekast.wekastandroidclient.model.Utils.SMS_REMIND;
 import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
-import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 
 /**
@@ -60,8 +60,19 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             return;
         }
 
-        //Call async task to login
-        new TaskConfirm().execute();
+        //Call async task to SMS_CONFIRM
+        new TaskConfirm(SMS_CONFIRM).execute();
+    }
+
+    public void btnRemind_Click(View v) {
+        //validate input
+        if ("".equals(txtLogin.getText().toString())) {
+            txtLogin.setError("Login is required!");
+            return;
+        }
+
+        //Call async task to SMS_REMIND
+        new TaskConfirm(SMS_REMIND).execute();
     }
 
     public void btnBack_Click(View v) {
@@ -74,8 +85,10 @@ public class PhoneConfirmActivity extends AppCompatActivity {
         String login;
         String codeSMS;
         ProgressDialog progressDialog;
+        String smsRequest;
 
-        public TaskConfirm() {
+        public TaskConfirm(String smsRequest) {
+            this.smsRequest = smsRequest;
             this.login = txtLogin.getText().toString();
             this.codeSMS = txtCodeSms.getText().toString();
         }
@@ -98,7 +111,7 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             JSONObject jsonObject;
 
             try {
-                JSONresponse = getJSONStringWithParam_POST(SERVICE_API_URL_CONFIRM, param);
+                JSONresponse = getJSONStringWithParam_POST(smsRequest, param);
                 jsonObject = convertJSONString2Obj(JSONresponse);
 
                 if (jsonObject.getInt("status") == 0) {
@@ -118,8 +131,10 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             super.onPostExecute(result);
             progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
-                toastShow(context, "Confirm success");
-                startActivity(WelcomeActivity.class);
+                if (smsRequest == SMS_CONFIRM) {
+                    toastShow(context, "Confirm success");
+                    startActivity(WelcomeActivity.class);
+                } else  toastShow(context, "SMS was sent");
             } else {
                 toastShow(context, "Confirm fail: " + JSONresponse);
             }

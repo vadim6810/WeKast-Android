@@ -67,7 +67,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_CANCEL"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
@@ -80,7 +79,6 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btn_Confirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -101,6 +99,18 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:orientation="vertical">
-    </LinearLayout>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_ripple_orange"
+            android:onClick="btnRemind_Click"
+            android:text="SMS reminder"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="normal|bold" />
+
+    </LinearLayout>
 </LinearLayout>
