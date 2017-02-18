@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
@@ -62,6 +64,11 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     TextView commentsFullSizeText;
     Vibrator vibrator;
     long mills = 30L;
+    private ProgressBar progressBarSlider;
+    private int progress = 1;
+    private CountDownTimer timer;
+    private int progressTimer = 0;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +81,10 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
         createWorkArray();
+        progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
+        progressBarSlider.setMax(slidesList.size());
+        progressBarSlider.setProgress(progress);
+//        startTimer(30);
 
         inputImage = new InputImage();
         mainImage = new MainImage();
@@ -120,6 +131,27 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             }
         });
         return view;
+    }
+
+    public void startTimer(int seconds) {
+        Log.d("startTimer: ", "startTimer: ");
+        if (timer != null){
+            timer.cancel();
+            progressTimer = 0;
+        }
+
+        timer = new CountDownTimer(seconds * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progressBarSlider.setSecondaryProgress(++progressTimer);
+            }
+
+            @Override
+            public void onFinish() {
+                toastShow(getActivity(), "Time is UP!");
+                Log.d("onFinish: ", "Time is UP!");
+            }
+        }.start();
     }
 
     public void createWorkArray() {
@@ -257,6 +289,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     public void prevSlide() {
         if (currentSlide > 0) {
+            progressBarSlider.setProgress(--progress);
             currentSlide = currentSlide - 1;
             currentChID = 1;
             changeSlideToDongle(currentSlide + 1, currentChID);
@@ -279,6 +312,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     public void nextSlide() {
         if (currentSlide < slidesList.size() - 1) {
+            progressBarSlider.setProgress(++progress);
             currentSlide = currentSlide + 1;
             currentChID = 1;
             changeSlideToDongle(currentSlide + 1, currentChID);
