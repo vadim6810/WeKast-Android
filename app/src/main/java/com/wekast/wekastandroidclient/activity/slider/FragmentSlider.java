@@ -63,7 +63,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
     Vibrator vibrator;
-    long mills = 30L;
+    private long mills = 30L;
     private ProgressBar progressBarSlider;
     private int progress = 1;
     private CountDownTimer timer;
