@@ -69,6 +69,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private long mills = 30L;
     private ProgressBar progressBarSlider;
     private int progress = 1;
+    private ProgressBar progressBarTimer;
     private CountDownTimer timer;
     private int progressTimer = 0;
 
@@ -92,6 +93,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
         progressBarSlider.setMax(slidesList.size());
         progressBarSlider.setProgress(progress);
+
+        progressBarTimer = (ProgressBar) view.findViewById(R.id.progressBarTimer);
 
         inputImage = new InputImage();
         mainImage = new MainImage();
@@ -175,15 +178,17 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             timer.cancel();
             progressTimer = 0;
         }
+        progressBarTimer.setMax(seconds);
 
         timer = new CountDownTimer(seconds * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                progressBarSlider.setSecondaryProgress(++progressTimer);
+                progressBarTimer.setProgress(++progressTimer);
             }
 
             @Override
             public void onFinish() {
+                progressBarTimer.setProgress(++progressTimer);
                 toastShow(getActivity(), "Time is UP!");
                 Log.d("onFinish: ", "Time is UP!");
             }
