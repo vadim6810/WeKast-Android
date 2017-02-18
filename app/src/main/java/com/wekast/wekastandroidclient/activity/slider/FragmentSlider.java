@@ -1,5 +1,6 @@
 package com.wekast.wekastandroidclient.activity.slider;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -8,6 +9,9 @@ import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
+import com.wekast.wekastandroidclient.activity.TimerActivity;
 import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -27,7 +32,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static com.wekast.wekastandroidclient.model.Utils.CASH_ABSOLUTE_PATH;
+import static com.wekast.wekastandroidclient.model.Utils.REQUEST_TIMER_CODE;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
+import static com.wekast.wekastandroidclient.model.Utils.TIME;
 import static com.wekast.wekastandroidclient.model.Utils.infoXML;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 import static java.lang.Math.abs;
@@ -36,12 +43,8 @@ import static java.lang.Math.abs;
  * Created by RDL on 03.09.2016.
  */
 public class FragmentSlider extends Fragment implements View.OnTouchListener {
-    float startY;
-    float stopY;
-    float startX;
-    float stopX;
-    float resY;
-    float resX;
+
+    private float startY, stopY, startX, stopX, resY, resX;
     View view;
     InputImage inputImage;
     MainImage mainImage;
@@ -53,14 +56,14 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FrameLayout commentsFullSize;
     CommentsFragment commentsFragment;
     FragmentTransaction tr;
-    int currentSlide = 0;
-    int currentChID = 1;
+    private int currentSlide = 0;
+    private int currentChID = 1;
     ArrayList<Slide> slidesList = new ArrayList<>();
     ArrayList<Integer> chID = new ArrayList<>();
     private int slideNumber;
     private String comments;
     private String filePath;
-    boolean fullCommentVisible = false;
+    private boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
     Vibrator vibrator;
     private long mills = 30L;
@@ -69,6 +72,11 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private CountDownTimer timer;
     private int progressTimer = 0;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -84,7 +92,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
         progressBarSlider.setMax(slidesList.size());
         progressBarSlider.setProgress(progress);
-//        startTimer(30);
 
         inputImage = new InputImage();
         mainImage = new MainImage();
@@ -133,9 +140,38 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_timer, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_timer:
+                Intent intent = new Intent(getActivity(), TimerActivity.class);
+                startActivityForResult(intent, REQUEST_TIMER_CODE);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_TIMER_CODE) {
+                if (data != null && data.getExtras() != null) {
+                    startTimer(data.getExtras().getInt(TIME, 0));
+                }
+            }
+        }
+    }
+
     public void startTimer(int seconds) {
-        Log.d("startTimer: ", "startTimer: ");
-        if (timer != null){
+        Log.d("startTimer: ", ": " + seconds);
+        if (timer != null) {
             timer.cancel();
             progressTimer = 0;
         }

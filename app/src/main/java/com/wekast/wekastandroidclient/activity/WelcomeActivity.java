@@ -14,23 +14,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.activity.list.FragmentListPresentations;
 import com.wekast.wekastandroidclient.activity.slider.FragmentSlider;
-import com.wekast.wekastandroidclient.R;
 import com.wekast.wekastandroidclient.model.CustomPhoneStateListener;
 import com.wekast.wekastandroidclient.model.ProccesCall;
 import com.wekast.wekastandroidclient.model.Utils;
 import com.wekast.wekastandroidclient.services.DongleService;
 import com.wekast.wekastandroidclient.services.DownloadService;
 
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.Utils.CHECK;
+import static com.wekast.wekastandroidclient.model.Utils.PRESENTATION_LIST;
+import static com.wekast.wekastandroidclient.model.Utils.SETTINGS;
+import static com.wekast.wekastandroidclient.model.Utils.SLIDER;
+import static com.wekast.wekastandroidclient.model.Utils.STOP;
+import static com.wekast.wekastandroidclient.model.Utils.UPLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 
 /**
  * Created by RDL on 15.07.2016.
  */
 public class WelcomeActivity extends AppCompatActivity implements FragmentListPresentations.onSomeEventListener {
     private static final String TAG = "WelcomeActivity";
-
     public static WelcomeActivity welcomeActivity;
     Context context = this;
     private int activityState;
@@ -45,7 +50,6 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         setContentView(R.layout.activity_welcome);
 
         welcomeActivity = this;
-
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.logo);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -83,9 +87,14 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

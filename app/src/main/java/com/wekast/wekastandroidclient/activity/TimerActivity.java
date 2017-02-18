@@ -1,5 +1,6 @@
 package com.wekast.wekastandroidclient.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -10,6 +11,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
+import static com.wekast.wekastandroidclient.model.Utils.*;
 
 public class TimerActivity extends AppCompatActivity implements View.OnClickListener, NumberPicker.OnValueChangeListener {
 
@@ -67,6 +69,10 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.btn_start:
                 Log.d("onClick: ", "START");
+                Intent intent = new Intent();
+                intent.putExtra(TIME, getTimeSec());
+                setResult(RESULT_OK, intent);
+                finish();
                 break;
             case R.id.btn_reset:
                 Log.d("onClick: ", "RESET");
@@ -92,5 +98,9 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         String mmTxt = (mm < 10) ? ("0" + mm) : String.valueOf(mm);
         String ssTxt = (ss < 10) ? ("0" + ss) : String.valueOf(ss);
         timerTxt.setText(hhTxt + ":" + mmTxt + ":" + ssTxt);
+    }
+
+    public int getTimeSec() {
+        return (npHH.getValue() * 3600) + (npMM.getValue() * 60) +  npSS.getValue();
     }
 }

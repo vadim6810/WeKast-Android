@@ -6,11 +6,6 @@
         android:id="@+id/action_timer"
         android:icon="@drawable/ic_timer"
         android:title=""
-        app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_close"
-        android:icon="@drawable/ic_close"
-        android:onClick="onClickClose"
-        android:title=""
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
+
 </menu>

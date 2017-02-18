@@ -88,6 +88,12 @@ public class Utils {
     public static final int ERROR_CONFIRM = 405;
 
     /**
+     * Commands timer
+     */
+    public static final int REQUEST_TIMER_CODE = 101;
+    public static final String TIME = "TIME";
+
+    /**
      * Default Dongle Access Point
      **/
     public static final String DONGLE_AP_SSID_DEFAULT = "wekast";
