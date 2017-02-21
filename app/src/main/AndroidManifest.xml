@@ -61,7 +61,8 @@
 
         <activity
             android:name=".activity.TimerActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Timer"></activity>
     </application>
 
 </manifest>

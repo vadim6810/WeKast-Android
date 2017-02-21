@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_timer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/frame_border_comments"
     tools:context="com.wekast.wekastandroidclient.activity.TimerActivity">
 
 
@@ -13,15 +14,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:paddingTop="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/timer_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/edittext_bg"
+            android:padding="10dp"
             android:text="00:00:00"
-            android:textSize="50sp" />
+            android:textColor="@color/wekast_title"
+            android:textSize="46sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -43,19 +47,19 @@
         <NumberPicker
             android:id="@+id/hh"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <!-- mm -->
         <NumberPicker
             android:id="@+id/mm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <!-- ss -->
         <NumberPicker
             android:id="@+id/ss"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -66,25 +70,39 @@
         android:layout_below="@id/npickers"
         android:layout_centerInParent="true"
         android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:layout_margin="10dp">
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_ripple_grey"
+            android:text="Cancel"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reset" />
+            android:layout_weight="1"
+            android:background="@drawable/btn_ripple_orange"
+            android:text="Reset"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start" />
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_ripple_orange"
+            android:text="Start"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </RelativeLayout>
