@@ -66,7 +66,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private boolean fullCommentVisible = false;
     TextView commentsFullSizeText;
     Vibrator vibrator;
-    private long mills = 30L;
+    private long millsVib = 30L;
     private ProgressBar progressBarSlider;
     private int progress = 1;
     private ProgressBar progressBarTimer;
@@ -172,7 +172,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }
     }
 
-    public void startTimer(int seconds) {
+    public void startTimer(final int seconds) {
         Log.d("startTimer: ", ": " + seconds);
         if (timer != null) {
             timer.cancel();
@@ -180,17 +180,17 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }
         progressBarTimer.setMax(seconds);
 
-        timer = new CountDownTimer(seconds * 1000, 1000) {
+        timer = new CountDownTimer((seconds + 1) * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                progressBarTimer.setProgress(++progressTimer);
+                progressBarTimer.setProgress(progressTimer++);
+                Log.e("TIMER", "onTick: " + millisUntilFinished/1000 );
             }
 
             @Override
             public void onFinish() {
-                progressBarTimer.setProgress(++progressTimer);
-                toastShow(getActivity(), "Time is UP!");
-                Log.d("onFinish: ", "Time is UP!");
+                progressBarTimer.setProgress(seconds);
+                vibrator.vibrate(millsVib);
             }
         }.start();
     }
@@ -286,7 +286,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (currentChID > 1) {
             currentChID--;
             changeSlideToDongle(currentSlide + 1, currentChID);
-            vibrator.vibrate(mills);
+            vibrator.vibrate(millsVib);
         }
         mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
@@ -295,7 +295,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (currentChID < slidesList.get(currentSlide).getChID().size()) {
             currentChID++;
             changeSlideToDongle(currentSlide + 1, currentChID);
-            vibrator.vibrate(mills);
+            vibrator.vibrate(millsVib);
         }
         mainImage.setTitleChid(currentChID, slidesList.get(currentSlide).getChID().size());
     }
@@ -347,7 +347,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
-            vibrator.vibrate(mills);
+            vibrator.vibrate(millsVib);
         }
     }
 
@@ -371,7 +371,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 outputImage.setImagePath(slidesList.get(currentSlide - 1), true);
                 commentsFragment.setComments(slidesList.get(currentSlide), true);
             }
-            vibrator.vibrate(mills);
+            vibrator.vibrate(millsVib);
         }
     }
 
