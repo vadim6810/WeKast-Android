@@ -90,12 +90,14 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+        createWorkArray();
+
         progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
         progressBarSlider.setMax(slidesList.size());
         progressBarSlider.setProgress(progress);
         progressBarTimer = (ProgressBar) view.findViewById(R.id.progressBarTimer);
 
-        createWorkArray();
+
 
         inputImage = new InputImage();
         mainImage = new MainImage();

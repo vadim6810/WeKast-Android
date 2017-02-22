@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
@@ -14,22 +15,36 @@
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBarSlider"
-                style="?android:attr/progressBarStyleHorizontal"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:progressDrawable="@drawable/custom_progressbar" />
+                android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBarTimer"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ProgressBar
+                        android:id="@+id/progressBarSlider"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:progressDrawable="@drawable/custom_progressbar" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarTimer"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"

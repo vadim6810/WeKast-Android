@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@android:id/background">
-        <shape>
-            <corners android:radius="5dp" />
-            <gradient
-                android:angle="270"
-                android:centerColor="#3f3f3f"
-                android:centerY="1.0"
-                android:endColor="#3f3f3f"
-                android:startColor="#3f3f3f" />
-                <!--android:startColor="#c3c3c3" -->
-            />
-        </shape>
-    </item>
+    <!--<item android:id="@android:id/background">-->
+        <!--<shape>-->
+            <!--<corners android:radius="5dp" />-->
+            <!--<gradient-->
+                <!--android:angle="270"-->
+                <!--android:centerColor="#3f3f3f"-->
+                <!--android:centerY="1.0"-->
+                <!--android:endColor="#3f3f3f"-->
+                <!--android:startColor="#3f3f3f" />-->
+                <!--&lt;!&ndash;android:startColor="#c3c3c3" &ndash;&gt;-->
+            <!--/>-->
+        <!--</shape>-->
+    <!--</item>-->
 
     <item android:id="@android:id/secondaryProgress">
         <clip>
@@ -34,10 +34,8 @@
             <shape>
                 <corners android:radius="5dp" />
                 <gradient
-                    android:angle="270"
                     android:centerColor="@color/lime"
-                    android:centerY="1.0"
-                    android:endColor="@color/colorPrimary"
+                    android:endColor="@color/lime"
                     android:startColor="@color/lime" />
             </shape>
         </clip>
