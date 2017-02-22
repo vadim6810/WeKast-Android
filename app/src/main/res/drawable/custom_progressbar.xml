@@ -3,28 +3,28 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="5dip" />
+            <corners android:radius="5dp" />
             <gradient
-                android:startColor="#c3c3c3"
-                android:centerColor="#0b131e"
-                android:centerY="1.0"
-                android:endColor="@color/colorPrimary"
                 android:angle="270"
-                />
+                android:centerColor="#3f3f3f"
+                android:centerY="1.0"
+                android:endColor="#3f3f3f"
+                android:startColor="#3f3f3f" />
+                <!--android:startColor="#c3c3c3" -->
+            />
         </shape>
     </item>
 
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape>
-                <corners android:radius="5dip" />
+                <corners android:radius="5dp" />
                 <gradient
-                    android:startColor="@color/colorAccent"
+                    android:angle="270"
                     android:centerColor="@color/colorAccent"
                     android:centerY="1.0"
                     android:endColor="@color/colorPrimary"
-                    android:angle="270"
-                    />
+                    android:startColor="@color/colorAccent" />
             </shape>
         </clip>
     </item>
@@ -32,15 +32,13 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <corners
-                    android:radius="5dip" />
+                <corners android:radius="5dp" />
                 <gradient
-                    android:startColor="@color/lime"
+                    android:angle="270"
                     android:centerColor="@color/lime"
                     android:centerY="1.0"
                     android:endColor="@color/colorPrimary"
-                    android:angle="270"
-                    />
+                    android:startColor="@color/lime" />
             </shape>
         </clip>
     </item>

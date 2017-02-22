@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_timer"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/frame_border_comments"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bkgr_timer"
     tools:context="com.wekast.wekastandroidclient.activity.TimerActivity">
 
 
@@ -76,7 +76,6 @@
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:background="@drawable/btn_ripple_grey"
             android:text="Cancel"
@@ -97,7 +96,6 @@
             android:id="@+id/btn_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:background="@drawable/btn_ripple_orange"
             android:text="Start"
