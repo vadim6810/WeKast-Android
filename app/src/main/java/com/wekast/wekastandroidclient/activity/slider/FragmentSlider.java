@@ -72,6 +72,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private ProgressBar progressBarTimer;
     private CountDownTimer timerPrBar;
     private int progressTimer = 0;
+    private int stepTimer = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,12 +90,12 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
-        createWorkArray();
         progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
         progressBarSlider.setMax(slidesList.size());
         progressBarSlider.setProgress(progress);
-
         progressBarTimer = (ProgressBar) view.findViewById(R.id.progressBarTimer);
+
+        createWorkArray();
 
         inputImage = new InputImage();
         mainImage = new MainImage();
@@ -178,8 +179,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             timerPrBar.cancel();
             progressTimer = 0;
         }
-        final int stepTimer = seconds * 1000 / progressBarTimer.getMax();
-
+        stepTimer = seconds * 1000 / progressBarTimer.getMax();
         timerPrBar = new CountDownTimer(seconds * 1000, stepTimer) {
             @Override
             public void onTick(long millisUntilFinished) {
