@@ -70,7 +70,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private ProgressBar progressBarSlider;
     private int progress = 1;
     private ProgressBar progressBarTimer;
-    private CountDownTimer timer;
+    private CountDownTimer timerPrBar;
     private int progressTimer = 0;
 
     @Override
@@ -174,22 +174,22 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     public void startTimer(final int seconds) {
         Log.d("startTimer: ", ": " + seconds);
-        if (timer != null) {
-            timer.cancel();
+        if (timerPrBar != null) {
+            timerPrBar.cancel();
             progressTimer = 0;
         }
-        progressBarTimer.setMax(seconds);
+        final int stepTimer = seconds * 1000 / progressBarTimer.getMax();
 
-        timer = new CountDownTimer((seconds + 1) * 1000, 1000) {
+        timerPrBar = new CountDownTimer(seconds * 1000, stepTimer) {
             @Override
             public void onTick(long millisUntilFinished) {
                 progressBarTimer.setProgress(progressTimer++);
-                Log.e("TIMER", "onTick: " + millisUntilFinished/1000 );
+//                Log.e("TIMER", "onTick: " + millisUntilFinished / 1000);
             }
 
             @Override
             public void onFinish() {
-                progressBarTimer.setProgress(seconds);
+                progressBarTimer.setProgress(progressBarTimer.getMax());
                 vibrator.vibrate(millsVib);
             }
         }.start();
@@ -392,6 +392,9 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (timerPrBar != null) {
+            timerPrBar.cancel();
+        }
     }
 
     public static class Slide {
