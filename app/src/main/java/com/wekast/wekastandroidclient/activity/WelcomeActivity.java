@@ -82,7 +82,7 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_settings, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -72,7 +72,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private ProgressBar progressBarTimer;
     private CountDownTimer timerPrBar;
     private int progressTimer = 0;
-    private int stepTimer = 0;
+    private MenuItem itemSetting;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,6 +148,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_timer, menu);
+        itemSetting = menu.findItem(R.id.action_settings);
+        itemSetting.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
