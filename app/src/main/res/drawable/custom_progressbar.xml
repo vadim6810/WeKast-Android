@@ -10,8 +10,6 @@
                 android:centerY="1.0"
                 android:endColor="#3f3f3f"
                 android:startColor="#3f3f3f" />
-                <!--android:startColor="#c3c3c3" -->
-            />
         </shape>
     </item>
 
