@@ -1,7 +1,6 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.wekast.wekastandroidclient.model.Utils.CODESMS;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.PREVIEW_ABSOLUTE_PATH;
 import static com.wekast.wekastandroidclient.model.Utils.clearWorkDirectory;
@@ -34,7 +32,6 @@ public class InitActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 403;
     private static final String TAG = "InitActivity";
     private VideoView startVideo;
-    public Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +75,7 @@ public class InitActivity extends AppCompatActivity {
             if (resPerm) {
                 initApp();
             } else {
-                toastShow(context, "WeKast can't work without \"PERMISSIONS!\"");
+                toastShow(this, "WeKast can't work without \"PERMISSIONS!\"");
                 finish();
             }
         }
@@ -100,12 +97,13 @@ public class InitActivity extends AppCompatActivity {
         @Override
         public void run() {
             Intent intent;
-            if (getContainsSP(context, LOGIN)) {
-                intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+            if (getContainsSP(InitActivity.this, LOGIN)) {
+                intent = new Intent(InitActivity.this, WelcomeActivity.class);
             } else {
-                intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                intent = new Intent(InitActivity.this, RegisterActivity.class);
             }
             startActivity(intent);
+            finish();
         }
     }
 }

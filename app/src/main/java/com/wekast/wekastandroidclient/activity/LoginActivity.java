@@ -1,7 +1,6 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,12 +20,12 @@ import java.util.Map;
 
 import static com.wekast.wekastandroidclient.model.AccessServiceAPI.convertJSONString2Obj;
 import static com.wekast.wekastandroidclient.model.AccessServiceAPI.getJSONStringWithParam_POST;
+import static com.wekast.wekastandroidclient.model.Utils.EZS_LIST;
 import static com.wekast.wekastandroidclient.model.Utils.LOGIN;
 import static com.wekast.wekastandroidclient.model.Utils.PASSWORD;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_CONFIRM;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_ERROR;
 import static com.wekast.wekastandroidclient.model.Utils.RESULT_SUCCESS;
-import static com.wekast.wekastandroidclient.model.Utils.EZS_LIST;
 import static com.wekast.wekastandroidclient.model.Utils.getFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.setFieldSP;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
@@ -39,19 +38,17 @@ public class LoginActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtPassword;
     private CheckBox checkPass;
-    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        context = LoginActivity.this;
 
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
 
-        txtLogin.setText(getFieldSP(context, LOGIN));
-        txtPassword.setText(getFieldSP(context, PASSWORD));
+        txtLogin.setText(getFieldSP(LoginActivity.this, LOGIN));
+        txtPassword.setText(getFieldSP(LoginActivity.this, PASSWORD));
 
         checkPass = (CheckBox) findViewById(R.id.checkPass);
         checkPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -83,38 +80,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void btnReg_Click(View v) {
-        Intent i = new Intent(LoginActivity.this, RegisterActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(i);
+        finish();
     }
 
     public void btnBack_Click(View v) {
         finish();
     }
 
-    public class TaskLogin extends AsyncTask<String, Void, Integer> {
+    public class TaskLogin extends AsyncTask<Void, Void, Integer> {
         private String JSONresponse;
-        public String JSONList;
-        String login;
-        String password;
-        ProgressDialog progressDialog;
-
-        public TaskLogin() {
-            this.login = txtLogin.getText().toString();
-            this.password = txtPassword.getText().toString();
-        }
+        private String JSONList;
+        private String login;
+        private String password;
+        private ProgressDialog progressDialog;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = ProgressDialog.show(context,
+            login = String.valueOf(txtLogin.getText());
+            password = String.valueOf(txtPassword.getText());
+            progressDialog = ProgressDialog.show(LoginActivity.this,
                     "Please wait",
                     "Authentication processing...",
                     true);
         }
 
         @Override
-        protected Integer doInBackground(String... params) {
+        protected Integer doInBackground(Void... params) {
             //Create date to pass in param
             Map<String, String> param = new HashMap<>();
             param.put(LOGIN, login);
@@ -146,20 +140,20 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(result);
             progressDialog.dismiss();
             if (result == RESULT_SUCCESS || result == RESULT_CONFIRM) {
-                toastShow(context, "Login success");
-                setFieldSP(context, LOGIN, login);
-                setFieldSP(context, PASSWORD, password);
-                startActivity(result == RESULT_SUCCESS ?
+                toastShow(LoginActivity.this, "Login success");
+                setFieldSP(LoginActivity.this, LOGIN, login);
+                setFieldSP(LoginActivity.this, PASSWORD, password);
+                runActivity(result == RESULT_SUCCESS ?
                         WelcomeActivity.class : PhoneConfirmActivity.class);
             } else {
-                toastShow(context, "Login fail: " + JSONresponse);
+                toastShow(LoginActivity.this, "Login fail: " + JSONresponse);
             }
         }
 
-        private void startActivity(Class<?> clazz) {
-            Intent i = new Intent(context, clazz)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            context.startActivity(i);
+        private void runActivity(Class<?> clazz) {
+            Intent i = new Intent(LoginActivity.this, clazz);
+            startActivity(i);
+            finish();
         }
     }
 }

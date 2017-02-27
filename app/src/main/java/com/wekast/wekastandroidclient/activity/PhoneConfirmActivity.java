@@ -1,7 +1,6 @@
 package com.wekast.wekastandroidclient.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,18 +34,15 @@ public class PhoneConfirmActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtCodeSms;
 
-    Context context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phoneconfirm);
-        context = PhoneConfirmActivity.this;
 
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtCodeSms = (EditText) findViewById(R.id.txt_code_sms);
 
-        txtLogin.setText(getFieldSP(context, LOGIN));
+        txtLogin.setText(getFieldSP(PhoneConfirmActivity.this, LOGIN));
     }
 
     public void btnConfirm_Click(View v) {
@@ -81,22 +77,22 @@ public class PhoneConfirmActivity extends AppCompatActivity {
 
     public class TaskConfirm extends AsyncTask<String, Void, Integer> {
         private String JSONresponse;
-        public String JSONList;
-        String login;
-        String codeSMS;
-        ProgressDialog progressDialog;
-        String smsRequest;
+        private String JSONList;
+        private String login;
+        private String codeSMS;
+        private ProgressDialog progressDialog;
+        private String smsRequest;
 
         public TaskConfirm(String smsRequest) {
             this.smsRequest = smsRequest;
-            this.login = txtLogin.getText().toString();
-            this.codeSMS = txtCodeSms.getText().toString();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = ProgressDialog.show(context,
+            login = String.valueOf(txtLogin.getText());
+            codeSMS = String.valueOf(txtCodeSms.getText());
+            progressDialog = ProgressDialog.show(PhoneConfirmActivity.this,
                     "Please wait",
                     "Confirmation processing...",
                     true);
@@ -132,18 +128,14 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
                 if (smsRequest == SMS_CONFIRM) {
-                    toastShow(context, "Confirm success");
-                    startActivity(WelcomeActivity.class);
-                } else  toastShow(context, "SMS was sent");
+                    toastShow(PhoneConfirmActivity.this, "Confirm success");
+                    Intent i = new Intent(PhoneConfirmActivity.this, WelcomeActivity.class);
+                    startActivity(i);
+                    finish();
+                } else toastShow(PhoneConfirmActivity.this, "SMS was sent");
             } else {
-                toastShow(context, "Confirm fail: " + JSONresponse);
+                toastShow(PhoneConfirmActivity.this, "Confirm fail: " + JSONresponse);
             }
-        }
-
-        private void startActivity(Class<?> clazz) {
-            Intent i = new Intent(context, clazz)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            context.startActivity(i);
         }
     }
 }

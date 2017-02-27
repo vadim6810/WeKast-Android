@@ -2,7 +2,6 @@ package com.wekast.wekastandroidclient.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -37,9 +36,6 @@ import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 public class RegisterActivity extends AppCompatActivity {
     private EditText txtLogin;
     private EditText txtEmail;
-    Context context = this;
-    private static long back_pressed;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +45,10 @@ public class RegisterActivity extends AppCompatActivity {
         txtLogin = (EditText) findViewById(R.id.txt_login);
         txtEmail = (EditText) findViewById(R.id.txt_email);
 
-        txtLogin.setText(getFieldSP(context, LOGIN));
-        txtEmail.setText(getFieldSP(context, EMAIL));
+        txtLogin.setText(getFieldSP(RegisterActivity.this, LOGIN));
+        txtEmail.setText(getFieldSP(RegisterActivity.this, EMAIL));
 
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        if (back_pressed + 2000 > System.currentTimeMillis())
-//            finishAffinity();
-//        else
-//            toastShow(context, "Press once again to exit!");
-//        back_pressed = System.currentTimeMillis();
-//    }
 
     public void btnRegister_Click(View v) {
         //validate input
@@ -101,38 +88,35 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void btnLogin_Click(View v) {
-        Intent i = new Intent(RegisterActivity.this, LoginActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(i);
+        finish();
     }
 
     public void btnBack_Click(View v) {
         finish();
     }
 
-    public class TaskRegister extends AsyncTask<String, Void, Integer> {
+    public class TaskRegister extends AsyncTask<Void, Void, Integer> {
         private String JSONresponse;
         private String password;
-        ProgressDialog progressDialog;
-        String login;
-        String email;
-
-        public TaskRegister() {
-            this.login = txtLogin.getText().toString();
-            this.email = txtEmail.getText().toString();
-        }
+        private ProgressDialog progressDialog;
+        private String login;
+        private String email;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = ProgressDialog.show(context,
+            login = txtLogin.getText().toString();
+            email = txtEmail.getText().toString();
+            progressDialog = ProgressDialog.show(RegisterActivity.this,
                     "Please wait",
                     "Registration processing...",
                     true);
         }
 
         @Override
-        protected Integer doInBackground(String... params) {
+        protected Integer doInBackground(Void... params) {
             Map<String, String> postParam = new HashMap<>();
             postParam.put(LOGIN, login);
             postParam.put(EMAIL, email);
@@ -152,7 +136,6 @@ public class RegisterActivity extends AppCompatActivity {
                     JSONresponse = jsonObject.getString("error");
                     return RESULT_ERROR;
                 }
-
             } catch (Exception e) {
                 return RESULT_ERROR;
             }
@@ -163,19 +146,15 @@ public class RegisterActivity extends AppCompatActivity {
             super.onPostExecute(result);
             progressDialog.dismiss();
             if (result == RESULT_SUCCESS) {
-                toastShow(context, "Register success! Password: " + password);
-                setFieldSP(context, LOGIN, login);
-                setFieldSP(context, PASSWORD, password.toString());
-                startActivity(WelcomeActivity.class);
+                toastShow(RegisterActivity.this, "Register success! Password: " + password);
+                setFieldSP(RegisterActivity.this, LOGIN, login);
+                setFieldSP(RegisterActivity.this, PASSWORD, password.toString());
+                Intent i = new Intent(RegisterActivity.this, WelcomeActivity.class);
+                startActivity(i);
+                finish();
             } else {
-                toastShow(context, "Registration fail: " + JSONresponse);
+                toastShow(RegisterActivity.this, "Registration fail: " + JSONresponse);
             }
-        }
-
-        private void startActivity(Class<?> clazz) {
-            Intent i = new Intent(context, clazz)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            context.startActivity(i);
         }
     }
 }
