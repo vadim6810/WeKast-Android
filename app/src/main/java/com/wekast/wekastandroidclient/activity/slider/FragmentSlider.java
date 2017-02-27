@@ -98,7 +98,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         progressBarTimer = (ProgressBar) view.findViewById(R.id.progressBarTimer);
 
 
-
         inputImage = new InputImage();
         mainImage = new MainImage();
         outputImage = new OutputImage();
@@ -181,18 +180,18 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             timerPrBar.cancel();
             progressTimer = 0;
         }
-        stepTimer = seconds * 1000 / progressBarTimer.getMax();
-        timerPrBar = new CountDownTimer(seconds * 1000, stepTimer) {
+        progressBarTimer.setMax(seconds);
+        timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                progressBarTimer.setProgress(progressTimer++);
-//                Log.e("TIMER", "onTick: " + millisUntilFinished / 1000);
+                progressBarTimer.setSecondaryProgress(progressTimer++);
+                Log.e("TIMER", "onTick: " + millisUntilFinished / 1000);
             }
 
             @Override
             public void onFinish() {
                 progressBarTimer.setProgress(progressBarTimer.getMax());
-                vibrator.vibrate(millsVib);
+                vibrator.vibrate(millsVib * 4);
             }
         }.start();
     }
