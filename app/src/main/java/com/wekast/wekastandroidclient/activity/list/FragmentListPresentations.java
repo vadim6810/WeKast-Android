@@ -2,7 +2,7 @@ package com.wekast.wekastandroidclient.activity.list;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,13 +33,26 @@ import com.wekast.wekastandroidclient.services.DownloadService;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import static com.wekast.wekastandroidclient.model.Utils.*;
+import static com.wekast.wekastandroidclient.model.Utils.DELETE;
+import static com.wekast.wekastandroidclient.model.Utils.DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.ERROR_CONFIRM;
+import static com.wekast.wekastandroidclient.model.Utils.ERROR_DOWNLOAD;
+import static com.wekast.wekastandroidclient.model.Utils.PREVIEW_ABSOLUTE_PATH;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ALL;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_ONE;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_FINISH_PREVIEW;
+import static com.wekast.wekastandroidclient.model.Utils.STATUS_START;
+import static com.wekast.wekastandroidclient.model.Utils.clearWorkDirectory;
+import static com.wekast.wekastandroidclient.model.Utils.getAllFilesList;
+import static com.wekast.wekastandroidclient.model.Utils.getAllPreviewList;
+import static com.wekast.wekastandroidclient.model.Utils.toastShow;
+import static com.wekast.wekastandroidclient.model.Utils.unZipPresentation2;
+import static com.wekast.wekastandroidclient.model.Utils.unZipPreview;
 
 /**
  * Created by RDL on 03.09.2016.
  */
-public class FragmentListPresentations  extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback {
+public class FragmentListPresentations extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MultiChoice.Callback, AdapterView.OnItemClickListener {
     private static final String TAG = "FragListPres";
     private SwipeRefreshLayout swipeRefreshLayout;
     private onSomeEventListener someEventListener;
@@ -64,6 +78,19 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         i.putExtra("command", DELETE);
         i.putStringArrayListExtra("serverEzsDel", serverEzsDel);
         getActivity().startService(i);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (!rowItems.get(position).isSelected()) {
+//            rowItems.get(position).setSelected(true);
+            if (unzipAsyncTask != null) {
+                unzipAsyncTask.cancel(true);
+            }
+            clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
+            unzipAsyncTask = new UnzipAsyncTask(position);
+            unzipAsyncTask.execute();
+        } else someEventListener.someEvent(rowItems.get(position).getPath());
     }
 
     public interface onSomeEventListener {
@@ -125,9 +152,9 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         broadcastReceiver = new BroadcastReceiver() {
             // действия при получении сообщений
             public void onReceive(Context context, Intent intent) {
-                if (DOWNLOAD == intent.getIntExtra("command", 0)){
-                     int status = intent.getIntExtra("status", 0);
-                    if (status  == STATUS_START) {
+                if (DOWNLOAD == intent.getIntExtra("command", 0)) {
+                    int status = intent.getIntExtra("status", 0);
+                    if (status == STATUS_START) {
                         Log.d(TAG, "onReceive: STATUS_START");
                     }
                     if (status == STATUS_FINISH_PREVIEW) {
@@ -170,8 +197,8 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         rowItems = new ArrayList<>();
         createListPresentations();
 
-        ListView listView = getListView();
-        adapter = new CustomAdapter(getActivity(), rowItems, listView);
+        ListView listView = (ListView) getView().findViewById(R.id.list_view);
+        adapter = new CustomAdapter(getActivity(), rowItems);
         listView.setAdapter(adapter);
         //Указываем ListView хотим режим с мультивыделеним
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -179,6 +206,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         MultiChoice multiChoice = new MultiChoice(listView);
         multiChoice.registerCallBack(this);
         listView.setMultiChoiceModeListener(multiChoice);
+        listView.setOnItemClickListener(this);
 
         startDownloadService();
         startBroadcastReceiver();
@@ -187,37 +215,24 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     private void createListPresentations() {
         localEzs = getAllFilesList();
         localPrev = getAllPreviewList();
-            for (int i = 0; i < localEzs.size(); i++) {
-                RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
-                rowItems.add(items);
-            }
+        for (int i = 0; i < localEzs.size(); i++) {
+            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
+            rowItems.add(items);
+        }
 
-            for (int i = 0; i < localPrev.size(); i++) {
-                RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
-                rowItems.add(items);
-            }
+        for (int i = 0; i < localPrev.size(); i++) {
+            RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
+            rowItems.add(items);
+        }
     }
 
     private void updateListPresentations() {
-        if(!rowItems.isEmpty())
+        if (!rowItems.isEmpty())
             rowItems.clear();
         createListPresentations();
         adapter.notifyDataSetChanged();
     }
 
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-//        toastShow(getActivity(), "fragment: " + rowItems.get(position).getTitle());
-        if(!rowItems.get(position).isSelected()){
-//            rowItems.get(position).setSelected(true);
-            if(unzipAsyncTask != null){
-                unzipAsyncTask.cancel(true);
-            }
-            clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
-            unzipAsyncTask = new UnzipAsyncTask(position);
-            unzipAsyncTask.execute();
-        } else someEventListener.someEvent(rowItems.get(position).getPath());
-    }
 
     @Override
     public void onRefresh() {
@@ -241,7 +256,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             this.path = path;
             this.isPreview = isPreview;
             this.isSelected = false;
-            if (!isPreview){
+            if (!isPreview) {
                 byte[] image = unZipPreview(path);
                 this.logo = EquationsBitmap.decodeSampledBitmapFromByte(image, 100, 80);
             } else {
@@ -289,15 +304,12 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
     }
 
     public class CustomAdapter extends BaseAdapter {
-        private ListView listView;
         Context context;
         ArrayList<RowItem> rowItem;
 
-        CustomAdapter(Context context, ArrayList<RowItem> rowItem, ListView listView) {
+        CustomAdapter(Context context, ArrayList<RowItem> rowItem) {
             this.context = context;
             this.rowItem = rowItem;
-            this.listView = listView;
-
         }
 
         @Override
@@ -335,7 +347,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
             imgIcon.setImageBitmap(row_pos.getLogo());
             imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
             txtTitle.setText(row_pos.getTitle());
-            if(row_pos.isPreview()){
+            if (row_pos.isPreview()) {
                 imgIcon.setImageAlpha(100);
                 progressBar.setVisibility(View.VISIBLE);
             } else {
@@ -347,7 +359,7 @@ public class FragmentListPresentations  extends ListFragment implements SwipeRef
         }
     }
 
-    private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean>{
+    private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean> {
         private int position;
         ProgressDialog progressDialog;
 
