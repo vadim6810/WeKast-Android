@@ -25,7 +25,7 @@
             android:padding="10dp"
             android:text="00:00:00"
             android:textColor="@color/wekast_title"
-            android:textSize="46sp" />
+            android:textSize="50sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -69,34 +69,44 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/npickers"
         android:layout_centerInParent="true"
-        android:orientation="horizontal"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_cancel"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/btn_ripple_grey"
-            android:text="Cancel"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/btn_ripple_orange"
-            android:text="Reset"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_ripple_grey"
+                android:text="Cancel"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_ripple_orange"
+                android:text="Reset"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/btn_start"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:background="@drawable/btn_ripple_orange"
             android:text="Start"
             android:textColor="@color/black"

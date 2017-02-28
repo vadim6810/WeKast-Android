@@ -42,7 +42,7 @@ public class InputImage extends Fragment {
         }
     }
 
-    public void setImagePath(FragmentSlider.Slide slide, boolean isshow) {
+    public void setImagePath(Slide slide, boolean isshow) {
         if (slide != null) {
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber();

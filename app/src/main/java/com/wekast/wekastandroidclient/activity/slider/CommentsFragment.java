@@ -35,7 +35,7 @@ public class CommentsFragment extends Fragment {
         commentsBody.setText(comments);
     }
 
-    public void setComments(FragmentSlider.Slide slide, boolean isshow) {
+    public void setComments(Slide slide, boolean isshow) {
         if (slide != null) {
             comments = slide.getComments();
             title = "Slide " + slide.getSlideNumber() + " comments";

@@ -61,7 +61,7 @@ public class MainImage extends Fragment {
         }
     }
 
-    public void setImagePath(FragmentSlider.Slide slide, int size, int currentChID, boolean isshow) {
+    public void setImagePath(Slide slide, int size, int currentChID, boolean isshow) {
         if (slide != null) {
             imagePath = slide.getFilePath();
             mTitle = "Slide " + slide.getSlideNumber() + "/" + size;

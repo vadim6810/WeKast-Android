@@ -58,7 +58,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     FragmentTransaction tr;
     private int currentSlide = 0;
     private int currentChID = 1;
-    ArrayList<Slide> slidesList = new ArrayList<>();
+    private ArrayList<Slide> slidesList = new ArrayList<>();
     ArrayList<Integer> chID = new ArrayList<>();
     private int slideNumber;
     private String comments;
@@ -180,8 +180,8 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         Log.d("startTimer: ", ": " + seconds);
         if (timerPrBar != null) {
             timerPrBar.cancel();
-            progressTimer = 0;
         }
+        progressTimer = 0;
         progressBarTimer.setMax(seconds);
         timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
             @Override
@@ -192,7 +192,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
             @Override
             public void onFinish() {
-                progressBarTimer.setProgress(progressBarTimer.getMax());
+                progressBarTimer.setSecondaryProgress(progressBarTimer.getMax());
                 vibrator.vibrate(millsVib * 4);
             }
         }.start();
@@ -400,51 +400,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }
     }
 
-    public static class Slide {
-        private String title;
-        private int slideNumber;
-        private String comments;
-        private String filePath;
-        private ArrayList<Integer> chID = new ArrayList<>();
 
-        public Slide(String title, int slideNumber, String comments, String filePath, ArrayList<Integer> chID) {
-            this.title = title;
-            this.slideNumber = slideNumber;
-            this.comments = comments;
-            this.filePath = filePath;
-            this.chID = chID;
-        }
-
-        public ArrayList<Integer> getChID() {
-            return chID;
-        }
-
-        public String getFilePath() {
-            return filePath;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public int getSlideNumber() {
-            return slideNumber;
-        }
-
-        public String getComments() {
-            return comments;
-        }
-
-        @Override
-        public String toString() {
-            return "Slide{" +
-                    "title='" + title + '\'' +
-                    ", slideNumber=" + slideNumber +
-                    ", comments='" + comments + '\'' +
-                    ", filePath='" + filePath + '\'' +
-                    ", chID=" + chID +
-                    '}';
-        }
-    }
 
 }

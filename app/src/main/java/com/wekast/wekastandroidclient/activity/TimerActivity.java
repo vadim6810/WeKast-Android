@@ -32,7 +32,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
-        getWindow().setLayout((int) (width * .7), (int) (height * .6));
+        getWindow().setLayout((int) (width * .7), (int) (height * .65));
 
 
         timerTxt = (TextView) findViewById(R.id.timer_txt);
