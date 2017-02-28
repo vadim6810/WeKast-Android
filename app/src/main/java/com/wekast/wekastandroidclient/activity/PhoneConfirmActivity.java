@@ -129,7 +129,8 @@ public class PhoneConfirmActivity extends AppCompatActivity {
             if (result == RESULT_SUCCESS) {
                 if (smsRequest == SMS_CONFIRM) {
                     toastShow(PhoneConfirmActivity.this, "Confirm success");
-                    Intent i = new Intent(PhoneConfirmActivity.this, WelcomeActivity.class);
+                    Intent i = new Intent(PhoneConfirmActivity.this, WelcomeActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(i);
                     finish();
                 } else toastShow(PhoneConfirmActivity.this, "SMS was sent");

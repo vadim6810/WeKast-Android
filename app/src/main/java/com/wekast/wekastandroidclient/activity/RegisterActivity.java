@@ -149,7 +149,8 @@ public class RegisterActivity extends AppCompatActivity {
                 toastShow(RegisterActivity.this, "Register success! Password: " + password);
                 setFieldSP(RegisterActivity.this, LOGIN, login);
                 setFieldSP(RegisterActivity.this, PASSWORD, password.toString());
-                Intent i = new Intent(RegisterActivity.this, WelcomeActivity.class);
+                Intent i = new Intent(RegisterActivity.this, WelcomeActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(i);
                 finish();
             } else {

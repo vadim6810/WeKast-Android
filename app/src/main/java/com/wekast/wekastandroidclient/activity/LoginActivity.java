@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -34,21 +35,28 @@ import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 /**
  * Created by RDL on 15.07.2016.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText txtLogin;
     private EditText txtPassword;
     private CheckBox checkPass;
+    private Button btnCancel, btnLogin, btnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        btnCancel = (Button) findViewById(R.id.btn_CANCEL);
+        btnLogin = (Button) findViewById(R.id.btn_LOGIN);
+        btnRegister = (Button) findViewById(R.id.btn_REGISTER);
         txtLogin = (EditText) findViewById(R.id.txt_username_login);
         txtPassword = (EditText) findViewById(R.id.txt_pwd_login);
 
         txtLogin.setText(getFieldSP(LoginActivity.this, LOGIN));
         txtPassword.setText(getFieldSP(LoginActivity.this, PASSWORD));
+        btnCancel.setOnClickListener(this);
+        btnLogin.setOnClickListener(this);
+        btnRegister.setOnClickListener(this);
 
         checkPass = (CheckBox) findViewById(R.id.checkPass);
         checkPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -63,30 +71,31 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
-    public void btnLogin_Click(View v) {
-        //validate input
-        if ("".equals(txtLogin.getText().toString())) {
-            txtLogin.setError("Login is required!");
-            return;
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_LOGIN:
+                //validate input
+                if ("".equals(txtLogin.getText().toString())) {
+                    txtLogin.setError("Login is required!");
+                    return;
+                }
+                if ("".equals(txtPassword.getText().toString())) {
+                    txtPassword.setError("Password is required!");
+                    return;
+                }
+                //Call async task to login
+                new TaskLogin().execute();
+                break;
+            case R.id.btn_REGISTER:
+                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(i);
+                finish();
+                break;
+            case R.id.btn_CANCEL:
+                finish();
+                break;
         }
-        if ("".equals(txtPassword.getText().toString())) {
-            txtPassword.setError("Password is required!");
-            return;
-        }
-
-        //Call async task to login
-        new TaskLogin().execute();
-    }
-
-    public void btnReg_Click(View v) {
-        Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-        startActivity(i);
-        finish();
-    }
-
-    public void btnBack_Click(View v) {
-        finish();
     }
 
     public class TaskLogin extends AsyncTask<Void, Void, Integer> {
@@ -151,7 +160,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         private void runActivity(Class<?> clazz) {
-            Intent i = new Intent(LoginActivity.this, clazz);
+            Intent i = new Intent(LoginActivity.this, clazz)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(i);
             finish();
         }
