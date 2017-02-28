@@ -59,7 +59,7 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
     private ArrayList<String[]> localEzs;
     private ArrayList<String[]> localPrev;
     private ArrayList<String> serverEzsDel;
-    private ArrayList<RowItem> rowItems;
+    private ArrayList<Ezs> ezsItems;
     private CustomAdapter adapter;
     private UnzipAsyncTask unzipAsyncTask;
     public final static String BROADCAST_ACTION = "com.wekast.wekastandroidclient.activity.list";
@@ -67,7 +67,6 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
 
     @Override
     public void callingBackMultiChoice(List<Integer> selectedEzs) {
-//      toastShow(getActivity(), "Selected items: " + selectedEzs);
         serverEzsDel = new ArrayList<>();
         for (Integer id : selectedEzs) {
             serverEzsDel.add(localEzs.get(id)[0]);
@@ -82,15 +81,15 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (!rowItems.get(position).isSelected()) {
-//            rowItems.get(position).setSelected(true);
+        if (!ezsItems.get(position).isSelected()) {
+//            ezsItems.get(position).setSelected(true);
             if (unzipAsyncTask != null) {
                 unzipAsyncTask.cancel(true);
             }
             clearWorkDirectory(PREVIEW_ABSOLUTE_PATH);
             unzipAsyncTask = new UnzipAsyncTask(position);
             unzipAsyncTask.execute();
-        } else someEventListener.someEvent(rowItems.get(position).getPath());
+        } else someEventListener.someEvent(ezsItems.get(position).getPath());
     }
 
     public interface onSomeEventListener {
@@ -194,11 +193,11 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        rowItems = new ArrayList<>();
+        ezsItems = new ArrayList<>();
         createListPresentations();
 
         ListView listView = (ListView) getView().findViewById(R.id.list_view);
-        adapter = new CustomAdapter(getActivity(), rowItems);
+        adapter = new CustomAdapter(getActivity(), ezsItems);
         listView.setAdapter(adapter);
         //Указываем ListView хотим режим с мультивыделеним
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -216,19 +215,19 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
         localEzs = getAllFilesList();
         localPrev = getAllPreviewList();
         for (int i = 0; i < localEzs.size(); i++) {
-            RowItem items = new RowItem(localEzs.get(i)[0], localEzs.get(i)[1], false);
-            rowItems.add(items);
+            Ezs items = new Ezs(localEzs.get(i)[0], localEzs.get(i)[1], false);
+            ezsItems.add(items);
         }
 
         for (int i = 0; i < localPrev.size(); i++) {
-            RowItem items = new RowItem("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
-            rowItems.add(items);
+            Ezs items = new Ezs("download... " + localPrev.get(i)[0], localPrev.get(i)[1], true);
+            ezsItems.add(items);
         }
     }
 
     private void updateListPresentations() {
-        if (!rowItems.isEmpty())
-            rowItems.clear();
+        if (!ezsItems.isEmpty())
+            ezsItems.clear();
         createListPresentations();
         adapter.notifyDataSetChanged();
     }
@@ -239,124 +238,6 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
         swipeRefreshLayout.setRefreshing(true);
         updateListPresentations();
         startDownloadService();
-    }
-
-
-    public class RowItem {
-
-        private String title;
-        private String path;
-        private boolean isSelected;
-        private boolean isPreview;
-        private Bitmap logo;
-
-
-        public RowItem(String title, String path, boolean isPreview) {
-            this.title = title;
-            this.path = path;
-            this.isPreview = isPreview;
-            this.isSelected = false;
-            if (!isPreview) {
-                byte[] image = unZipPreview(path);
-                this.logo = EquationsBitmap.decodeSampledBitmapFromByte(image, 100, 80);
-            } else {
-                this.logo = EquationsBitmap.decodeSampledBitmapFromFile(path, 100, 80);
-            }
-
-        }
-
-        public boolean isPreview() {
-            return isPreview;
-        }
-
-        public void setPreview(boolean preview) {
-            isPreview = preview;
-        }
-
-        public Bitmap getLogo() {
-            return logo;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
-        }
-
-        public void setSelected(boolean isSelected) {
-            this.isSelected = isSelected;
-        }
-
-        public boolean isSelected() {
-            return isSelected;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-    }
-
-    public class CustomAdapter extends BaseAdapter {
-        Context context;
-        ArrayList<RowItem> rowItem;
-
-        CustomAdapter(Context context, ArrayList<RowItem> rowItem) {
-            this.context = context;
-            this.rowItem = rowItem;
-        }
-
-        @Override
-        public int getCount() {
-
-            return rowItem.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-
-            return rowItem.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-
-            return rowItem.indexOf(getItem(position));
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            if (convertView == null) {
-                LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-                convertView = mInflater.inflate(R.layout.fragment_listitem, null);
-            }
-
-            ImageView imgIcon = (ImageView) convertView.findViewById(R.id.preview);
-            TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-            ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
-
-            RowItem row_pos = rowItem.get(position);
-            // setting the image resource and title
-            imgIcon.setImageBitmap(row_pos.getLogo());
-            imgIcon.setScaleType(ImageView.ScaleType.FIT_XY);
-            txtTitle.setText(row_pos.getTitle());
-            if (row_pos.isPreview()) {
-                imgIcon.setImageAlpha(100);
-                progressBar.setVisibility(View.VISIBLE);
-            } else {
-                imgIcon.setImageAlpha(255);
-                progressBar.setVisibility(View.GONE);
-            }
-
-            return convertView;
-        }
     }
 
     private class UnzipAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -379,7 +260,7 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            return unZipPresentation2(rowItems.get(position).getPath());
+            return unZipPresentation2(ezsItems.get(position).getPath());
         }
 
         @Override
@@ -388,9 +269,9 @@ public class FragmentListPresentations extends Fragment implements SwipeRefreshL
 //            unzipProgress.setVisibility(View.GONE);
             if (unzipResult) {
                 toastShow(getActivity(), "Cash unziped!");
-                someEventListener.someEvent(rowItems.get(position).getPath());
+                someEventListener.someEvent(ezsItems.get(position).getPath());
             } else {
-                rowItems.get(position).setSelected(false);
+                ezsItems.get(position).setSelected(false);
                 toastShow(getActivity(), "Unzip error!");
             }
         }
