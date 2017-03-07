@@ -40,8 +40,7 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     Context context = this;
     private int activityState;
     private BroadcastReceiver processCall;
-    FragmentListPresentations fragmentListPresentations;
-    FragmentTransaction fragmentTransaction;
+    FragmentTransaction transaction;
     private static long back_pressed;
 
     @Override
@@ -61,12 +60,10 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
         //sync SSID & PASS with SERVER
         startSyncSettings();
 
-        fragmentListPresentations = new FragmentListPresentations();
-        fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragmContainer, fragmentListPresentations);
-//        fragmentTransaction.addToBackStack(null);
+        transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.fragmContainer, new FragmentListPresentations());
         activityState = PRESENTATION_LIST;
-        fragmentTransaction.commit();
+        transaction.commit();
 
 
 //        testRemoveConnectionWithDongle();
@@ -100,11 +97,10 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
     @Override
     public void someEvent(String presPath) {
         initProccesCall();
-        fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmContainer, new FragmentSlider());
-//        fragmentTransaction.addToBackStack(null);
+        transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmContainer, new FragmentSlider());
+        transaction.commit();
         activityState = SLIDER;
-        fragmentTransaction.commit();
         uploadPresentationToDongle(presPath);
     }
 
@@ -170,11 +166,10 @@ public class WelcomeActivity extends AppCompatActivity implements FragmentListPr
                 stopPresentation();
                 CustomPhoneStateListener.blockingCall = false;
                 unregisterReceiver(processCall);
-                fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragmContainer, fragmentListPresentations);
-//                fragmentTransaction.addToBackStack(null);
+                transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragmContainer, new FragmentListPresentations());
+                transaction.commit();
                 activityState = PRESENTATION_LIST;
-                fragmentTransaction.commit();
                 break;
         }
     }

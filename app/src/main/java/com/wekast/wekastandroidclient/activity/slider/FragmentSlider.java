@@ -1,13 +1,14 @@
 package com.wekast.wekastandroidclient.activity.slider;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wekast.wekastandroidclient.R;
-import com.wekast.wekastandroidclient.activity.TimerActivity;
 import com.wekast.wekastandroidclient.services.DongleService;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -32,9 +32,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static com.wekast.wekastandroidclient.model.Utils.CASH_ABSOLUTE_PATH;
-import static com.wekast.wekastandroidclient.model.Utils.REQUEST_TIMER_CODE;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
-import static com.wekast.wekastandroidclient.model.Utils.TIME;
 import static com.wekast.wekastandroidclient.model.Utils.infoXML;
 import static com.wekast.wekastandroidclient.model.Utils.toastShow;
 import static java.lang.Math.abs;
@@ -45,27 +43,23 @@ import static java.lang.Math.abs;
 public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     private float startY, stopY, startX, stopX, resY, resX;
-    View view;
-    InputImage inputImage;
-    MainImage mainImage;
-    OutputImage outputImage;
-    FrameLayout inputSlideContainer;
-    FrameLayout currentSlideContainer;
-    FrameLayout outputSlideContainer;
-    FrameLayout commentsContainer;
-    FrameLayout commentsFullSize;
-    CommentsFragment commentsFragment;
-    FragmentTransaction tr;
+    private View view;
+    private InputImage inputImage;
+    private MainImage mainImage;
+    private OutputImage outputImage;
+    private FrameLayout inputSlideContainer, currentSlideContainer, outputSlideContainer, commentsContainer, commentsFullSize;
+    private CommentsFragment commentsFragment;
+    private FragmentTransaction tr;
     private int currentSlide = 0;
     private int currentChID = 1;
     private ArrayList<Slide> slidesList = new ArrayList<>();
-    ArrayList<Integer> chID = new ArrayList<>();
+    private ArrayList<Integer> chID = new ArrayList<>();
     private int slideNumber;
     private String comments;
     private String filePath;
     private boolean fullCommentVisible = false;
-    TextView commentsFullSizeText;
-    Vibrator vibrator;
+    private TextView commentsFullSizeText;
+    private Vibrator vibrator;
     private long millsVib = 30L;
     private ProgressBar progressBarSlider;
     private int progress = 1;
@@ -73,6 +67,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private CountDownTimer timerPrBar;
     private int progressTimer = 0;
     private MenuItem itemSetting;
+    private TimerPopUp timerPopUp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,7 +77,12 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_slider, container, false);
+        return inflater.inflate(R.layout.fragment_slider, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         inputSlideContainer = (FrameLayout) view.findViewById(R.id.input_slide_container);
         currentSlideContainer = (FrameLayout) view.findViewById(R.id.current_slide_container);
         outputSlideContainer = (FrameLayout) view.findViewById(R.id.output_slide_container);
@@ -90,13 +90,13 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+
         createWorkArray();
 
         progressBarSlider = (ProgressBar) view.findViewById(R.id.progressBarSlider);
         progressBarSlider.setMax(slidesList.size());
         progressBarSlider.setProgress(progress);
         progressBarTimer = (ProgressBar) view.findViewById(R.id.progressBarTimer);
-
 
         inputImage = new InputImage();
         mainImage = new MainImage();
@@ -125,7 +125,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             public boolean onLongClick(View view) {
                 commentsFullSizeText.setText(commentsFragment.getCurrentComments());
                 commentsFullSize.setVisibility(View.VISIBLE);
-
                 fullCommentVisible = true;
                 return true;
             }
@@ -142,7 +141,6 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                 return false;
             }
         });
-        return view;
     }
 
     @Override
@@ -157,23 +155,16 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_timer:
-                Intent intent = new Intent(getActivity(), TimerActivity.class);
-                startActivityForResult(intent, REQUEST_TIMER_CODE);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+                timerPopUp = new TimerPopUp(getActivity(), new TimerPopUp.CallbackPopUpListener() {
+                    @Override
+                    public void resultOk(int time) {
+                        startTimer(time);
+                    }
+                });
+                timerPopUp.showAtLocation(getView(), Gravity.CENTER, 0, 0);
+                break;
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_TIMER_CODE) {
-                if (data != null && data.getExtras() != null) {
-                    startTimer(data.getExtras().getInt(TIME, 0));
-                }
-            }
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void startTimer(final int seconds) {
@@ -198,7 +189,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }.start();
     }
 
-    public void createWorkArray() {
+    private void createWorkArray() {
         try {
             XmlPullParser parser = prepareXpp();
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
@@ -235,7 +226,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         }
     }
 
-    XmlPullParser prepareXpp() throws XmlPullParserException {
+    private XmlPullParser prepareXpp() throws XmlPullParserException {
         // получаем фабрику
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         // включаем поддержку namespace (по умолчанию выключена)
@@ -399,7 +390,4 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             timerPrBar.cancel();
         }
     }
-
-
-
 }
