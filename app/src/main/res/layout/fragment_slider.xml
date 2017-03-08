@@ -28,6 +28,7 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:layout_margin="5dp"
                         android:maxHeight="5dip"
                         android:minHeight="5dip"
@@ -38,10 +39,20 @@
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:layout_margin="5dp"
                         android:maxHeight="5dip"
                         android:minHeight="5dip"
                         android:progressDrawable="@drawable/custom_progressbar2" />
+
+                    <TextView
+                        android:id="@+id/timer_clock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="5dp"
+                        android:text="00:00"
+                        android:textSize="24sp" />
                 </RelativeLayout>
 
             </LinearLayout>

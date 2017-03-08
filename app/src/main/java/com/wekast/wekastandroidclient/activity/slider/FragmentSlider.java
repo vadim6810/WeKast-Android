@@ -68,6 +68,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
     private int progressTimer = 0;
     private MenuItem itemSetting;
     private TimerPopUp timerPopUp;
+    private TextView timerClock;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         commentsFullSize = (FrameLayout) view.findViewById(R.id.comments_full_size);
         commentsFullSizeText = (TextView) view.findViewById(R.id.comments_full_size_text);
         vibrator = (Vibrator) getActivity().getSystemService(getActivity().VIBRATOR_SERVICE);
+        timerClock = (TextView) view.findViewById(R.id.timer_clock);
 
         createWorkArray();
 
@@ -161,6 +163,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
                         startTimer(time);
                     }
                 });
+//                timerPopUp.setAnimationStyle(R.style.shake_and_shake);
                 timerPopUp.showAtLocation(getView(), Gravity.CENTER, 0, 0);
                 break;
         }
@@ -172,18 +175,29 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (timerPrBar != null) {
             timerPrBar.cancel();
         }
+        if (seconds < 10) {
+            timerClock.setText("00:0" + seconds);
+        } else {
+            timerClock.setText("00:" + seconds);
+        }
         progressTimer = 0;
         progressBarTimer.setMax(seconds);
         timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 progressBarTimer.setSecondaryProgress(progressTimer++);
-                Log.e("TIMER", "onTick: " + millisUntilFinished / 1000);
+                final long countTimer = millisUntilFinished / 1000;
+                if (countTimer < 10) {
+                    timerClock.setText("00:0" + countTimer);
+                } else {
+                    timerClock.setText("00:" + countTimer);
+                }
             }
 
             @Override
             public void onFinish() {
                 progressBarTimer.setSecondaryProgress(progressBarTimer.getMax());
+                timerClock.setText("00:00");
                 vibrator.vibrate(millsVib * 4);
             }
         }.start();

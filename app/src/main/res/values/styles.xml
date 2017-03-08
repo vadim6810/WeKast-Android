@@ -6,4 +6,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="shake_and_shake" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/shake</item>
+        <item name="android:windowExitAnimation">@anim/shake</item>
+    </style>
 </resources>
