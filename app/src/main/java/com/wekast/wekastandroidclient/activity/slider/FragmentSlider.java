@@ -29,7 +29,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 import static com.wekast.wekastandroidclient.model.Utils.CASH_ABSOLUTE_PATH;
 import static com.wekast.wekastandroidclient.model.Utils.SLIDE;
@@ -175,11 +178,7 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         if (timerPrBar != null) {
             timerPrBar.cancel();
         }
-        if (seconds < 10) {
-            timerClock.setText("00:0" + seconds);
-        } else {
-            timerClock.setText("00:" + seconds);
-        }
+        timerClock.setText(getSecToTime(seconds));
         progressTimer = 0;
         progressBarTimer.setMax(seconds);
         timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
@@ -187,20 +186,23 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
             public void onTick(long millisUntilFinished) {
                 progressBarTimer.setSecondaryProgress(progressTimer++);
                 final long countTimer = millisUntilFinished / 1000;
-                if (countTimer < 10) {
-                    timerClock.setText("00:0" + countTimer);
-                } else {
-                    timerClock.setText("00:" + countTimer);
-                }
+                timerClock.setText(getSecToTime((int) countTimer));
             }
 
             @Override
             public void onFinish() {
                 progressBarTimer.setSecondaryProgress(progressBarTimer.getMax());
-                timerClock.setText("00:00");
+                timerClock.setText("00:00:00");
                 vibrator.vibrate(millsVib * 4);
             }
         }.start();
+    }
+
+    private String getSecToTime(int seconds) {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(tz);
+        return df.format(new Date(seconds * 1000L));
     }
 
     private void createWorkArray() {
