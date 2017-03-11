@@ -177,25 +177,29 @@ public class FragmentSlider extends Fragment implements View.OnTouchListener {
         Log.d("startTimer: ", ": " + seconds);
         if (timerPrBar != null) {
             timerPrBar.cancel();
+            timerClock.setVisibility(View.GONE);
+            progressBarTimer.setSecondaryProgress(0);
         }
-        timerClock.setText(getSecToTime(seconds));
-        progressTimer = 0;
-        progressBarTimer.setMax(seconds);
-        timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                progressBarTimer.setSecondaryProgress(progressTimer++);
-                final long countTimer = millisUntilFinished / 1000;
-                timerClock.setText(getSecToTime((int) countTimer));
-            }
-
-            @Override
-            public void onFinish() {
-                progressBarTimer.setSecondaryProgress(progressBarTimer.getMax());
-                timerClock.setText("00:00:00");
-                vibrator.vibrate(millsVib * 4);
-            }
-        }.start();
+        if (seconds > 0) {
+            progressBarTimer.setMax(seconds);
+            progressTimer = 0;
+            timerClock.setText(getSecToTime(seconds));
+            timerClock.setVisibility(View.VISIBLE);
+            timerPrBar = new CountDownTimer((seconds + 1) * 1000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    progressBarTimer.setSecondaryProgress(progressTimer++);
+                    final long countTimer = millisUntilFinished / 1000;
+                    timerClock.setText(getSecToTime((int) countTimer));
+                }
+                @Override
+                public void onFinish() {
+                    progressBarTimer.setSecondaryProgress(progressBarTimer.getMax());
+                    timerClock.setVisibility(View.GONE);
+                    vibrator.vibrate(millsVib * 4);
+                }
+            }.start();
+        }
     }
 
     private String getSecToTime(int seconds) {
