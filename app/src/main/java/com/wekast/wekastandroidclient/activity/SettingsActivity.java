@@ -71,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         }
 
         SimpleAdapter adapter = new SimpleAdapter(this, mSettingsList,
-                R.layout.activity_settingsitems, new String[]{TITLE, SUBTITLE, ICON},
+                R.layout.settings_item, new String[]{TITLE, SUBTITLE, ICON},
                 new int[]{R.id.text1, R.id.text2, R.id.img});
 
         listView.setAdapter(adapter);

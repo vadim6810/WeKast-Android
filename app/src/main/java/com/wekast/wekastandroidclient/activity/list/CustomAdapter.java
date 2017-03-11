@@ -49,7 +49,7 @@ public class CustomAdapter extends BaseAdapter {
         if (convertView != null) {
             view = convertView;
         } else {
-            view = LayoutInflater.from(context).inflate(R.layout.fragment_listitem, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
         }
 
         ImageView imgIcon = (ImageView) view.findViewById(R.id.preview);

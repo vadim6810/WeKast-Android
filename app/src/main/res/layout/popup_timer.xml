@@ -1,117 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_timer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@color/colorPrimary"
-        android:padding="16dp">
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="@dimen/cardview_default_elevation">
 
-        <LinearLayout
-            android:id="@+id/timer_layout"
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:layout_margin="10dp"
-            android:orientation="vertical">
+            android:layout_centerInParent="true">
 
-            <TextView
-                android:id="@+id/timer_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edittext_bg"
-                android:padding="10dp"
-                android:text="00:00:00"
-                android:textColor="@color/wekast_title"
-                android:textSize="50sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="hr : min : sec" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/npickers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/timer_layout"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal">
-
-            <!-- hh -->
-            <NumberPicker
-                android:id="@+id/hh"
+            <LinearLayout
+                android:id="@+id/timer_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <!-- mm -->
-            <NumberPicker
-                android:id="@+id/mm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <!-- ss -->
-            <NumberPicker
-                android:id="@+id/ss"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/buttons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/npickers"
-            android:layout_centerInParent="true"
-            android:layout_margin="10dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_reset"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_ripple_grey"
-                android:text="Reset"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_start"
-                android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/timer_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_bg"
+                    android:padding="10dp"
+                    android:text="00:00:00"
+                    android:textColor="@color/wekast_title"
+                    android:textSize="50sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="hr : min : sec" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/npickers"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_ripple_orange"
-                android:text="Start"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </RelativeLayout>
+                android:layout_below="@id/timer_layout"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/relativeLayout"
-        android:layout_alignTop="@+id/relativeLayout">
+                <!-- hh -->
+                <NumberPicker
+                    android:id="@+id/hh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        <ImageButton
-            android:id="@+id/btn_cancel"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_close_timer" />
-    </FrameLayout>
+                <!-- mm -->
+                <NumberPicker
+                    android:id="@+id/mm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- ss -->
+                <NumberPicker
+                    android:id="@+id/ss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/npickers"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_reset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_ripple_grey"
+                    android:text="Reset"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_ripple_orange"
+                    android:text="Start"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true">
+
+                <ImageButton
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/ic_close_timer" />
+            </FrameLayout>
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
 
 
 </RelativeLayout>
